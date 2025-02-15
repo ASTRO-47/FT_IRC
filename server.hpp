@@ -1,0 +1,21 @@
+#pragma once
+
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+class Server
+{
+    private:
+        int port;
+        int server_socket;
+        int client_socket;
+        // struct sockaddr_in server_address;
+        // struct sockaddr_in client_address;
+        // socklen_t client_address_len;
+    public:
+        Server(int port);
+        ~Server();
+};

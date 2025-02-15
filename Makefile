@@ -1,12 +1,12 @@
-FLAGS = -Wall -Wextra -Werror 
+# FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++98
+CPPC = c++ -std=c++11
 
 
 SOURCES =  main.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
-NAME = Iter
+NAME = ircserv
 HEADERS =
 RM = rm -f
 #Colors:
