@@ -1,6 +1,6 @@
 # FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++98
+CPPC = c++ -std=c++11
 
 
 SOURCES =  main.cpp server.cpp

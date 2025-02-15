@@ -62,49 +62,7 @@ void Server::wait_connections()
         close (client_socket);
     }
 }
-    // if (bind(serverSocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
-    //     std::cerr << "Failed to bind socket\n";
-    //     close(serverSocket);
-    //     return 1;
-    // }
 
-    // Step 3: Listen for incoming connections
-    // if (listen(serverSocket, 5) == -1) {
-    //     std::cerr << "Failed to listen on socket\n";
-    //     close(serverSocket);
-    //     return 1;
-    // }
-
-    // std::cout << "Server is listening on port 6667...\n";
-
-    // // Step 4: Accept a client connection
-    // sockaddr_in clientAddress;
-    // socklen_t clientAddressSize = sizeof(clientAddress);
-    // int clientSocket = accept(serverSocket, (sockaddr*)&clientAddress, &clientAddressSize);
-    // if (clientSocket == -1) {
-    //     std::cerr << "Failed to accept client connection\n";
-    //     close(serverSocket);
-    //     return 1;
-    // }
-
-    // std::cout << "Client connected!\n";
-
-    // // Step 5: Communicate with the client
-    // char buffer[1024];
-    // while (true) {
-    //     memset(buffer, 0, sizeof(buffer));
-    //     int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-    //     if (bytesReceived <= 0) {
-    //         std::cerr << "Client disconnected\n";
-    //         break;
-    //     }
-    //     std::cout << "Received: " << buffer << std::endl;
-    //     send(clientSocket, buffer, bytesReceived, 0); // Echo back the message
-    // }
-
-    // // Step 6: Close sockets
-    // close(clientSocket);
-    // close(serverSocket);
 
 Server::~Server()
 {
