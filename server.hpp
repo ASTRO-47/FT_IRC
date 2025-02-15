@@ -9,6 +9,7 @@
 class Server
 {
     private:
+        sockaddr_in sock_addr;
         int port;
         int server_socket;
         int client_socket;
@@ -16,6 +17,10 @@ class Server
         // struct sockaddr_in client_address;
         // socklen_t client_address_len;
     public:
-        Server(int port);
+        void server_setup(std::string);
+        void wait_connections();
+        Server();
         ~Server();
 };
+
+//endianness

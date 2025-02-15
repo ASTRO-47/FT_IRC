@@ -1,9 +1,9 @@
 # FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++11
+CPPC = c++ -std=c++98
 
 
-SOURCES =  main.cpp
+SOURCES =  main.cpp server.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 NAME = ircserv
