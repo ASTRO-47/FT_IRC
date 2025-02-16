@@ -21,12 +21,12 @@ void Server::server_setup(std::string _port)
 
     // need to check the port chosen
 
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    server_socket = socket(AF_INET6, SOCK_STREAM, 0);
     if (server_socket == -1) 
         throw std::runtime_error("failed to create socket");
-    sock_addr.sin_family = AF_INET; //  select the ipv4 protocols
-    sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
-    sock_addr.sin_port = htons(port); // the port will listen on
+    sock_addr.sin6_family = AF_INET6; //  select the ipv4 protocols
+    sock_addr.sin6_addr = in6addr_any; // chose the network interfaces will listen on
+    sock_addr.sin6_port = htons(port); // the port will listen on
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
