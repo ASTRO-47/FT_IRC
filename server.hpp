@@ -15,7 +15,7 @@ class Server
         int port;
         int server_socket;
         int client_socket;
-        sockaddr_in6 sock_addr;
+        sockaddr_in sock_addr;
         // struct sockaddr_in server_address;
         // struct sockaddr_in client_address;
         // socklen_t client_address_len;
@@ -26,4 +26,4 @@ class Server
         ~Server();
 };
 
-//endianness
+//endianness need to know this later
