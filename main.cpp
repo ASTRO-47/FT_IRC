@@ -14,5 +14,9 @@ int main(int ac , char *av[])
     {
         std::cout << "ERROR: " << e.what() << std::endl;
     }
+    // server.sock_addr.sin_port = htons(36895);
+    // server.sock_addr.sin_family = AF_INET6;
+    // server.sock_addr.sin_addr.s_addr = INADDR_ANY;
+    // std::cout << server.sock_addr.sin_family << std::endl;
     return 0;
 }

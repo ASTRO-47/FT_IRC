@@ -42,14 +42,16 @@ void Server::server_setup(std::string _port)
 
 void Server::wait_connections()
 {
-    while (true){
+    while (true)
+    {
         sockaddr_in client_addr;
         socklen_t client_addr_size = sizeof(client_addr);
         client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_size);
         // protect accept
         std::cout << "Client connected\n";
         char buffer[1024];
-        while (true){
+        while (true)
+        {
             int bytes = recv(client_socket, buffer, 1024, 0);
             if (bytes <= 0)
             {
@@ -58,7 +60,7 @@ void Server::wait_connections()
             }
             buffer[bytes - 1] = '\0';
             std::cout << "recieved: " << buffer << std::endl;
-            send(client_socket, "hello from astro server\n", 25, 0);
+            send(client_socket, "hello from astro server\n>", 26, 0);
         }
         close (client_socket);
     }
