@@ -3,13 +3,13 @@
 CPPC = c++ -std=c++11
 
 
-SOURCES =  main.cpp server.cpp
+SOURCES =  main.cpp server.cpp client.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 NAME = ircserv
-HEADERS =
+HEADERS = server.hpp client.hpp
 RM = rm -f
-#Colors:
+#anssi Colors:
 GREEN       = \e[38;5;118m
 YELLOW      = \e[38;5;226m
 GRAY        = \e[38;5;37m

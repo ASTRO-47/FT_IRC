@@ -1,6 +1,6 @@
 #include "server.hpp"
 
-Server::Server(){}
+Server::Server() {}
 
 // bool check_numeric(std::string m)
 // {
@@ -51,7 +51,8 @@ void Server::wait_connections()
         char buffer[1024];
         while (true){
             int bytes = recv(client_socket, buffer, 1024, 0);
-            if (bytes <= 0){
+            if (bytes <= 0)
+            {
                 std::cout << "client disconnected\n";
                 break;
             }
@@ -62,7 +63,6 @@ void Server::wait_connections()
         close (client_socket);
     }
 }
-
 
 Server::~Server()
 {

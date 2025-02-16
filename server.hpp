@@ -6,6 +6,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+using std::cout, std::string, std::endl;
+
 class Server
 {
     private:
