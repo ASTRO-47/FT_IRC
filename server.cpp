@@ -40,37 +40,45 @@ void Server::server_setup(std::string _port, std::string passwd)
         throw std::runtime_error("listen failed"); // try to print the errno
         close (server_socket);
     }
-    _poll_fds.push_back({server_socket, POLLIN, 0}); // need to know the zero value
+    struct pollfd new_pollfd;
+    new_pollfd.fd = server_socket;
+    new_pollfd.events = POLLIN; // tells pool which request will come
+    new_pollfd.revents = 0; // the actuel request comes
+    _poll_fds.push_back(new_pollfd);
     std::cout << "server listening on port: " << port << std::endl;
 }
 
-void Server::wait_connections()
+void Server::multiplexing_func()
 {
     while (true)
     {
-        int ready = poll(_poll_fds.data(), _poll_fds.size(), -1);
+        int ready = poll(_poll_fds.data(), _poll_fds.size(), -1); // no blocking poll
         if (ready == -1)
             throw std::runtime_error("poll error");
         for (size_t i = 0; i < _poll_fds.size(); i++)
         {
-            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
+            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) // check if a client cut off
             {
-                // Handle errors or hangup
-                std::cout << "Error or hangup on fd " << _poll_fds[i].fd << std::endl;
+                std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
                 close(_poll_fds[i].fd);
                 _poll_fds.erase(_poll_fds.begin() + i);
                 i--;
             }
-            if (_poll_fds[i].revents & POLLIN)
+
+            if (_poll_fds[i].revents & POLLIN) // if a connection to the socket requested and its writing request
             {
-                if (_poll_fds[i].fd == server_socket)
+                if (_poll_fds[i].fd == server_socket) // new connection, set same socket
                 {
                     sockaddr_in client_addr;
                     socklen_t client_addr_size = sizeof(client_addr);
                     client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_size);
                     if (client_socket == -1)
                         throw std::runtime_error("request accepting failed");
-                    _poll_fds.push_back((client_socket, POLL_IN, 0)); // add the client to the socket
+                    struct pollfd new_pollfd;
+                    new_pollfd.fd = client_socket   ;
+                    new_pollfd.events = POLLIN;
+                    new_pollfd.revents = 0;
+                    _poll_fds.push_back(new_pollfd); // add the client to the socket
                     std::cout << "Client connected\n";
                 }
                 else

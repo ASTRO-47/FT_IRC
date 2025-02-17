@@ -25,7 +25,8 @@ class Server
         // socklen_t client_address_len;
     public:
         void server_setup(std::string, std::string);
-        void wait_connections();
+        void multiplexing_func();
+        
         Server();
         ~Server();
 };
