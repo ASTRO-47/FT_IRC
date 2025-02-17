@@ -5,7 +5,8 @@
 class Client
 {
 private:
-    std::string name;
+    std::string     name;
+    bool            auth;
 public:
     Client(std::string);
     Client(const Client &);

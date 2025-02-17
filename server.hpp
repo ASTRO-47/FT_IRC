@@ -2,25 +2,29 @@
 
 #include <iostream>
 #include <cstring>
+#include <fcntl.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <map>
-// #include <poll>
+#include <vector>
+#include <poll.h>
 
 class Server
 {
     private:
+        std::string password;
         std::map<std::string , int> clients;
         int port;
         int server_socket;
         int client_socket;
         sockaddr_in sock_addr;
+        std::vector<struct pollfd> _poll_fds;
         // struct sockaddr_in server_address;
         // struct sockaddr_in client_address;
         // socklen_t client_address_len;
     public:
-        void server_setup(std::string);
+        void server_setup(std::string, std::string);
         void wait_connections();
         Server();
         ~Server();
