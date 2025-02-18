@@ -9,20 +9,20 @@
 #include <map>
 #include <vector>
 #include <poll.h>
+#include "client.hpp"
+class Client;
 
 class Server
 {
     private:
+        std::vector<Client *> clients;
+        std::vector<struct pollfd>  _poll_fds;
         std::string password;
-        std::map<std::string , int> clients;
         int port;
         int server_socket;
-        int client_socket;
         sockaddr_in sock_addr;
-        std::vector<struct pollfd> _poll_fds;
-        // struct sockaddr_in server_address;
-        // struct sockaddr_in client_address;
-        // socklen_t client_address_len;
+        void handle_new_client();
+        void handle_event_fd(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
@@ -30,5 +30,3 @@ class Server
         Server();
         ~Server();
 };
-
-//endianness need to know this later
