@@ -35,8 +35,8 @@ void Server::server_setup(std::string _port, std::string passwd)
     }
     if (listen(server_socket, 5) < 0)
     {
-        throw std::runtime_error("listen failed"); // try to print the errno    
         close (server_socket);
+        throw std::runtime_error("listen failed"); // try to print the errno    
     }
     Client* poll_server = new Client();
     poll_server->add_server_to_poll(server_socket);
