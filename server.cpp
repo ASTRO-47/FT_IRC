@@ -49,7 +49,7 @@ void    Server::handle_new_client()
 {
     Client *new_client = new Client;
     new_client->connect(server_socket);
-    clients.push_back(new_client); // add the client to the socket
+    clients.push_back(new_client); // add the client to the vector
     _poll_fds.push_back(new_client->get_socket_struct());
     std::cout << "Client connected, on fd: "  <<  new_client->get_socket_fd()  << "\n";
 }

@@ -18,8 +18,6 @@ public:
     sockaddr_in &get_socket_addr();
     pollfd  get_socket_struct();
     socklen_t &get_socket_addr_length();
-    // Client(const Client &);
-    Client& operator=(const Client &);
     Client();
     ~Client();
 } ;

@@ -10,6 +10,7 @@
 #include <vector>
 #include <poll.h>
 #include "client.hpp"
+
 class Client;
 
 class Server

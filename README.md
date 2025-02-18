@@ -7,3 +7,5 @@ struct pollfd {
     short events;    // Events to monitor (e.g., POLLIN, POLLOUT)
     short revents;   // Events that actually occurred
 };
+
+https://www.rfc-editor.org/rfc/rfc2812.html#section-1.1 irc ref
