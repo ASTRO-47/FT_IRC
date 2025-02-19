@@ -12,7 +12,6 @@ Server::Server() {}
 //     return true;
 // }
 
-
 void Server::server_setup(std::string _port, std::string passwd)
 {
     // check the password policy
@@ -36,7 +35,7 @@ void Server::server_setup(std::string _port, std::string passwd)
     if (listen(server_socket, 5) < 0)
     {
         close (server_socket);
-        throw std::runtime_error("listen failed"); // try to print the errno    
+        throw std::runtime_error("listen failed"); // try to print the errno
     }
     Client* poll_server = new Client();
     poll_server->add_server_to_poll(server_socket);
@@ -56,22 +55,25 @@ void    Server::handle_new_client()
 
 void Server::handle_event_fd(int i)
 {
-    char buffer[1024]; // change this later
-    int bytes = recv(clients[i]->get_socket_fd(), buffer, 1023, 0);
+    char buffer[500]; // change this later
+    int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
     if (bytes <= 0)
     {
         std::cout << "client disconnected\n";
         close (clients[i]->get_socket_fd());
         _poll_fds.erase(_poll_fds.begin() + i);
-        --i;
+        i--;
     }
     else
     {
-        buffer[bytes - 1] = '\0'; // trim the new line at the end
-        std::cout << "recieved: " << buffer << std::endl;
-        if (!strcmp(buffer, "halt"))
-            throw std::runtime_error("server down");
-        send(clients[i]->get_socket_fd(), "hello from astro server\n>", 26, 0);
+        buffer[bytes] = '\0'; // trim the new line at the end
+        clients[i]->append_buffer(buffer);
+        // std::cout << "recieved: " << clients[i]->get_buffer() << ']'<< std::endl;
+        if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
+            throw std::runtime_error("server stoped by a client request");
+        // std::cout << clients[i]->get_buffer() << std::endl;
+        if (clients[i]->get_buffer().back() == '\n')
+            handle_cmd(i);
     }
 }
 

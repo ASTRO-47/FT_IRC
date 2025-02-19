@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-Client::Client() : auth(false)
+Client::Client() : auth(false), pass(false)
 {
     //check the username policy and duplicate
     addr_len = sizeof(socket_addr);
@@ -41,6 +41,32 @@ void Client::add_server_to_poll(int server_socket)
     __poll.revents = 0;
 }
 
-Client::~Client()  {
+void Client::append_buffer(char *res)
+{
+    _buffer.append(res);
+}
+
+bool Client::check_pass() const
+{
+    return pass;
+}
+
+std::string Client::get_buffer() const
+{
+    return _buffer;
+}
+
+bool Client::check_auth() const
+{
+    return auth;
+}
+
+void Client::reset()
+{
+    _buffer.clear();
+}
+
+Client::~Client()  
+{
     // close (client_socket);
 }

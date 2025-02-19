@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <poll.h>
+#include <sstream>
 #include "client.hpp"
 
 class Client;
@@ -24,6 +25,8 @@ class Server
         sockaddr_in sock_addr;
         void handle_new_client();
         void handle_event_fd(int);
+        void try_to_auth(int);
+        void handle_cmd(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
