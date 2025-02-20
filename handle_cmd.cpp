@@ -3,7 +3,7 @@
 
 void Server::parse_nick()
 {
-    
+
 }
 
 void Server::try_to_auth(int i)
@@ -33,7 +33,7 @@ void Server::handle_cmd(int i)
     if (clients[i]->get_cmd(0) == "PASS")
         try_to_auth(i);
     if (clients[i]->get_cmd(0) == "NICK" && clients[i]->get_buffer_size() > 1)
-        parse_nick();
+        // parse_nick();
     // clients[i]->reset();
     // if (!_C->check_auth())
     //     try_to_auth(_C);
