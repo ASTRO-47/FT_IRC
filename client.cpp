@@ -1,8 +1,7 @@
 #include "client.hpp"
 
-Client::Client() : auth(false), pass(false)
+Client::Client() : pass(false) , _nick(false), user(false), _msg(false)
 {
-    //check the username policy and duplicate
     addr_len = sizeof(socket_addr);
     memset(&socket_addr, 0, addr_len);
 }
@@ -75,6 +74,12 @@ void Client::parse_command()
             _command_buffer.push_back(trimmed);
         }
     }
+    // std::cout << '[' << std::endl;
+    // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
+    // {
+    //     std::cout << *it << "," ;
+    // }
+    // std::cout << ']' << std::endl;
 }
 
 
@@ -95,9 +100,11 @@ std::string Client::get_buffer() const
     return _buffer;
 }
 
-bool Client::check_auth() const
+bool Client::check_all() const
 {
-    return auth;
+    if (pass && _nick && user)
+        return true;
+    return false;
 }
 
 void Client::reset()
@@ -109,6 +116,22 @@ void Client::reset()
 void Client::correct_pass()
 {
     pass = true;
+}
+
+void Client::set_nick_name()
+{
+    _nick = true;
+    nick  = _command_buffer[0];
+}
+
+void Client::set_user_infos()
+{
+    user = true;
+}
+
+std::string Client::get_nick_name() const
+{
+    return nick;
 }
 
 Client::~Client()  

@@ -1,6 +1,27 @@
 #include "server.hpp"
 
-Server::Server() {}
+Server::Server() {
+    message =
+            ":ft_irc.1337.ma 001 dsf :Welcome to the :ft_irc.1337.ma Network, :dsf!~dfsd@197.230.30.146\r\n"
+            ":ft_irc.1337.ma 002 dsf :Your host is :ft_irc.1337.ma, running version version: 01\r\n"
+            ":ft_irc.1337.ma 003 dsf :This server was created Sat May  4 18:12:40 2024\r\n"
+            ":ft_irc.1337.ma 005 dsf CHANMODES=k,l,i,t MODES=20 NICKLEN=16 MAXCHANNELS=250 TOPICLEN=300 USERNAMELEN=9 CHANNELLEN=50 :are supported by this server\r\n"
+            ":ft_irc.1337.ma 253 dsf 98 :unknown connection(s)\r\n"
+            ":ft_irc.1337.ma 254 dsf 0 :channels formed\r\n"
+            ":ft_irc.1337.ma 255 dsf :I have 1 clients and 1 servers\r\n"
+            ":ft_irc.1337.ma 375 dsf :- :ft_irc.1337.ma Message of the Day -\r\n"
+            ":ft_irc.1337.ma 372 dsf :-\r\n"
+            ":ft_irc.1337.ma 372 dsf :-   __  _         _               _  _____ _____ _____ \r\n"
+            ":ft_irc.1337.ma 372 dsf :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
+            ":ft_irc.1337.ma 372 dsf :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
+            ":ft_irc.1337.ma 372 dsf :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
+            ":ft_irc.1337.ma 372 dsf :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
+            ":ft_irc.1337.ma 372 dsf :-          |_____|                                     \r\n"
+            ":ft_irc.1337.ma 372 dsf :-\r\n"
+            ":ft_irc.1337.ma 372 dsf :- irc1337 is a really cool network!\r\n"
+            ":ft_irc.1337.ma 372 dsf :- No spamming please, thank you!\r\n"
+            ":ft_irc.1337.ma 376 dsf :End of /MOTD command.\r\n";
+}
 
 // bool check_numeric(std::string m)
 // {
@@ -11,6 +32,11 @@ Server::Server() {}
 //     }
 //     return true;
 // }
+
+void       Server::registration_msge(int i) const
+{
+    send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
+}
 
 void Server::server_setup(std::string _port, std::string passwd)
 {
