@@ -32,7 +32,7 @@ void Server::server_setup(std::string _port, std::string passwd)
         close (server_socket);
         throw std::runtime_error("bind failed");
     }
-    if (listen(server_socket, 5) < 0)
+    if (listen(server_socket, 100) < 0) // set the backlog
     {
         close (server_socket);
         throw std::runtime_error("listen failed"); // try to print the errno
@@ -68,10 +68,8 @@ void Server::handle_event_fd(int i)
     {
         buffer[bytes] = '\0'; // trim the new line at the end
         clients[i]->append_buffer(buffer);
-        // std::cout << "recieved: " << clients[i]->get_buffer() << ']'<< std::endl;
         if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
             throw std::runtime_error("server stoped by a client request");
-        // std::cout << clients[i]->get_buffer() << std::endl;
         if (clients[i]->get_buffer().back() == '\n')
             handle_cmd(i);
     }

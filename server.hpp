@@ -27,6 +27,7 @@ class Server
         void                        handle_event_fd(int);
         void                        try_to_auth(int);
         void                        handle_cmd(int);
+        void                         parse_nick();
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

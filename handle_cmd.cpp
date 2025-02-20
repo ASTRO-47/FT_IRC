@@ -1,29 +1,42 @@
 #include "server.hpp"
 
 
+void Server::parse_nick()
+{
+    
+}
+
 void Server::try_to_auth(int i)
 {
-    if (!clients[i]->get_buffer().rfind("PASS", 0))
+    if (clients[i]->get_buffer_size() == 2)
     {
-        std::string _pass = clients[i]->get_buffer().substr(5);
-        _pass.erase(_pass.find_last_not_of(" \n\r\t") + 1);
-        // std::cout <<  "parsed password :" <<  _pass<<'"' <<password<< '"' << std::endl;
-        if (_pass == password)
+        if (clients[i]->check_pass())
+            send(clients[i]->get_socket_fd(), "you already validate the password\n", 33, 0);
+        else
         {
-            clients[i]->correct_pass();
-            std::cout << "correct passwor" << std::endl;
-        }
+            if (clients[i]->get_cmd(1) == password)
+                clients[i]->correct_pass();
+            else
+                send(clients[i]->get_socket_fd(), "wrong password\n", 15, 0);
+        }    
     }
-    std::cout << clients[i]->get_buffer() ;
 }
 
 void Server::handle_cmd(int i)
 {
-    
-    if (!clients[i]->check_pass())
+    clients[i]->parse_command();
+    if (!clients[i]->check_pass() && clients[i]->get_cmd(0) != "PASS")
+    {
+        send(clients[i]->get_socket_fd(), "you have to validate the password first\n", 40, 0);
+        return ;
+    }
+    if (clients[i]->get_cmd(0) == "PASS")
         try_to_auth(i);
-    clients[i]->reset();
+    if (clients[i]->get_cmd(0) == "NICK" && clients[i]->get_buffer_size() > 1)
+        parse_nick();
+    // clients[i]->reset();
     // if (!_C->check_auth())
     //     try_to_auth(_C);
     // send(_C->get_socket_fd(), "you are not registered\n", 24, 0);
+    clients[i]->reset();
 }

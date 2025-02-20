@@ -39,8 +39,49 @@ void Client::add_server_to_poll(int server_socket)
     __poll.revents = 0;
 }
 
+std::string &Client::get_cmd(int i)
+{
+    // if (i >= _command_buffer.size())
+        // return "";
+    return _command_buffer[i];
+}
+
+int Client::get_buffer_size() const
+{
+    // if (i >= _command_buffer.size())
+        // return "";
+    return _command_buffer.size();
+}
+
+std::string trim(const std::string& str) 
+{
+    const std::string whitespace = " \t\n\r";
+    size_t first = str.find_first_not_of(whitespace);
+    if (first == std::string::npos) return "";
+    size_t last = str.find_last_not_of(whitespace);
+    return str.substr(first, last - first + 1);
+}
+
+void Client::parse_command()
+{
+    std::stringstream ss(_buffer);
+    std::string command;
+    
+    while (std::getline(ss, command, ' ')) 
+    {
+        std::string trimmed = trim(command);
+        if (!trimmed.empty())
+        {
+            _command_buffer.push_back(trimmed);
+        }
+    }
+}
+
+
 void Client::append_buffer(char *res)
 {
+    if (!strlen(res) || (strlen(res) == 1 && res[0] == '\n'))
+        return ;
     _buffer.append(res);
 }
 
@@ -62,6 +103,7 @@ bool Client::check_auth() const
 void Client::reset()
 {
     _buffer.clear();
+    _command_buffer.clear();
 }
 
 void Client::correct_pass()
