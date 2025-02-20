@@ -20,7 +20,7 @@ void Server::server_setup(std::string _port, std::string passwd)
     port = std::strtod(_port.c_str(), &checker);
     if (checker[0] != '\0')
         throw std::runtime_error("invalid port format");
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    server_socket = socket(AF_INET, SOCK_STREAM, 0); 
     if (server_socket == -1) 
         throw std::runtime_error("failed to create socket");
     // fcntl(server_socket, F_SETFL, O_NONBLOCK);

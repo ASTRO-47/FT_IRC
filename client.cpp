@@ -4,15 +4,13 @@ Client::Client() : auth(false), pass(false)
 {
     //check the username policy and duplicate
     addr_len = sizeof(socket_addr);
-    memset(&socket_addr, 0 ,addr_len);
-
+    memset(&socket_addr, 0, addr_len);
 }
 
 pollfd Client::get_socket_struct()
 {
     return __poll;
 }
-
 
 socklen_t &Client::get_socket_addr_length()
 {
@@ -64,6 +62,11 @@ bool Client::check_auth() const
 void Client::reset()
 {
     _buffer.clear();
+}
+
+void Client::correct_pass()
+{
+    pass = true;
 }
 
 Client::~Client()  

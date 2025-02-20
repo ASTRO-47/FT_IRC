@@ -13,6 +13,7 @@ private:
     pollfd          __poll;
     int             client_socket;
     std::string     _buffer;
+    std::vector<std::string>       _command_buffer;
 public:
     Client();
     bool        check_pass() const;
@@ -25,6 +26,7 @@ public:
     socklen_t   &get_socket_addr_length();
     void        append_buffer(char *);
     std::string get_buffer() const;
+    void        correct_pass();
     void        reset();
     ~Client();
 } ;
