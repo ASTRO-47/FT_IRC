@@ -11,6 +11,7 @@
 #include <poll.h>
 #include <sstream>
 #include "client.hpp"
+#include <string>
 
 class Client;
 
@@ -19,6 +20,7 @@ class Server
     private:
         std::vector<Client *>       clients;
         std::string                  message;
+        std::string                  _draw;
         std::vector<struct pollfd>  _poll_fds;
         std::string                 password;
         int                         port;
@@ -30,7 +32,8 @@ class Server
         void                        handle_cmd(int);
         void                         parse_nick(int);
         void                         parse_user(int);
-        void                         registration_msge(int) const;
+        void                         registration_msge(int);
+        std::string                  server_prefix;
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

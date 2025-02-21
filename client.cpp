@@ -34,7 +34,7 @@ int Client::get_socket_fd() const
 void Client::add_server_to_poll(int server_socket)
 {
     __poll.fd = server_socket;
-    __poll.events = POLLIN; // tells pool which request will come
+    __poll.events = POLLIN; // tells poll() which request will come
     __poll.revents = 0;
 }
 
@@ -118,10 +118,15 @@ void Client::correct_pass()
     pass = true;
 }
 
+void Client::wrong_pass()
+{
+    pass = false;
+}
+
 void Client::set_nick_name()
 {
     _nick = true;
-    nick  = _command_buffer[0];
+    nick  = _command_buffer[1];
 }
 
 void Client::set_user_infos()
@@ -132,6 +137,23 @@ void Client::set_user_infos()
 std::string Client::get_nick_name() const
 {
     return nick;
+}
+
+void    Client::showed_messgae()
+{
+    _msg = true;
+}
+
+bool Client::check_message() const
+{
+    return _msg;
+}
+
+bool    Client::cmd_end() const
+{
+    if (_buffer[_buffer.length() - 1] == '\n')
+        return true;
+    return false;
 }
 
 Client::~Client()  

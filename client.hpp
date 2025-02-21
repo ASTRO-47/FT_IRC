@@ -32,10 +32,13 @@ public:
     void            append_buffer(char *);
     std::string     get_buffer() const;
     void            correct_pass();
+    void            wrong_pass();
     void            set_nick_name();
     std::string     get_nick_name() const; 
     void            reset();
-    
+    void            showed_messgae();
+    bool            check_message() const;
     void            set_user_infos();
+    bool            cmd_end() const;
     ~Client();
 } ;

@@ -9,3 +9,5 @@ struct pollfd {
 };
 
 https://www.rfc-editor.org/rfc/rfc2812.html#section-1.1 irc ref
+
+-- the last param in the s(end) sys call: its about how the message gonna sent.(urgnet data, bypass routing, sigpipe.....)

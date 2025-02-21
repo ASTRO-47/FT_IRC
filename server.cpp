@@ -1,26 +1,9 @@
 #include "server.hpp"
 
-Server::Server() {
-    message =
-            ":ft_irc.1337.ma 001 dsf :Welcome to the :ft_irc.1337.ma Network, :dsf!~dfsd@197.230.30.146\r\n"
-            ":ft_irc.1337.ma 002 dsf :Your host is :ft_irc.1337.ma, running version version: 01\r\n"
-            ":ft_irc.1337.ma 003 dsf :This server was created Sat May  4 18:12:40 2024\r\n"
-            ":ft_irc.1337.ma 005 dsf CHANMODES=k,l,i,t MODES=20 NICKLEN=16 MAXCHANNELS=250 TOPICLEN=300 USERNAMELEN=9 CHANNELLEN=50 :are supported by this server\r\n"
-            ":ft_irc.1337.ma 253 dsf 98 :unknown connection(s)\r\n"
-            ":ft_irc.1337.ma 254 dsf 0 :channels formed\r\n"
-            ":ft_irc.1337.ma 255 dsf :I have 1 clients and 1 servers\r\n"
-            ":ft_irc.1337.ma 375 dsf :- :ft_irc.1337.ma Message of the Day -\r\n"
-            ":ft_irc.1337.ma 372 dsf :-\r\n"
-            ":ft_irc.1337.ma 372 dsf :-   __  _         _               _  _____ _____ _____ \r\n"
-            ":ft_irc.1337.ma 372 dsf :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
-            ":ft_irc.1337.ma 372 dsf :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
-            ":ft_irc.1337.ma 372 dsf :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
-            ":ft_irc.1337.ma 372 dsf :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
-            ":ft_irc.1337.ma 372 dsf :-          |_____|                                     \r\n"
-            ":ft_irc.1337.ma 372 dsf :-\r\n"
-            ":ft_irc.1337.ma 372 dsf :- irc1337 is a really cool network!\r\n"
-            ":ft_irc.1337.ma 372 dsf :- No spamming please, thank you!\r\n"
-            ":ft_irc.1337.ma 376 dsf :End of /MOTD command.\r\n";
+Server::Server() 
+{
+
+    server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
 }
 
 // bool check_numeric(std::string m)
@@ -33,9 +16,30 @@ Server::Server() {
 //     return true;
 // }
 
-void       Server::registration_msge(int i) const
+void       Server::registration_msge(int i)
 {
+    std::string nick = clients[i]->get_nick_name();
+    // ":ft_irc.1337.ma 375 " + nick + " :- Welcome to ft_irc.1337.ma\n"
+    std::string message = 
+            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\n"
+            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\n"
+            ":ft_irc 254 " + nick + " :channels formed\n"
+            ":ft_irc 255 " + nick + " :We have 1 clients\n";
+    std::string motd = 
+        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \n"
+        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\n"
+        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \n"
+        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \n"
+        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \n"
+        ":ft_irc 372 " + nick + " :-          |_____|                                     \n"
+        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\n"
+        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\n";
+        // ":ft_irc 376 " + nick + " :End of /MOTD command.\n";
+    message += motd;
     send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
+    clients[i]->showed_messgae();
+
+    // send(clients[i]->get_socket_fd(), motd.c_str(), motd.length(), 0);
 }
 
 void Server::server_setup(std::string _port, std::string passwd)
@@ -58,7 +62,7 @@ void Server::server_setup(std::string _port, std::string passwd)
         close (server_socket);
         throw std::runtime_error("bind failed");
     }
-    if (listen(server_socket, 100) < 0) // set the backlog
+    if (listen(server_socket, 100) < 0) // set the backlog = how much cleints in the queue
     {
         close (server_socket);
         throw std::runtime_error("listen failed"); // try to print the errno
@@ -96,7 +100,7 @@ void Server::handle_event_fd(int i)
         clients[i]->append_buffer(buffer);
         if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
             throw std::runtime_error("server stoped by a client request");
-        if (clients[i]->get_buffer().back() == '\n')
+        if (clients[i]->cmd_end())
             handle_cmd(i);
     }
 }
