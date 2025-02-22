@@ -19,6 +19,7 @@ Server::Server()
 void       Server::registration_msge(int i)
 {
     std::string nick = clients[i]->get_nick_name();
+    taken_nick_name(clients[i]);
     // ":ft_irc.1337.ma 375 " + nick + " :- Welcome to ft_irc.1337.ma\n"
     std::string message = 
             ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\n"
@@ -92,6 +93,8 @@ void Server::handle_event_fd(int i)
         std::cout << "client disconnected\n";
         close (clients[i]->get_socket_fd());
         _poll_fds.erase(_poll_fds.begin() + i);
+        delete clients[i];
+        clients.erase(clients.begin() + i);
         i--;
     }
     else
@@ -101,7 +104,10 @@ void Server::handle_event_fd(int i)
         if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
             throw std::runtime_error("server stoped by a client request");
         if (clients[i]->cmd_end())
+        {
+            std::cout << clients[i]->get_buffer();
             handle_cmd(i);
+        }
     }
 }
 
@@ -119,9 +125,10 @@ void Server::multiplexing_func()
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
                 close(_poll_fds[i].fd);
                 _poll_fds.erase(_poll_fds.begin() + i);
+                delete clients[i];
+                clients.erase(clients.begin() + i);
                 i--;
             }
-
             if (_poll_fds[i].revents & POLLIN) // if a connection to the socket requested and its writing request
             {
                 if (_poll_fds[i].fd == server_socket) // new events is on the socket file desctiptor
