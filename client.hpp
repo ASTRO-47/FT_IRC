@@ -6,6 +6,9 @@ class Client
 {
 private:
     bool                            _msg;
+    std::string                     host_name;
+    std::string                     user_name;
+    std::string                     server_name;
     std::string                     nick;
     std::string                     real_name;
     bool                            _nick;

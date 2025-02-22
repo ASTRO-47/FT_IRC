@@ -8,15 +8,14 @@ void f()
 
 int main(int ac , char *av[])
 {
-    if (ac != 3)
+    if (ac != 2)
         return (std::cerr << "invalid number of args\n", 1);
     Server server;
     try
     {
-        server.server_setup(av[1], av[2]);
+        server.server_setup(av[1], "hello");
         server.multiplexing_func();
     }
-
 
     catch (std::exception &e)
     {

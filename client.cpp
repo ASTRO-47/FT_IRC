@@ -125,12 +125,19 @@ void Client::wrong_pass()
 
 void Client::set_nick_name()
 {
+    nick  = _command_buffer[1]; // take one or more ??
     _nick = true;
-    nick  = _command_buffer[1];
 }
 
 void Client::set_user_infos()
 {
+    user_name = _command_buffer[0];
+    host_name = _command_buffer[1];
+    std::string r_name ;
+    server_name = _command_buffer[2];
+    for (int i = 3; i < _command_buffer.size();i++)
+        r_name += _command_buffer[i] + ' ';
+    real_name = r_name;
     user = true;
 }
 
