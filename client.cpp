@@ -163,7 +163,7 @@ bool    Client::cmd_end() const
     return false;
 }
 
-Client::~Client()  
+Client::~Client()
 {
     // close (client_socket);
 }

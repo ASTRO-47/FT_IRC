@@ -1,6 +1,6 @@
 # FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++98
+CPPC = c++ -std=c++17
 
 SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
