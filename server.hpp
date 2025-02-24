@@ -35,7 +35,7 @@ class Server
         void                        parse_user(int);
         void                        registration_msge(int);
         std::string                 server_prefix;
-        void                        taken_nick_name(Client *);
+        void                        taken_nick_name(int);
         bool                        taken_nick_name_1(std::string) const;
         // void                        disconnect_client(Client *);
         void                         handle_cmd_1(int);

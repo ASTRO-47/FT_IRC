@@ -1,8 +1,8 @@
 #include "server.hpp"
 
-void Server::taken_nick_name(Client *_C)
+void Server::taken_nick_name(int i)
 {
-    std::string _n = _C->get_nick_name();
+    std::string _n = clients[i]->get_nick_name();
 
     for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
     {
@@ -11,9 +11,9 @@ void Server::taken_nick_name(Client *_C)
             std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)\n";
             send((*it)->get_socket_fd(), msge.c_str(), msge.length(), 0);
             close ((*it)->get_socket_fd());
-            // _poll_fds.erase(_C->get_socket_struct());
-            // delete clients[i];
-            // clients.erase(clients.begin() + i);
+            _poll_fds.erase(_poll_fds.begin() + i);
+            delete clients[i];
+            clients.erase(clients.begin() + i);
         }
     }
 }

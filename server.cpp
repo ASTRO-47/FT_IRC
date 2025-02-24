@@ -19,7 +19,7 @@ Server::Server()
 void       Server::registration_msge(int i)
 {
     std::string nick = clients[i]->get_nick_name();
-    taken_nick_name(clients[i]);
+    taken_nick_name(i);
     // ":ft_irc.1337.ma 375 " + nick + " :- Welcome to ft_irc.1337.ma\n"
     std::string message = 
             ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\n"
