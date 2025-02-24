@@ -45,7 +45,6 @@ void       Server::registration_msge(int i)
 
 void Server::server_setup(std::string _port, std::string passwd)
 {
-    // check the password policy
     password = passwd;
     char *checker = NULL;
     port = std::strtod(_port.c_str(), &checker);
@@ -55,9 +54,14 @@ void Server::server_setup(std::string _port, std::string passwd)
     if (server_socket == -1) 
         throw std::runtime_error("failed to create socket");
     // fcntl(server_socket, F_SETFL, O_NONBLOCK);
-    sock_addr.sin_family = AF_INET; //  select the ipv4 protocols
+    sock_addr.sin_family = AF_INET; //  select the ipv4 family
     sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
-    sock_addr.sin_port = htons(port); // the port will listen on
+    sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
+    int opt = 1;
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) == -1) // keeping the socket alive after the program terminate
+        throw std::runtime_error("setsockedopt function failed");
+    // if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) // keeping the socket alive after the program terminate
+    //     throw std::runtime_error("setsockedopt function failed");
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
@@ -103,11 +107,10 @@ void Server::handle_event_fd(int i)
         clients[i]->append_buffer(buffer);
         if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
             throw std::runtime_error("server stoped by a client request");
-        if (clients[i]->cmd_end())
-        {
-            std::cout << clients[i]->get_buffer();
+        if (clients[i]->cmd_end() && !clients[i]->check_all())
             handle_cmd(i);
-        }
+        else
+            handle_cmd_1(i);
     }
 }
 

@@ -26,7 +26,7 @@ class Server
         std::string                 password;
         int                         port;
         int                         server_socket;
-        sockaddr_in                 sock_addr;
+        sockaddr_in                 sock_addr; // use sockaddr_in6 when want to work with ipv6
         void                        handle_new_client();
         void                        handle_event_fd(int);
         void                        try_to_auth(int);
@@ -38,6 +38,7 @@ class Server
         void                        taken_nick_name(Client *);
         bool                        taken_nick_name_1(std::string) const;
         // void                        disconnect_client(Client *);
+        void                         handle_cmd_1(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

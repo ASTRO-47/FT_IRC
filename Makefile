@@ -1,8 +1,8 @@
 # FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++17
+CPPC = c++ -std=c++11
 
-SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp
+SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 NAME = ircserv

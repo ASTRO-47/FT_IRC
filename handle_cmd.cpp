@@ -11,13 +11,12 @@ void Server::taken_nick_name(Client *_C)
             std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)\n";
             send((*it)->get_socket_fd(), msge.c_str(), msge.length(), 0);
             close ((*it)->get_socket_fd());
-            // _poll_fds.erase(_poll_fds.begin() + i);
+            // _poll_fds.erase(_C->get_socket_struct());
             // delete clients[i];
             // clients.erase(clients.begin() + i);
         }
     }
 }
-
 
 bool Server::taken_nick_name_1(std::string _n) const
 {
