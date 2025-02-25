@@ -74,12 +74,12 @@ void Client::parse_command()
             _command_buffer.push_back(trimmed);
         }
     }
-    // std::cout << '[' << std::endl;
-    // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
-    // {
-    //     std::cout << *it << "," ;
-    // }
-    // std::cout << ']' << std::endl;
+    std::cout << '[' << std::endl;
+    for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
+    {
+        std::cout << *it << "," ;
+    }
+    std::cout << ']' << std::endl;
 }
 
 
@@ -111,6 +111,7 @@ void Client::reset()
 {
     _buffer.clear();
     _command_buffer.clear();
+    _message.clear();
 }
 
 void Client::correct_pass()
@@ -161,6 +162,40 @@ bool    Client::cmd_end() const
     if (_buffer[_buffer.length() - 1] == '\n')
         return true;
     return false;
+}
+
+void Client::trim_message()
+{
+    std::vector<std::string>::iterator it = std::find(_command_buffer.begin(), _command_buffer.end(), ":");
+    if (it != _command_buffer.end())
+    {
+        it++;
+        while (it != _command_buffer.end())
+        {
+            _message += *it + ' ';
+            it++;
+        }
+        _message[_message.length() - 1] = '\0';
+    }
+    else
+    {
+        _message = _command_buffer[2];
+    }
+}
+
+std::string Client::get_message() const
+{
+    return _message;
+}
+
+Client* Client::get_reciever() const
+{
+    return _reciever;
+}
+
+void Client::set_reciever(Client* _rec)
+{
+    _reciever = _rec;
 }
 
 Client::~Client()

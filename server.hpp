@@ -39,6 +39,8 @@ class Server
         bool                        taken_nick_name_1(std::string) const;
         // void                        disconnect_client(Client *);
         void                         handle_cmd_1(int);
+        bool                         check_user(int);
+        void                         handle_prv_msge(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

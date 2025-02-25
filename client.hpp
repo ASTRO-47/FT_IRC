@@ -20,6 +20,8 @@ private:
     int                             client_socket;
     std::string                     _buffer;
     std::vector<std::string>        _command_buffer;
+    std::string                     _message;
+    Client                          *_reciever;
 public:
     Client();
     bool            check_all() const;
@@ -43,5 +45,11 @@ public:
     bool            check_message() const;
     void            set_user_infos();
     bool            cmd_end() const;
+    void            trim_message();
+    std::string     get_message() const;
+    void             set_reciever(Client *);
+    Client*          get_reciever() const;
+
+    
     ~Client();
 } ;
