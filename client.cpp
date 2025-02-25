@@ -74,12 +74,12 @@ void Client::parse_command()
             _command_buffer.push_back(trimmed);
         }
     }
-    std::cout << '[' << std::endl;
-    for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
-    {
-        std::cout << *it << "," ;
-    }
-    std::cout << ']' << std::endl;
+//     std::cout << '[' << std::endl;
+//     for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
+//     {
+//         std::cout << *it << "," ;
+//     }
+//     std::cout << ']' << std::endl;
 }
 
 
