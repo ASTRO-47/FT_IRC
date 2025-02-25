@@ -108,14 +108,15 @@ void Server::handle_event_fd(int i)
         if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
             throw std::runtime_error("server stoped by a client request");
         if (clients[i]->cmd_end() && !clients[i]->check_all())
-
         {
-            std::cout << clients[i]->get_buffer() ;
+            std::cout << clients[i]->get_buffer();
             handle_cmd(i);
         }
         else
-    
+        {
+            std::cout << clients[i]->get_buffer() ;
             handle_cmd_1(i);
+        }
     }
 }
 
