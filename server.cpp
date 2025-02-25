@@ -16,7 +16,7 @@ Server::Server()
 //     return true;
 // }
 
-void       Server::registration_msge(int i)
+void    Server::registration_msge(int i)
 {
     std::string nick = clients[i]->get_nick_name();
     taken_nick_name(i);
@@ -35,12 +35,9 @@ void       Server::registration_msge(int i)
         ":ft_irc 372 " + nick + " :-          |_____|                                     \n"
         ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\n"
         ":ft_irc 372 " + nick + " :- No spamming please, thank you!\n";
-        // ":ft_irc 376 " + nick + " :End of /MOTD command.\n";
     message += motd;
     send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
     clients[i]->showed_messgae();
-
-    // send(clients[i]->get_socket_fd(), motd.c_str(), motd.length(), 0);
 }
 
 void Server::server_setup(std::string _port, std::string passwd)
@@ -59,9 +56,9 @@ void Server::server_setup(std::string _port, std::string passwd)
     sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
     int opt = 1;
     if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) == -1) // keeping the socket alive after the program terminate
-        throw std::runtime_error("setsockedopt function failed");
-    // if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) // keeping the socket alive after the program terminate
-    //     throw std::runtime_error("setsockedopt function failed");
+        throw std::runtime_error("setsocketopt function failed");
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) // keeping the socket alive after the program terminate
+        throw std::runtime_error("setsocketopt function failed");
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
@@ -95,6 +92,7 @@ void Server::handle_event_fd(int i)
     if (bytes <= 0)
     {
         std::cout << "client disconnected\n";
+        std::cout << "what the hell is going on";
         close (clients[i]->get_socket_fd());
         _poll_fds.erase(_poll_fds.begin() + i);
         delete clients[i];
@@ -114,7 +112,7 @@ void Server::handle_event_fd(int i)
         }
         else
         {
-            std::cout << clients[i]->get_buffer() ;
+            std::cout << clients[i]->get_buffer();
             handle_cmd_1(i);
         }
     }
@@ -124,7 +122,7 @@ void Server::multiplexing_func()
 {
     while (true)
     {
-        int ready = poll(_poll_fds.data(), _poll_fds.size(), -1); // no blocking poll
+        int ready = poll(_poll_fds.data(), _poll_fds.size(), 0); // non-blocking poll
         if (ready == -1)
             throw std::runtime_error("poll error");
         for (size_t i = 0; i < _poll_fds.size(); i++)
@@ -158,7 +156,6 @@ Server::~Server()
         delete clients[i];
     }
     clients.clear();
-
     if (server_socket != -1)
         close(server_socket);
 }

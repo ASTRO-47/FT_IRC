@@ -26,3 +26,5 @@ So, in a non-blocking + multiplexed server:
 The server does not wait for a single client.
 It monitors all clients and only acts when there's data to process.
 💡 This is exactly how high-performance servers (like an IRC server) handle thousands of connections efficiently! 🚀
+
+Ports in the range 1–1023 are called privileged ports.
