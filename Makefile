@@ -2,11 +2,11 @@
 
 CPPC = c++ -std=c++98
 
-SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp
+SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 NAME = ircserv
-HEADERS = server.hpp client.hpp
+HEADERS = server.hpp client.hpp Channel.hpp
 RM = rm -f
 #anssi Colors:
 GREEN       = \e[38;5;118m

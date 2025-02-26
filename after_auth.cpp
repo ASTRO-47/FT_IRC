@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "Channel.hpp"
 
 void Server::handle_prv_msge(int i)
 {
@@ -23,6 +24,13 @@ bool    Server::check_user(int i)
     send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
     return false;
 }
+bool Server::channel_exists(const std::string& channelName){
+    return channels.find(channelName) != channels.end();
+}
+
+void Server::create_channel(const std::string& channelName, Client *creator){
+    Channel *newChannel = new Channel(channelName, creator);
+}
 
 void    Server::handle_cmd_1(int i)
 {
@@ -36,6 +44,10 @@ void    Server::handle_cmd_1(int i)
             return ;
         }
         handle_prv_msge(i);
+    }
+    else if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){
+        if (channel_exists(clients[i]->get_cmd(1)) == false)
+            create_channel(clients[i]->get_cmd(1), clients[i]);
     }
     clients[i]->reset();
 }

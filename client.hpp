@@ -22,6 +22,7 @@ private:
     std::vector<std::string>        _command_buffer;
     std::string                     _message;
     Client                          *_reciever;
+    std::string                     _ip;
 public:
     Client();
     bool            check_all() const;
@@ -49,6 +50,8 @@ public:
     std::string     get_message() const;
     void             set_reciever(Client *);
     Client*          get_reciever() const;
+    std::string      get_hostname() const;
+    std::string      get_ip() const;
 
     
     ~Client();

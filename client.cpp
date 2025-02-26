@@ -2,7 +2,7 @@
 
 Client::Client() : pass(false) , _nick(false), user(false), _msg(false)
 {
-    addr_len = sizeof(socket_addr);
+    addr_len = sizeof(socket_addr); 
     memset(&socket_addr, 0, addr_len);
 }
 
@@ -21,6 +21,11 @@ void Client::connect(int server_socket)
     client_socket = accept(server_socket, (struct sockaddr*)&socket_addr, &addr_len);
     if (client_socket == -1)
         throw std::runtime_error("request accepting failed");
+    char *clientIp = inet_ntoa(socket_addr.sin_addr);
+    this->_ip = clientIp;
+    // char buf[256];
+    // std::cout << "*/*/*/*/*/*/*/ hostanem:" << gethostname(buf, sizeof(buf)) << '\n';
+    // std::cout << "*/*/*/*/*/*/*/ hostanem:" << buf << '\n';
     __poll.fd = client_socket;
     __poll.events = POLLIN;
     __poll.revents = 0;
@@ -132,11 +137,12 @@ void Client::set_nick_name()
 
 void Client::set_user_infos()
 {
-    user_name = _command_buffer[0];
-    host_name = _command_buffer[1];
+    user_name = _command_buffer[1]; // ?????
+    host_name = _command_buffer[2];
     std::string r_name ;
-    server_name = _command_buffer[2];
-    for (int i = 3; i < _command_buffer.size();i++)
+    server_name = _command_buffer[3];
+    std::cout << "server_name is -- " << server_name <<'\n';
+    for (int i = 4; i < _command_buffer.size();i++)
         r_name += _command_buffer[i] + ' ';
     real_name = r_name;
     user = true;
@@ -145,6 +151,15 @@ void Client::set_user_infos()
 std::string Client::get_nick_name() const
 {
     return nick;
+}
+
+std::string Client::get_hostname() const
+{
+    return host_name;
+}
+
+std::string Client::get_ip() const{
+    return _ip;
 }
 
 void    Client::showed_messgae()

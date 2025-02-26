@@ -15,6 +15,7 @@
 #include <string>
 
 class Client;
+class Channel;
 
 class Server
 {
@@ -41,6 +42,9 @@ class Server
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
+        std::map<std::string ,Channel*>channels;
+        bool channel_exists(const std::string&);
+        void create_channel(const std::string&, Client *);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
