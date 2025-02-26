@@ -22,6 +22,7 @@ private:
     std::vector<std::string>        _command_buffer;
     std::string                     _message;
     Client                          *_reciever;
+    std::string                     _ip;
 public:
     Client();
     bool            check_all() const;
@@ -46,10 +47,10 @@ public:
     void            set_user_infos();
     bool            cmd_end() const;
     void            trim_message();
+    bool            check_nick() const;
     std::string     get_message() const;
-    void             set_reciever(Client *);
-    Client*          get_reciever() const;
+    void            set_reciever(Client *);
+    Client*         get_reciever() const;
 
-    
     ~Client();
 } ;

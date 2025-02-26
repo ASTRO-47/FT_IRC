@@ -48,8 +48,6 @@
         407     ERR_TOOMANYTARGETS
                         "<target> :Duplicate recipients. No message \
 
-
-
 Oikarinen & Reed                                               [Page 43]
 
 RFC 1459              Internet Relay Chat Protocol              May 1993
@@ -747,3 +745,6 @@ RFC 1459              Internet Relay Chat Protocol              May 1993
         373     RPL_INFOSTART           384     RPL_MYPORTIS
         466     ERR_YOUWILLBEBANNED     476     ERR_BADCHANMASK
         492     ERR_NOSERVICEHOST
+
+
+if change the nick name 

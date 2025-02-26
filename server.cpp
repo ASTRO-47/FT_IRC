@@ -2,7 +2,6 @@
 
 Server::Server() 
 {
-
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
 }
 
@@ -15,6 +14,11 @@ Server::Server()
 //     }
 //     return true;
 // }
+
+void send_reply()
+{
+
+}
 
 void    Server::registration_msge(int i)
 {
@@ -110,7 +114,7 @@ void Server::handle_event_fd(int i)
             std::cout << clients[i]->get_buffer();
             handle_cmd(i);
         }
-        else
+        else if (clients[i]->cmd_end())
         {
             std::cout << clients[i]->get_buffer();
             handle_cmd_1(i);
@@ -127,7 +131,7 @@ void Server::multiplexing_func()
             throw std::runtime_error("poll error");
         for (size_t i = 0; i < _poll_fds.size(); i++)
         {
-            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) // check if a client cut off
+            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) // check if a client cut off with the server
             {
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
                 close(_poll_fds[i].fd);

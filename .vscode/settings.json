@@ -57,9 +57,6 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "stdexcept": "cpp",
-    "string": "cpp",
-    "vector": "cpp",
     "__bit_reference": "cpp",
     "__config": "cpp",
     "__debug": "cpp",
@@ -111,13 +108,17 @@
     "ostream": "cpp",
     "ratio": "cpp",
     "sstream": "cpp",
+    "stdexcept": "cpp",
     "streambuf": "cpp",
+    "string": "cpp",
     "string_view": "cpp",
     "system_error": "cpp",
     "tuple": "cpp",
     "type_traits": "cpp",
     "typeinfo": "cpp",
     "unordered_map": "cpp",
-    "utility": "cpp"
-  }
+    "utility": "cpp",
+    "vector": "cpp"
+  },
+  "C_Cpp.errorSquiggles": "disabled"
 }

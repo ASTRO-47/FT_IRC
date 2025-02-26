@@ -19,17 +19,31 @@ bool    Server::check_user(int i)
             return true;
         }
     }
-    std::string msge =  "402 " + _n +  " :No such nick/channel\n";
+    std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel\n";
     send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
     return false;
 }
 
 void    Server::handle_cmd_1(int i)
 {
+    std::string msge;
     clients[i]->parse_command();
     if (clients[i]->get_cmd(0) == "privmsg" || clients[i]->get_cmd(0) == "PRIVMSG")
     {
-        // if () need to check for all invalid conditins
+        if (clients[i]->get_buffer_size() == 1)
+        {
+            msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\n";
+            send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
+            clients[i]->reset();
+            return ;
+        }
+        if (clients[i]->get_buffer_size() == 2)
+        {
+            msge = server_prefix + "412 " + clients[i]->get_nick_name() + " :No text to send\n";
+            send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
+            clients[i]->reset();
+            return ;
+        }
         if (!check_user(i))
         {
             clients[i]->reset();
@@ -37,5 +51,13 @@ void    Server::handle_cmd_1(int i)
         }
         handle_prv_msge(i);
     }
+    else if (clients[i]->get_cmd(0) != "pong" && clients[i]->get_cmd(0) != "PONG" )
+    {
+        msge = server_prefix + "421 " + clients[i]->get_cmd(0) +  ": unkown command\n";
+        send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
+    }
     clients[i]->reset();
 }
+
+
+// privmsg hello : hello world hello

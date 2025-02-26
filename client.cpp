@@ -95,6 +95,11 @@ bool Client::check_pass() const
     return pass;
 }
 
+bool Client::check_nick() const
+{
+    return _nick;
+}
+
 std::string Client::get_buffer() const
 {
     return _buffer;
@@ -132,11 +137,11 @@ void Client::set_nick_name()
 
 void Client::set_user_infos()
 {
-    user_name = _command_buffer[0];
-    host_name = _command_buffer[1];
+    user_name = _command_buffer[1];
+    host_name = _command_buffer[2];
     std::string r_name ;
-    server_name = _command_buffer[2];
-    for (int i = 3; i < _command_buffer.size();i++)
+    server_name = _command_buffer[3];
+    for (int i = 4; i < _command_buffer.size();i++)
         r_name += _command_buffer[i] + ' ';
     real_name = r_name;
     user = true;

@@ -39,7 +39,15 @@ void Server::parse_nick(int i)
     else
     {
         if (taken_nick_name_1(clients[i]->get_cmd(1)))
+        {
+            if (clients[i]->check_nick())
+            {
+                msge = clients[i]->get_nick_name() + "!@ NICK :" + clients[i]->get_cmd(1) + '\n';
+                send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
+                // send info to all the joined channels that the nik is changed
+            }
             clients[i]->set_nick_name();
+        }
         else
         {
             msge = server_prefix + "433 " +  clients[i]->get_cmd(1) +  " :Nickname is already in use\n";
@@ -50,7 +58,7 @@ void Server::parse_nick(int i)
 
 void Server::parse_user(int i)
 {
-    std::string  msge; 
+    std::string  msge;
     if (clients[i]->check_all())
     {
         msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\n";
