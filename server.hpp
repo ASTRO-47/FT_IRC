@@ -13,6 +13,7 @@
 #include <algorithm>
 #include "client.hpp"
 #include <string>
+#include <exception>
 
 class Client;
 class Channel;
@@ -45,10 +46,10 @@ class Server
         std::map<std::string ,Channel*>channels;
         bool channel_exists(const std::string&);
         void create_channel(const std::string&, Client *);
+        std::string parse_join_input(const std::string &, size_t &);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
-    
         Server();
         ~Server();
 };
