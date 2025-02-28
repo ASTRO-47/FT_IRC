@@ -4,6 +4,8 @@ Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
 	name = ChannelName;
 	this->operators[Creator] = true;
 	isInviteOnly = false;
+	pass = "";
+	requiresPass = false;
 	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + prefix + ChannelName + "\n"; 
 	// std::string msg2 = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + ChannelName + " +t" + "\n"; 
 	// setTopic("");
@@ -30,4 +32,12 @@ void Channel::setPass(const std::string &newPass){
 
 Channel::~Channel(){
 	
+}
+
+void Channel::setRequiresPass(const bool &NewStatus){
+	requiresPass = NewStatus;
+}
+
+bool & Channel::getRequiresPass(){
+	return requiresPass;
 }

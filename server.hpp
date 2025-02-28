@@ -43,10 +43,13 @@ class Server
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
-        std::map<std::string ,Channel*>channels;
+        std::map<std::string ,Channel*>channelMap;
+        std::map<std::string, std::string>channelAndPass;
+        void extract_channels(const std::string &, int, const std::string &);
         bool channel_exists(const std::string&);
         void create_channel(const std::string&, Client *);
         std::string parse_join_input(const std::string &, size_t &);
+        std::string parse_passwords(const std::string &, size_t &);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

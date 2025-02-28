@@ -11,11 +11,14 @@ class Channel{
 	std::string topic;
 	std::map<Client*, bool> operators;
 	bool isInviteOnly;
+	bool requiresPass;
 	public:
 	std::string & getTopic();
 	std::string & getPass();
+	bool & getRequiresPass();
 	void setPass(const std::string&);
 	void setTopic(const std::string&);
+	void setRequiresPass(const bool&);
 
 	Channel(std::string, Client*, char);
 	~Channel();
