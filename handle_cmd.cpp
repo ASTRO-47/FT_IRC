@@ -51,7 +51,7 @@ void Server::parse_nick(int i)
         else
         {
             msge = server_prefix + "433 " +  clients[i]->get_cmd(1) +  " :Nickname is already in use\n";
-            send(clients[i]->get_socket_fd(), msge.c_str(), msge.length(), 0);
+            send_reply(clients[i]->get_socket_fd(), msge);
         }
     }
 }

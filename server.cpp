@@ -151,6 +151,12 @@ void Server::multiplexing_func()
     }
 }
 
+void    Server::send_reply(int fd, std::string message)
+{
+    // protect send
+    send(fd, message.c_str(), message.length(), 0);
+}
+
 Server::~Server()
 {
     for (size_t i = 0; i < clients.size(); i++)

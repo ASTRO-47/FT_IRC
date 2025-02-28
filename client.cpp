@@ -47,8 +47,6 @@ std::string &Client::get_cmd(int i)
 
 int Client::get_buffer_size() const
 {
-    // if (i >= _command_buffer.size())
-        // return "";
     return _command_buffer.size();
 }
 
@@ -70,16 +68,14 @@ void Client::parse_command()
     {
         std::string trimmed = trim(command);
         if (!trimmed.empty())
-        {
             _command_buffer.push_back(trimmed);
-        }
     }
-//     std::cout << '[' << std::endl;
-//     for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
-//     {
-//         std::cout << *it << "," ;
-//     }
-//     std::cout << ']' << std::endl;
+
+    // debug printing
+    std::cout << '[';
+    for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
+        std::cout << *it << "," ;
+    std::cout << ']' << std::endl;
 }
 
 
@@ -181,6 +177,12 @@ void Client::trim_message()
             it++;
         }
         _message[_message.length() - 1] = '\0';
+        return ;
+    }
+    size_t pos = _buffer.find(':');
+    if (std::string::npos != pos)
+    {
+        _message = _buffer.substr(pos + 1, _buffer.length() - 2);
     }
     else
     {

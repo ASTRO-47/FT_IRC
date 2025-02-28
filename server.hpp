@@ -41,10 +41,12 @@ class Server
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
+        void                         send_reply(int, std::string);
+        void                         send_private_message(Client *, std::string);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
-    
+
         Server();
         ~Server();
 };

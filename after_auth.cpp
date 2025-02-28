@@ -3,8 +3,14 @@
 void Server::handle_prv_msge(int i)
 {
     clients[i]->trim_message();
-    std::string msge = server_prefix + clients[i]->get_nick_name() +  " PRIVMSG :" + clients[i]->get_message() + '\n';
-    send(clients[i]->get_reciever()->get_socket_fd(), msge.c_str(), msge.length(), 0);
+    std::string msge = ":" + clients[i]->get_nick_name() +"!~" + clients[i]->get_nick_name() + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + '\n';
+    send_private_message(clients[i],  msge);
+}
+
+void Server::send_private_message(Client *sender, std::string msge)
+{
+    send_reply(sender->get_reciever()->get_socket_fd(), msge);
+
 }
 
 bool    Server::check_user(int i)
@@ -59,5 +65,4 @@ void    Server::handle_cmd_1(int i)
     clients[i]->reset();
 }
 
-
-// privmsg hello : hello world hello
+// privmsg hello :hello world hello
