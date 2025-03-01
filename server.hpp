@@ -37,12 +37,12 @@ class Server
         std::string                 server_prefix;
         void                        taken_nick_name(int);
         bool                        taken_nick_name_1(std::string) const;
-        // void                        disconnect_client(Client *);
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
         void                         send_reply(int, std::string);
         void                         send_private_message(Client *, std::string);
+        void                         change_nick_name(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

@@ -19,8 +19,8 @@ socklen_t &Client::get_socket_addr_length()
 void Client::connect(int server_socket)
 {
     client_socket = accept(server_socket, (struct sockaddr*)&socket_addr, &addr_len);
-    if (client_socket == -1)
-        throw std::runtime_error("request accepting failed");
+    if (client_socket < 0)
+        throw std::runtime_error("can not add new client at this time");
     __poll.fd = client_socket;
     __poll.events = POLLIN;
     __poll.revents = 0;
@@ -182,7 +182,8 @@ void Client::trim_message()
     size_t pos = _buffer.find(':');
     if (std::string::npos != pos)
     {
-        _message = _buffer.substr(pos + 1, _buffer.length() - 2);
+        _message = _buffer.substr(pos + 1, _buffer.length() - pos - 2);
+        std::cout << _message << ']' << std::endl;
     }
     else
     {

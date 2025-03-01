@@ -7,7 +7,7 @@ void f()
 
 int main(int ac , char *av[])
 {
-    // atexit(f);
+    atexit(f);
     int integer;
     if (ac != 2)
         return (std::cerr << "invalid number of args\n", 1);
