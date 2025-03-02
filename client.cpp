@@ -6,7 +6,7 @@ Client::Client() : pass(false) , _nick(false), user(false), _msg(false)
     memset(&socket_addr, 0, addr_len);
 }
 
-pollfd Client::get_socket_struct()
+pollfd &Client::get_socket_struct()
 {
     return __poll;
 }

@@ -33,7 +33,7 @@ public:
     void            add_server_to_poll(int);
     int             get_socket_fd() const;
     void            connect(int);
-    pollfd          get_socket_struct();
+    pollfd&          get_socket_struct();
     socklen_t       &get_socket_addr_length();
     void            append_buffer(char *);
     std::string     get_buffer() const;
