@@ -1,10 +1,10 @@
 #include "server.hpp"
 
-void Server::taken_nick_name(int i)
+void Server::taken_nick_name(int &i)
 {
     std::string _n = clients[i]->get_nick_name();
 
-    for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
+    for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end();)
     {
         if ((*it)->get_nick_name() == _n && !(*it)->check_all())  // Ensure the check is active
         {
@@ -12,9 +12,11 @@ void Server::taken_nick_name(int i)
             send_reply((*it)->get_socket_fd(), msge);
             close ((*it)->get_socket_fd());
             _poll_fds.erase(_poll_fds.begin() + i);
-            delete clients[i];
-            clients.erase(clients.begin() + i);
+            // delete clients[i];
+            it = clients.erase(it);
         }
+        else
+            ++it; // check poste increment
     }
 }
 
@@ -100,7 +102,7 @@ void Server::try_to_auth(int i)
     }
 }
 
-void Server::handle_cmd(int i)
+void Server::handle_cmd(int &i)
 {
     clients[i]->parse_command();
 

@@ -20,7 +20,7 @@ void send_reply()
 
 }
 
-void    Server::registration_msge(int i)
+void    Server::registration_msge(int &i)
 {
     std::string nick = clients[i]->get_nick_name();
     taken_nick_name(i);
@@ -157,7 +157,7 @@ void    Server::send_reply(int fd, std::string message)
     if (bytes < 0)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
-            std::cerr << errno << '\n';
+            std::cerr << "send function failed\n";
     }
 }
 

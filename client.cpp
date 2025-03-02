@@ -72,10 +72,10 @@ void Client::parse_command()
     }
 
     // debug printing
-    std::cout << '[';
-    for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
-        std::cout << *it << "," ;
-    std::cout << ']' << std::endl;
+    // std::cout << '[';
+    // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
+    //     std::cout << *it << "," ;
+    // std::cout << ']' << std::endl;
 }
 
 

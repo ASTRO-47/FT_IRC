@@ -17,7 +17,7 @@ bool    Server::check_user(int i)
 {
     std::string _n = clients[i]->get_cmd(1);
 
-    for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
+    for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
     {
         if ((*it)->get_nick_name() == _n && (*it)->check_all())
         {

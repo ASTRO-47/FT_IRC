@@ -30,12 +30,12 @@ class Server
         void                        handle_new_client();
         void                        handle_event_fd(int);
         void                        try_to_auth(int);
-        void                        handle_cmd(int);
+        void                        handle_cmd(int &);
         void                        parse_nick(int);
         void                        parse_user(int);
-        void                        registration_msge(int);
+        void                        registration_msge(int &);
         std::string                 server_prefix;
-        void                        taken_nick_name(int);
+        void                        taken_nick_name(int &);
         bool                        taken_nick_name_1(std::string) const;
         void                         handle_cmd_1(int);
         bool                         check_user(int);
