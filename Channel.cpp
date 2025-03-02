@@ -1,12 +1,13 @@
 #include "Channel.hpp"
 
 Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
-	name = ChannelName;
-	this->operators[Creator] = true;
+	name = ChannelName.substr(1);
+	this->members[Creator] = true;
 	isInviteOnly = false;
 	pass = "";
 	requiresPass = false;
-	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + prefix + ChannelName + "\n"; 
+	// setOperator(Creator, true);
+	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + prefix + name + "\n"; 
 	// std::string msg2 = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + ChannelName + " +t" + "\n"; 
 	// setTopic("");
 	//rpl topic 332 && RPL_NAMREPLY 353 && ENDOFNAMES 366
@@ -40,4 +41,15 @@ void Channel::setRequiresPass(const bool &NewStatus){
 
 bool & Channel::getRequiresPass(){
 	return requiresPass;
+}
+
+bool Channel::isOperator(Client* client){
+	std::map<Client*,bool>::iterator it = members.find(client);
+	if (it != members.end())
+		return it->second;
+	return false;
+}
+
+void Channel::setOperator(Client* client, bool flag){
+	members[client] = flag;
 }

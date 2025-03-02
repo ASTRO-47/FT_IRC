@@ -25,14 +25,12 @@ bool    Server::check_user(int i)
     return false;
 }
 bool Server::channel_exists(const std::string& channelName){
-    std::string noPrefix = channelName.substr(1);
-    return channelMap.find(noPrefix) != channelMap.end();
+    return channelMap.find(channelName) != channelMap.end();
 }
 
 void Server::create_channel(const std::string& channelName, Client *creator){
-    std::string noPrefix = channelName.substr(1);
-    Channel *newChannel = new Channel(noPrefix, creator, channelName.front());
-    channelMap[noPrefix] = newChannel;
+    Channel *newChannel = new Channel(channelName, creator, channelName.front());
+    channelMap[channelName.substr(1)] = newChannel;
     return;
 }
 
@@ -60,13 +58,15 @@ std::string Server::parse_passwords(const std::string &passwords, size_t &start)
     return pass;
 }
 // check edge cases kayn chi 8
-void Server::extract_channels(const std::string &chans, int i, const std::string &passwords){
+// makhdmtch ga3 bdak i tat7ydo prototype
+
+void Server::extract_channels(const std::string &chans, int i, const std::string &passwords){ 
     size_t start = 0;
     size_t start2 = 0;
     std::string pass;
 	while (start != std::string::npos){
 	    const std::string chan = parse_join_input(chans, start);
-        if (start2 != std::string::npos && !passwords.empty())
+        if (!passwords.empty() && start2 != std::string::npos)
             pass = parse_passwords(passwords, start2);
         else
             pass = "";
@@ -74,16 +74,43 @@ void Server::extract_channels(const std::string &chans, int i, const std::string
     }
 }
 // khasni n ignori ila makanch formatted correctlly
-// Pseudocode for a Clean Structure
-// Extract channels and keys from the input.
-// Loop through each channel:
-// Normalize the name (keep # or &).
-// Get the corresponding key (if any).
-// Check if the channel exists.
-// If new, create it.
-// If it exists, validate key (if required).
-// Add client to the channel.
-// Send appropriate JOIN responses to the client.
+// check password if channel exists moraha addi lclient ldik channel, operator kikon endo @ 9bl
+// join replies
+
+void Server::find_user(const std::string &user, int i){
+    if (clients[i]->get_nick_name() == user)
+        // self promotion nono
+    else { // khasni n9lb 3lih fchannel
+
+    }
+}
+
+void Server::process_operation(char sign, const char &oper, int i){
+    if (sign == '+' && oper == 'o'){
+        if (clients[i]->get_buffer_size() > 3){
+            find_user(clients[i]->get_cmd(3), i);
+        }
+    }
+}
+
+void  Server::check_operations(const std::string &opers, int i){
+    char modeSign = '+';
+    std::vector<char> operations;
+    if (opers.empty()){
+        // needmoreparams
+        return;
+    }
+    for (auto it = opers.begin(); it != opers.end(); it++){
+        if (*it == '+' || *it == '-')
+            modeSign = *it;
+        std::set<char>::const_iterator mode_it = modes.find(*it);
+        if (mode_it != modes.end()){
+            operations.push_back(*it);// lcase dial +l wla -l second arg
+            process_operation(modeSign, *it, i);
+                // pop ila tprocessat
+        }
+    }
+}
 
 void    Server::handle_cmd_1(int i)
 {
@@ -98,9 +125,9 @@ void    Server::handle_cmd_1(int i)
         }
         handle_prv_msge(i);
     }
-    else if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){
+    else if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){ // tolower w compari
         std::string channels = clients[i]->get_cmd(1);
-        if (clients[i]->get_cmd(2).empty() == false){
+        if (clients[i]->get_buffer_size() > 3){
             std::string pass = clients[i]->get_cmd(2);
             extract_channels(channels, i, pass);
             // for (auto it= channelAndPass.begin();it != channelAndPass.end();it++){ debugging channel name key
@@ -108,16 +135,22 @@ void    Server::handle_cmd_1(int i)
             // }
         }
         else
-            extract_channels(channels, i, NULL);
+            extract_channels(channels, i, "");
             for (auto it = channelAndPass.begin();it != channelAndPass.end();it++){
-            	if (!it->first.empty() && channel_exists(it->first) == false)
+				// 7iyd lprefix hna w hni rask bach matb9ach dirha kola mra
+				std::string channelName = it->first.substr(1);
+            	if (!it->first.empty() && channel_exists(channelName) == false){
 	                create_channel(it->first, clients[i]);
-            	else if (channel_exists(it->first) == true){
-					if (channelMap[it->first]->getRequiresPass() == true)
-                        if (channelMap[it->first]->getPass() == channelAndPass[it->second])
+                }
+            	else if (channel_exists(channelName) == true){
+					if (channelMap[channelName]->getRequiresPass() == true){
+                        if (channelMap[channelName]->getPass() == it->second)
                             puts("here");// join_channel
-                        // else
-                            // pass incorrect
+                        else
+                            puts("pass incorrect");
+                    }
+                    else
+                    appaend user lchsnnael
                 	// check if it requires a password
                 }
 			}
@@ -131,7 +164,32 @@ void    Server::handle_cmd_1(int i)
             // default: throw std::runtime_error("wazbi hhhhh"); makhsnich nthrowi 7it y9d ykon khdam dakchi
         }
         else if (clients[i]->get_cmd(0) == "mode" || clients[i]->get_cmd(0) == "MODE"){
-            
+			if (clients[i]->get_buffer_size() < 3)
+				return;
+            std::string chan = clients[i]->get_cmd(1).substr(1);
+                // check if channel valid and user has operator role fdik channel
+            if (channel_exists(chan) == true){
+                if (channelMap[chan]->isOperator(clients[i]) == true){
+					// what operation
+					std::string oper = clients[i]->get_cmd(2);
+                    check_operations(oper, i);
+					// ERR_UNKNOWNMODE
+				}
+				else
+					puts("no permission to perform hadchi");
+            }
+                
         }
     clients[i]->reset();
 }
+
+
+//vector 
+// l9it +o 
+// antraiter l arg wnpoppih
+
+
+// sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
+
+
+// user cannot promote himself

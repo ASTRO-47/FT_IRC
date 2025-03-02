@@ -14,6 +14,7 @@
 #include "client.hpp"
 #include <string>
 #include <exception>
+#include <set>
 
 class Client;
 class Channel;
@@ -50,6 +51,11 @@ class Server
         void create_channel(const std::string&, Client *);
         std::string parse_join_input(const std::string &, size_t &);
         std::string parse_passwords(const std::string &, size_t &);
+        // bool valid_channel(const std::string &);
+        void check_operations(const std::string &, int);
+        void process_operation(char, const char &, int);
+        void find_user(const std::string &, int);
+        std::set<char> modes;
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
