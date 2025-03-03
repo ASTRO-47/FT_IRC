@@ -52,9 +52,10 @@ class Server
         std::string parse_join_input(const std::string &, size_t &);
         std::string parse_passwords(const std::string &, size_t &);
         // bool valid_channel(const std::string &);
-        void check_operations(const std::string &, int);
-        void process_operation(char, const char &, int);
-        void find_user(const std::string &, int);
+        void check_operations(const std::string &, int, Channel *);
+        void process_operation(char, const char &, int, Channel *);
+        void find_user(const std::string &, int, Channel *);
+        void append_user_to_channel(Channel * ,Client *);
         std::set<char> modes;
     public:
         void server_setup(std::string, std::string);

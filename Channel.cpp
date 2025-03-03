@@ -15,6 +15,14 @@ Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
 	send(Creator->get_socket_fd(), msg.c_str(), msg.length(), 0);
 }
 
+void Channel::appendMember(Client *newMember){ // zid lprefix
+	this->members[newMember] = false;
+	// correct reply;
+	std::string msg = ":" + newMember->get_nick_name() + "!~" + newMember->get_hostname() + "@" + newMember->get_ip() +" JOIN " + name + "\n"; 
+	send(newMember->get_socket_fd(), msg.c_str(), msg.length(), 0);
+	// sendiha lga3 lmembers bli joina 
+}
+
 std::string & Channel::getTopic(){
 	return topic;
 }
@@ -52,4 +60,8 @@ bool Channel::isOperator(Client* client){
 
 void Channel::setOperator(Client* client, bool flag){
 	members[client] = flag;
+}
+
+std::map<Client*, bool> Channel::getMembers(){
+	return members;
 }

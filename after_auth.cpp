@@ -77,23 +77,26 @@ void Server::extract_channels(const std::string &chans, int i, const std::string
 // check password if channel exists moraha addi lclient ldik channel, operator kikon endo @ 9bl
 // join replies
 
-void Server::find_user(const std::string &user, int i){
+void Server::find_user(const std::string &user, int i, Channel *channel){
     if (clients[i]->get_nick_name() == user)
-        // self promotion nono
+        puts("cant promote yourself"); // self promotion nono
     else { // khasni n9lb 3lih fchannel
-
-    }
-}
-
-void Server::process_operation(char sign, const char &oper, int i){
-    if (sign == '+' && oper == 'o'){
-        if (clients[i]->get_buffer_size() > 3){
-            find_user(clients[i]->get_cmd(3), i);
+        for (auto it = channel->getMembers().begin(); it != channel->getMembers().end(); it++){
+            if (it->first->get_nick_name() == user)
+                puts("he is a member of the channel");
         }
     }
 }
 
-void  Server::check_operations(const std::string &opers, int i){
+void Server::process_operation(char sign, const char &oper, int i, Channel *channel){
+    if (sign == '+' && oper == 'o'){
+        if (clients[i]->get_buffer_size() > 3){
+            find_user(clients[i]->get_cmd(3), i, channel);
+        }
+    }
+}
+
+void  Server::check_operations(const std::string &opers, int i, Channel *channel){
     char modeSign = '+';
     std::vector<char> operations;
     if (opers.empty()){
@@ -106,10 +109,14 @@ void  Server::check_operations(const std::string &opers, int i){
         std::set<char>::const_iterator mode_it = modes.find(*it);
         if (mode_it != modes.end()){
             operations.push_back(*it);// lcase dial +l wla -l second arg
-            process_operation(modeSign, *it, i);
+            process_operation(modeSign, *it, i, channel);
                 // pop ila tprocessat
         }
     }
+}
+
+void Server::append_user_to_channel(Channel *channel, Client *newMember){
+    channel->appendMember(newMember);
 }
 
 void    Server::handle_cmd_1(int i)
@@ -150,7 +157,7 @@ void    Server::handle_cmd_1(int i)
                             puts("pass incorrect");
                     }
                     else
-                    appaend user lchsnnael
+                        append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member
                 	// check if it requires a password
                 }
 			}
@@ -172,7 +179,7 @@ void    Server::handle_cmd_1(int i)
                 if (channelMap[chan]->isOperator(clients[i]) == true){
 					// what operation
 					std::string oper = clients[i]->get_cmd(2);
-                    check_operations(oper, i);
+                    check_operations(oper, i, channelMap[chan]);
 					// ERR_UNKNOWNMODE
 				}
 				else
