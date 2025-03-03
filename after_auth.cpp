@@ -133,7 +133,6 @@ void    Server::change_nick_name(int i)
 
 void    Server::handle_cmd_1(int i)
 {
-    puts("hello");
     std::string msge;
     clients[i]->parse_command();
     if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
