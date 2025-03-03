@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-Client::Client() : pass(false) , _nick(false), user(false), _msg(false), _disconnected(true)
+Client::Client() : pass(false) , _nick(false), user(false), _msg(false), _disconnected(true), first(false)
 {
     addr_len = sizeof(socket_addr); 
     memset(&socket_addr, 0, addr_len);
@@ -101,6 +101,11 @@ bool Client::check_pass() const
     return pass;
 }
 
+bool Client::check_first_nick()
+{
+    return first;
+}
+
 bool Client::check_nick() const
 {
     return _nick;
@@ -139,17 +144,18 @@ void Client::set_nick_name()
 {
     nick  = _command_buffer[1]; // take one or more ??
     _nick = true;
+    first = true;
 }
 
 void Client::set_user_infos()
 {
-    user_name = _command_buffer[1];
-    host_name = _command_buffer[2];
-    std::string r_name ;
-    server_name = _command_buffer[3];
-    for (int i = 4; i < _command_buffer.size();i++)
-        r_name += _command_buffer[i] + ' ';
-    real_name = r_name;
+    // user_name = _command_buffer[1];
+    // host_name = _command_buffer[2];
+    // std::string r_name ;
+    // server_name = _command_buffer[3];
+    // for (int i = 4; i < _command_buffer.size();i++)
+    //     r_name += _command_buffer[i] + ' ';
+    // real_name = r_name;
     user = true;
 }
 
@@ -202,7 +208,7 @@ void Client::trim_message()
     if (std::string::npos != pos)
     {
         _message = _buffer.substr(pos + 1, _buffer.length() - pos - 2);
-        std::cout << _message << ']' << std::endl;
+        // std::cout << _message << ']' << std::endl;
     }
     else
     {

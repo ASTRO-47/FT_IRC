@@ -7,22 +7,31 @@ void Server::taken_nick_name(int i)
     for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
     {
         if ((*it)->get_nick_name() == _n && !(*it)->check_all())  
-        {
             (*it)->disconnected();
-            // std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)\n";
-            // send_reply((*it)->get_socket_fd(), msge);
-            // close((*it)->get_socket_fd());
-            // set some bool to detect  on the main multiplexing loop
-        }
     }
 }
-
 
 bool Server::taken_nick_name_1(std::string _n) const
 {
     for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
     {
         if ((*it)->get_nick_name() == _n && (*it)->check_all())  // Ensure the check is active
+            return false;
+    }
+    return true;
+}
+
+bool    Server::check_nick_name(int i) 
+{
+    std::string nick = clients[i]->get_cmd(1);
+
+    if (!nick.length() || nick.length() > MAX_NICK_LEN)
+        return false;
+    if (!isalpha(nick[0]))
+        return false;
+    for (int i = 1; i < nick.length() ; i++) 
+    {
+        if (!isalnum(nick[i]) && nick[i] != '-' && nick[i] != '[' && nick[i] != ']' && nick[i] != '\\' && nick[i] != '_')
             return false;
     }
     return true;
@@ -38,19 +47,32 @@ void Server::parse_nick(int i)
     }
     else
     {
-        if (taken_nick_name_1(clients[i]->get_cmd(1)))
+        if (!check_nick_name(i))
         {
-            if (clients[i]->check_nick())
+            std::string msge = server_prefix +  "431 * " + clients[i]->get_cmd(1) +" :Erroneus nickname\n";
+            send_reply(clients[i]->get_socket_fd(), msge);
+        }
+        else if (taken_nick_name_1(clients[i]->get_cmd(1)))
+        {
+            if (!clients[i]->check_all() && clients[i]->check_nick())
             {
-                msge = clients[i]->get_nick_name() + "!@ NICK :" + clients[i]->get_cmd(1) + '\n';
-                send_reply(clients[i]->get_socket_fd(), msge);
+                if (clients[i]->check_first_nick())
+                {
+                    msge = clients[i]->get_nick_name() + "!@ NICK :" + clients[i]->get_cmd(1) + '\n';
+                    send_reply(clients[i]->get_socket_fd(), msge);
+                }
                 // send info to all the joined channels that the nik is changed
+            }
+            else if (clients[i]->check_all())
+            {
+                msge = ":" + clients[i]->get_nick_name() + "!~d@197.230.30.146 NICK :" + clients[i]->get_cmd(1) + "\n";
+                send_reply(clients[i]->get_socket_fd(), msge);
             }
             clients[i]->set_nick_name();
         }
         else
         {
-            msge = server_prefix + "433 " +  clients[i]->get_cmd(1) +  " :Nickname is already in use\n";
+            msge = server_prefix + "433" +  " * :Nickname is already in use\n";
             send_reply(clients[i]->get_socket_fd(), msge);
         }
     }
@@ -64,12 +86,12 @@ void Server::parse_user(int i)
         msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\n";
         send_reply(clients[i]->get_socket_fd(), msge);
     }
-    else if (clients[i]->get_buffer_size() < 5)
-    {
+    // else if (clients[i]->get_buffer_size() < 5)
+    // {
         
-        msge = server_prefix + "461 " +  "USER :Not enough parameters\n";
-        send_reply(clients[i]->get_socket_fd(), msge);
-    }
+    //     msge = server_prefix + "461 " +  "USER :Not enough parameters\n";
+    //     send_reply(clients[i]->get_socket_fd(), msge);
+    // }
     else
         clients[i]->set_user_infos();
 }
@@ -84,7 +106,7 @@ void Server::try_to_auth(int i)
     }
     else if (clients[i]->get_buffer_size() == 1)
     {
-        std::string msge = server_prefix + "461 PASS: Not enough parameters\n";   
+        std::string msge = server_prefix + "461 PASS: Not enough parameters\n";
         send_reply(clients[i]->get_socket_fd(), msge);
     }
     else if (clients[i]->get_buffer_size() > 1)

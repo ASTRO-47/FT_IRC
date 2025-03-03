@@ -24,6 +24,7 @@ private:
     bool                            _disconnected;
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
+    bool                            first;
 public:
     Client();
     bool            check_all() const;
@@ -56,6 +57,7 @@ public:
     bool            check_connection();
     std::string get_hostname() const;
     std::string get_ip() const;
+    bool            check_first_nick();
 
     ~Client();
 } ;

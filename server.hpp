@@ -16,6 +16,8 @@
 #include <exception>
 #include <set>
 
+#define MAX_NICK_LEN 20 // think about this later
+
 class Client;
 class Channel;
 
@@ -59,6 +61,7 @@ class Server
         void find_user(const std::string &, int, Channel *);
         void append_user_to_channel(Channel * ,Client *);
         std::set<char> modes;
+        bool                          check_nick_name(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
