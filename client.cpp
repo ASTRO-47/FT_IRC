@@ -2,7 +2,7 @@
 
 Client::Client() : pass(false) , _nick(false), user(false), _msg(false), _disconnected(true)
 {
-    addr_len = sizeof(socket_addr);
+    addr_len = sizeof(socket_addr); 
     memset(&socket_addr, 0, addr_len);
 }
 
@@ -156,6 +156,15 @@ void Client::set_user_infos()
 std::string Client::get_nick_name() const
 {
     return nick;
+}
+
+std::string Client::get_hostname() const
+{
+    return host_name;
+}
+
+std::string Client::get_ip() const{
+    return _ip;
 }
 
 void    Client::showed_messgae()

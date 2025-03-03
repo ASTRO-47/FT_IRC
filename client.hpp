@@ -19,7 +19,6 @@ private:
     pollfd                          __poll;
     int                             client_socket;
     std::string                     _buffer;
-    std::vector<std::string>        _command_buffer;
     std::string                     _message;
     Client                          *_reciever;
     std::string                     _ip;

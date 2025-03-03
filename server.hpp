@@ -13,8 +13,11 @@
 #include <algorithm>
 #include "client.hpp"
 #include <string>
+#include <exception>
+#include <set>
 
 class Client;
+class Channel;
 
 class Server
 {
@@ -43,6 +46,19 @@ class Server
         void                         send_reply(int, std::string);
         void                         send_private_message(Client *, std::string);
         void                         change_nick_name(int);
+        std::map<std::string ,Channel*>channelMap;
+        std::map<std::string, std::string>channelAndPass;
+        void extract_channels(const std::string &, int, const std::string &);
+        bool channel_exists(const std::string&);
+        void create_channel(const std::string&, Client *);
+        std::string parse_join_input(const std::string &, size_t &);
+        std::string parse_passwords(const std::string &, size_t &);
+        // bool valid_channel(const std::string &);
+        void check_operations(const std::string &, int, Channel *);
+        void process_operation(char, const char &, int, Channel *);
+        void find_user(const std::string &, int, Channel *);
+        void append_user_to_channel(Channel * ,Client *);
+        std::set<char> modes;
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
