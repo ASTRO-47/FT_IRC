@@ -2,11 +2,7 @@
 
 Server::Server() 
 {
-    modes.insert('o');
-    modes.insert('k');
-    modes.insert('l');
-    modes.insert('i');
-    modes.insert('t');
+
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
 }
 
@@ -116,7 +112,7 @@ void Server::handle_event_fd(int i)
             throw std::runtime_error("server stoped by a client request");
         if (clients[i]->cmd_end() && !clients[i]->check_all())
             handle_cmd(i);
-        else
+        else if (clients[i]->cmd_end())
             handle_cmd_1(i);
     }
 }
@@ -132,6 +128,9 @@ void Server::multiplexing_func()
         {
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
+                std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\n";
+                send_reply(clients[i]->get_socket_fd(), msge);
+                close(clients[i]->get_socket_fd());
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
                 _poll_fds.erase(_poll_fds.begin() + i);
                 delete clients[i];

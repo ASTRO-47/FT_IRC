@@ -9,9 +9,9 @@ void Server::taken_nick_name(int i)
         if ((*it)->get_nick_name() == _n && !(*it)->check_all())  
         {
             (*it)->disconnected();
-            std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)\n";
-            send_reply((*it)->get_socket_fd(), msge);
-            close((*it)->get_socket_fd());
+            // std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)\n";
+            // send_reply((*it)->get_socket_fd(), msge);
+            // close((*it)->get_socket_fd());
             // set some bool to detect  on the main multiplexing loop
         }
     }
