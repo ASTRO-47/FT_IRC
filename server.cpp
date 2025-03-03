@@ -2,7 +2,11 @@
 
 Server::Server() 
 {
-
+    modes.insert('o');
+    modes.insert('k');
+    modes.insert('l');
+    modes.insert('i');
+    modes.insert('t');
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
 }
 

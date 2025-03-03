@@ -15,6 +15,7 @@
 #include <string>
 #include <exception>
 #include <set>
+#include <sstream>
 
 class Client;
 class Channel;
@@ -56,7 +57,7 @@ class Server
         // bool valid_channel(const std::string &);
         void check_operations(const std::string &, int, Channel *);
         void process_operation(char, const char &, int, Channel *);
-        void find_user(const std::string &, int, Channel *);
+        Client* find_user(const std::string &, int, Channel *);
         void append_user_to_channel(Channel * ,Client *);
         std::set<char> modes;
     public:

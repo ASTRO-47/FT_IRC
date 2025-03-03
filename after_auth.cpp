@@ -83,21 +83,47 @@ void Server::extract_channels(const std::string &chans, int i, const std::string
 // check password if channel exists moraha addi lclient ldik channel, operator kikon endo @ 9bl
 // join replies
 
-void Server::find_user(const std::string &user, int i, Channel *channel){
+Client* Server::find_user(const std::string &user, int i, Channel *channel){
     if (clients[i]->get_nick_name() == user)
         puts("cant promote yourself"); // self promotion nono
     else { // khasni n9lb 3lih fchannel
         for (auto it = channel->getMembers().begin(); it != channel->getMembers().end(); it++){
             if (it->first->get_nick_name() == user)
-                puts("he is a member of the channel");
+                return it->first;
         }
     }
+    return NULL;// change this later
 }
 
 void Server::process_operation(char sign, const char &oper, int i, Channel *channel){
-    if (sign == '+' && oper == 'o'){
-        if (clients[i]->get_buffer_size() > 3){
-            find_user(clients[i]->get_cmd(3), i, channel);
+    if (oper == 'o'){
+        if (sign == '+'){
+            if (clients[i]->get_buffer_size() > 3){
+                find_user(clients[i]->get_cmd(3), i, channel);
+            }
+        }
+    }
+    else if (oper == 'i'){
+        if (sign == '+')
+            channel->setInviteOnly(true);// replies ajmi
+        else if (sign == '-')
+            channel->setInviteOnly(false); //replies ajmi
+    }
+    else if (oper == 'l'){
+        if (sign == '+'){
+            if (clients[i]->get_buffer_size () > 3){
+                std::string limit = clients[i]->get_cmd(3);
+	            std::stringstream ss(limit);
+	            long userLimit = 0;
+	            ss >> userLimit;
+	            if (!ss.fail() && ss.eof() && (userLimit < 0 || userLimit > 2147483647))
+                    puts("error number");
+                channel->setLimitSet(true);
+                channel->setUserLimit(userLimit);
+            }
+        }
+        else if (sign == '-'){
+            channel->setLimitSet(false);
         }
     }
 }
@@ -122,7 +148,10 @@ void  Server::check_operations(const std::string &opers, int i, Channel *channel
 }
 
 void Server::append_user_to_channel(Channel *channel, Client *newMember){
-    channel->appendMember(newMember);
+    if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit())
+        channel->appendMember(newMember);
+    else
+        puts("baraka ajmi"); // reply
 }
 
 void    Server::change_nick_name(int i)
@@ -133,7 +162,6 @@ void    Server::change_nick_name(int i)
 
 void    Server::handle_cmd_1(int i)
 {
-    puts("hello");
     std::string msge;
     clients[i]->parse_command();
     if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
