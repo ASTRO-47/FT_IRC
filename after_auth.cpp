@@ -102,6 +102,9 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
                 find_user(clients[i]->get_cmd(3), i, channel);
             }
         }
+        else if (sign == '-'){
+            
+        }
     }
     else if (oper == 'i'){
         if (sign == '+')
@@ -111,7 +114,7 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
     }
     else if (oper == 'l'){
         if (sign == '+'){
-            if (clients[i]->get_buffer_size () > 3){
+            if (clients[i]->get_buffer_size() > 3){
                 std::string limit = clients[i]->get_cmd(3);
 	            std::stringstream ss(limit);
 	            long userLimit = 0;
@@ -126,6 +129,26 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
             channel->setLimitSet(false);
         }
     }
+    else if (oper == 'k'){
+        if (sign == '+'){
+            if (clients[i]->get_buffer_size() > 3){
+                std::string pass = clients[i]->get_cmd(3);
+                channel->setRequiresPass(true);
+                channel->setPass(pass);
+            }
+        }
+        else if (sign == '-'){
+            channel->setRequiresPass(false);
+            channel->setPass(NULL); // hmmmm tanchof wach blan
+        }
+    }
+    else if (oper == 't'){
+        if (sign == '+')
+            channel->setTopicFlag(true);
+        else if (sign == '-')
+            channel->setTopicFlag(false);
+    }
+        
 }
 
 void  Server::check_operations(const std::string &opers, int i, Channel *channel){
@@ -210,8 +233,8 @@ void    Server::handle_cmd_1(int i)
 					if (channelMap[channelName]->getRequiresPass() == true){
                         if (channelMap[channelName]->getPass() == it->second)
                             puts("here");// join_channel
-                        else
-                            puts("pass incorrect");
+                        else // reply dial you need a password
+                            puts("pass incorrect"); std::cout << "dakchi lidkhl" <<it->second << '\n';
                     }
                     else
                         append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member

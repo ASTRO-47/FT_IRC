@@ -7,6 +7,7 @@ Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
 	pass = "";
 	requiresPass = false;
 	limitSet = false;
+	topicSettable = false;
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
 	// setOperator(Creator, true);
 	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + prefix + name + "\n"; 
@@ -96,4 +97,12 @@ void Channel::setLimitSet(bool flag){
 
 unsigned long Channel::getNumMembers(){
 	return members.size();
+}
+
+bool & Channel::getTopicFlag(){
+	return topicSettable;
+}
+
+void Channel::setTopicFlag(bool flag){
+	topicSettable = flag;
 }

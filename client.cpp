@@ -179,7 +179,7 @@ bool Client::check_message() const
 
 bool    Client::cmd_end() const
 {
-    if (_buffer[_buffer.length() - 1] == '\n')
+    if (_buffer[_buffer.length() - 1] == '\n' && _buffer.length() > 1)
         return true;
     return false;
 }

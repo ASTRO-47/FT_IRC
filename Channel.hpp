@@ -14,6 +14,7 @@ class Channel{
 	bool requiresPass;
 	bool limitSet;
 	size_t userLimit;
+	bool topicSettable;
 	public:
 	std::string & getTopic();
 	std::string & getPass();
@@ -35,4 +36,6 @@ class Channel{
 	bool & getLimitSet();
 	void setLimitSet(bool flag);
 	unsigned long getNumMembers();
+	bool & getTopicFlag();
+	void setTopicFlag(bool);
 };
