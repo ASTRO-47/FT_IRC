@@ -23,9 +23,11 @@ private:
     std::string                     _message;
     Client                          *_reciever;
     std::string                     _ip;
+    bool                            _disconnected;
 public:
     Client();
     bool            check_all() const;
+    void            disconnected();
     bool            check_pass() const;
     int             get_buffer_size() const;
     std::string&    get_cmd(int);
@@ -51,6 +53,7 @@ public:
     std::string     get_message() const;
     void            set_reciever(Client *);
     Client*         get_reciever() const;
+    bool            check_connection();
 
     ~Client();
 } ;

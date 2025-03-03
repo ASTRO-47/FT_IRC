@@ -15,16 +15,10 @@ Server::Server()
 //     return true;
 // }
 
-void send_reply()
+void    Server::registration_msge(int i)
 {
-
-}
-
-void    Server::registration_msge(Client *C)
-{
-    std::string nick = C->get_nick_name();
-    taken_nick_name(C);
-
+    std::string nick = clients[i]->get_nick_name();
+    taken_nick_name(i);
     std::string message = 
             ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\n"
             ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\n"
@@ -40,8 +34,8 @@ void    Server::registration_msge(Client *C)
         ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\n"
         ":ft_irc 372 " + nick + " :- No spamming please, thank you!\n";
     message += motd;
-    send_reply(C->get_socket_fd(), message);
-    C->showed_messgae();
+    send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
+    clients[i]->showed_messgae();
 }
 
 void Server::server_setup(std::string _port, std::string passwd)
@@ -96,28 +90,29 @@ void    Server::handle_new_client()
     std::cout << "Client connected, on fd: "  <<  new_client->get_socket_fd()  << "\n";
 }
 
-void Server::handle_event_fd(Client *C)
+void Server::handle_event_fd(int i)
 {
-    char buffer[500];
-    int bytes = recv(C->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
-    if (bytes <= 0)
+    char buffer[500]; // change this later
+    int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
+    // if (bytes <= 0)
+    // {
+    //     std::cout << "client disconnected\n";
+    //     close (clients[i]->get_socket_fd());
+    //     _poll_fds.erase(_poll_fds.begin() + i);
+    //     delete clients[i];
+    //     clients.erase(clients.begin() + i);
+    //     i--;
+    // }
+    // else
     {
-        std::cout << "client disconnected\n";
-        close (C->get_socket_fd());
-        // _poll_fds.erase(_poll_fds.begin());
-        delete C;
-        // clients.erase(clients.begin() + i);
-    }
-    else
-    {
-        buffer[bytes] = '\0';  // trim the new line at the end
-        C->append_buffer(buffer);
-        if (!strcmp(C->get_buffer().c_str(), "halt\n"))
-            throw std::runtime_error("server stoped by a client request"); // just for nothing
-        if (C->cmd_end() && !C->check_all())
-            handle_cmd(C);
-        else if (C->cmd_end())
-            handle_cmd_1(C);
+        buffer[bytes] = '\0'; // trim the new line at the end
+        clients[i]->append_buffer(buffer);
+        if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
+            throw std::runtime_error("server stoped by a client request");
+        if (clients[i]->cmd_end() && !clients[i]->check_all())
+            handle_cmd(i);
+        else
+            handle_cmd_1(i);
     }
 }
 
@@ -125,29 +120,27 @@ void Server::multiplexing_func()
 {
     while (true)
     {
-        int ready = poll(_poll_fds.data(), _poll_fds.size(), 0);   // non-blocking poll
+        int ready = poll(_poll_fds.data(), _poll_fds.size(), 0); // non-blocking poll
         if (ready == -1)
             throw std::runtime_error("poll error");
-        for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end();)
+        for (size_t i = 0; i < _poll_fds.size(); i++)
         {
-            if ((*it)->get_socket_struct().revents & (POLLERR | POLLHUP | POLLNVAL)) 
+            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
-                std::cout << "hangup or error on fd " << (*it)->get_socket_fd() << std::endl;
-                close((*it)->get_socket_fd());
-                // _poll_fds.erase(_poll_fds.begin() + i);
-                delete *it;
-                it = clients.erase(it);
+                std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
+                _poll_fds.erase(_poll_fds.begin() + i);
+                delete clients[i];
+                clients.erase(clients.begin() + i);
+                --i;
             }
-            else if ((*it)->get_socket_struct().revents & POLLIN) 
+            if (_poll_fds[i].revents & POLLIN && clients[i]->check_connection()) // if a connection to the socket requested and its writing request
             {
-                if ((*it)->get_socket_fd() == server_socket)
+                if (_poll_fds[i].fd == server_socket) // new events is on the socket file desctiptor
                     handle_new_client();
                 else
-                    handle_event_fd(*it);
-                it++;
+                    handle_event_fd(i);
             }
         }
-
     }
 }
 

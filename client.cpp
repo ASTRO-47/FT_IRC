@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-Client::Client() : pass(false) , _nick(false), user(false), _msg(false)
+Client::Client() : pass(false) , _nick(false), user(false), _msg(false), _disconnected(true)
 {
     addr_len = sizeof(socket_addr);
     memset(&socket_addr, 0, addr_len);
@@ -11,8 +11,18 @@ pollfd &Client::get_socket_struct()
     return __poll;
 }
 
-socklen_t &Client::get_socket_addr_length()
+void   Client::disconnected()
 {
+    _disconnected = false;
+}
+
+bool    Client::check_connection()
+{
+    return _disconnected;
+}
+
+socklen_t &Client::get_socket_addr_length()
+{ 
     return addr_len;
 }
 
