@@ -62,6 +62,6 @@ void Channel::setOperator(Client* client, bool flag){
 	members[client] = flag;
 }
 
-std::map<Client*, bool> Channel::getMembers(){
+std::map<Client*, bool>& Channel::getMembers(){
 	return members;
 }

@@ -23,7 +23,7 @@ class Channel{
 	void setTopic(const std::string&);
 	void setRequiresPass(const bool&);
 	void appendMember(Client *);
-	std::map<Client*, bool> getMembers();
+	std::map<Client*, bool>& getMembers();
 
 	Channel(std::string, Client*, char);
 	~Channel();
