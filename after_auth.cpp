@@ -35,8 +35,8 @@ bool Server::channel_exists(const std::string& channelName){
 }
 
 void Server::create_channel(const std::string& channelName, Client *creator){
-    Channel *newChannel = new Channel(channelName, creator, channelName.front());
-    channelMap[channelName.substr(1)] = newChannel;
+    Channel *newChannel = new Channel(channelName, creator);
+    channelMap[channelName] = newChannel;
     return;
 }
 
@@ -99,7 +99,9 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
     if (oper == 'o'){
         if (sign == '+'){
             if (clients[i]->get_buffer_size() > 3){
-                find_user(clients[i]->get_cmd(3), i, channel);
+                Client *newOp = find_user(clients[i]->get_cmd(3), i, channel);
+                channel->getMembers()[newOp] = true;
+                puts("he is now an operator");
             }
         }
         else if (sign == '-'){
@@ -135,6 +137,7 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
                 std::string pass = clients[i]->get_cmd(3);
                 channel->setRequiresPass(true);
                 channel->setPass(pass);
+                channelAndPass[channel->getChannelName()] = pass;
             }
         }
         else if (sign == '-'){
@@ -171,6 +174,11 @@ void  Server::check_operations(const std::string &opers, int i, Channel *channel
 }
 
 void Server::append_user_to_channel(Channel *channel, Client *newMember){
+    auto it = channel->getMembers().find(newMember);
+    if (it != channel->getMembers().end()){
+        puts("user is already a member of this channel");
+        return;
+    }
     if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit())
         channel->appendMember(newMember);
     else
@@ -225,16 +233,20 @@ void    Server::handle_cmd_1(int i)
             extract_channels(channels, i, "");
             for (auto it = channelAndPass.begin();it != channelAndPass.end();it++){
 				// 7iyd lprefix hna w hni rask bach matb9ach dirha kola mra
-				std::string channelName = it->first.substr(1);
+				std::string channelName = it->first;
+                std::cout << "name " << channelName << '\n';
+                std::cout << "exists?:  " << channel_exists(channelName) << '\n';
             	if (!it->first.empty() && channel_exists(channelName) == false){
 	                create_channel(it->first, clients[i]);
                 }
             	else if (channel_exists(channelName) == true){
 					if (channelMap[channelName]->getRequiresPass() == true){
+                        std::cout << "pass " << it->second << '\n';
+                        pass kib9a empty string wa9ila name ghalt idk 
                         if (channelMap[channelName]->getPass() == it->second)
                             puts("here");// join_channel
                         else // reply dial you need a password
-                            puts("pass incorrect"); std::cout << "dakchi lidkhl" <<it->second << '\n';
+                            puts("pass incorrect");
                     }
                     else
                         append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member
@@ -253,7 +265,7 @@ void    Server::handle_cmd_1(int i)
         else if (clients[i]->get_cmd(0) == "mode" || clients[i]->get_cmd(0) == "MODE"){
 			if (clients[i]->get_buffer_size() < 3)
 				return;
-            std::string chan = clients[i]->get_cmd(1).substr(1);
+            std::string chan = clients[i]->get_cmd(1);
                 // check if channel valid and user has operator role fdik channel
             if (channel_exists(chan) == true){
                 if (channelMap[chan]->isOperator(clients[i]) == true){

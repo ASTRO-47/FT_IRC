@@ -29,7 +29,7 @@ class Channel{
 	void setInviteOnly(bool);
 	std::map<Client*, bool>& getMembers();
 
-	Channel(std::string, Client*, char);
+	Channel(std::string, Client*);
 	~Channel();
 	void setUserLimit(size_t newLimit);
 	size_t & getUserLimit();
@@ -38,4 +38,5 @@ class Channel{
 	unsigned long getNumMembers();
 	bool & getTopicFlag();
 	void setTopicFlag(bool);
+	std::string & getChannelName();
 };
