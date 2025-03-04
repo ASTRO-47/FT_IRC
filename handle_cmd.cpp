@@ -6,8 +6,13 @@ void Server::taken_nick_name(int i)
     
     for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
     {
-        if ((*it)->get_nick_name() == _n && !(*it)->check_all())  
+        if ((*it)->get_nick_name() == _n && !(*it)->check_all())
+        {
+            std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\n";
+            send_reply((*it)->get_socket_fd(), msge);
+            close((*it)->get_socket_fd());
             (*it)->disconnected();
+        }
     }
 }
 
@@ -126,6 +131,11 @@ void Server::handle_cmd(int i)
 {
     clients[i]->parse_command();
 
+    if (clients[i]->get_cmd(0) == "quit" || clients[i]->get_cmd(0) == "QUIT")
+    {
+        handle_quit_cmd(i);
+        return ;
+    }
     if (!clients[i]->check_pass() && (clients[i]->get_cmd(0) != "pass" && clients[i]->get_cmd(0) != "PASS"))
     {
         std::string msge = server_prefix + "451 :You have not registered\n";

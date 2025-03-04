@@ -4,7 +4,7 @@
 void Server::handle_prv_msge(int i)
 {
     clients[i]->trim_message();
-    std::string msge = ":" + clients[i]->get_nick_name() +"!~" + clients[i]->get_nick_name() + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + '\n';
+    std::string msge = ":" + clients[i]->get_nick_name() +"!~" + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + '\n';
     send_private_message(clients[i],  msge);
 }
 
@@ -131,12 +131,28 @@ void    Server::change_nick_name(int i)
     //broadcast to all channels
 }
 
-void    Server::handle_cmd_1(int i)
+void    Server::handle_quit_cmd(int i)
 {
     std::string msge;
-    clients[i]->parse_command();
+    msge = ":";
+    if (clients[i]->check_all())
+        msge += clients[i]->get_nick_name();
+    else
+        msge += "*";
+    msge += "!~f@197.230.30.146 QUIT :Client Quit\n";
+    send_reply(clients[i]->get_socket_fd(), msge);
+    msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)\n";
+    send_reply(clients[i]->get_socket_fd(), msge);
+    close(clients[i]->get_socket_fd());
+    clients[i]->disconnected();
+}
+
+bool Server::check_command(int i)
+{
+    std::string msge;
+
     if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
-        change_nick_name(i);
+        return (change_nick_name(i), true);
     else if (clients[i]->get_cmd(0) == "privmsg" || clients[i]->get_cmd(0) == "PRIVMSG")
     {
         if (clients[i]->get_buffer_size() == 1)
@@ -144,23 +160,31 @@ void    Server::handle_cmd_1(int i)
             msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\n";
             send_reply(clients[i]->get_socket_fd(), msge);
             clients[i]->reset();
-            return ;
+            return true;
         }
         if (clients[i]->get_buffer_size() == 2)
         {
             msge = server_prefix + "412 " + clients[i]->get_nick_name() + " :No text to send\n";
             send_reply(clients[i]->get_socket_fd(), msge);
             clients[i]->reset();
-            return ;
+            return true;
         }
         if (!check_user(i))
-        {
-            clients[i]->reset();
-            return ;
-        }
-        handle_prv_msge(i);
+            return (clients[i]->reset(), true);
+        return (handle_prv_msge(i), true);
     }
-    else if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){ // tolower w compari
+    else if (clients[i]->get_cmd(0) == "quit" || clients[i]->get_cmd(0) == "QUIT")
+        return (handle_quit_cmd(i), true);
+    return false;
+}
+
+void    Server::handle_cmd_1(int i)
+{
+    std::string msge;
+    clients[i]->parse_command();
+    if (check_command(i))
+        return ;
+    if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){ // tolower w compari
         std::string channels = clients[i]->get_cmd(1);
         if (clients[i]->get_buffer_size() > 3){
             std::string pass = clients[i]->get_cmd(2);

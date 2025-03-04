@@ -185,7 +185,7 @@ bool Client::check_message() const
 
 bool    Client::cmd_end() const
 {
-    if (_buffer[_buffer.length() - 1] == '\n')
+    if ((_buffer[_buffer.length() - 1] == '\n'  && _buffer[_buffer.length() - 2] == '\r' ) || _buffer[_buffer.length() - 1] == '\n')
         return true;
     return false;
 }

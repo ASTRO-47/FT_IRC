@@ -128,9 +128,6 @@ void Server::multiplexing_func()
         {
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
-                std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\n";
-                send_reply(clients[i]->get_socket_fd(), msge);
-                close(clients[i]->get_socket_fd());
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
                 _poll_fds.erase(_poll_fds.begin() + i);
                 delete clients[i];
