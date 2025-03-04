@@ -72,8 +72,9 @@ void Server::extract_channels(const std::string &chans, int i, const std::string
     std::string pass;
 	while (start != std::string::npos){
 	    const std::string chan = parse_join_input(chans, start);
-        if (!passwords.empty() && start2 != std::string::npos)
+        if (!passwords.empty() && start2 != std::string::npos){
             pass = parse_passwords(passwords, start2);
+        }
         else
             pass = "";
         channelAndPass[chan] = pass;
@@ -142,7 +143,7 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
         }
         else if (sign == '-'){
             channel->setRequiresPass(false);
-            channel->setPass(NULL); // hmmmm tanchof wach blan
+            channel->setPass(""); // hmmmm tanchof wach blan
         }
     }
     else if (oper == 't'){
@@ -190,7 +191,7 @@ void    Server::change_nick_name(int i)
     parse_nick(i);
     //broadcast to all channels
 }
-
+// bghiti tkhdm bl exceptions khs dir try catch ajmi
 void    Server::handle_cmd_1(int i)
 {
     std::string msge;
@@ -222,7 +223,7 @@ void    Server::handle_cmd_1(int i)
     }
     else if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){ // tolower w compari
         std::string channels = clients[i]->get_cmd(1);
-        if (clients[i]->get_buffer_size() > 3){
+        if (clients[i]->get_buffer_size() > 2){
             std::string pass = clients[i]->get_cmd(2);
             extract_channels(channels, i, pass);
             // for (auto it= channelAndPass.begin();it != channelAndPass.end();it++){ debugging channel name key
@@ -231,25 +232,21 @@ void    Server::handle_cmd_1(int i)
         }
         else
             extract_channels(channels, i, "");
-            for (auto it = channelAndPass.begin();it != channelAndPass.end();it++){
+        for (auto it = channelAndPass.begin();it != channelAndPass.end();it++){
 				// 7iyd lprefix hna w hni rask bach matb9ach dirha kola mra
-				std::string channelName = it->first;
-                std::cout << "name " << channelName << '\n';
-                std::cout << "exists?:  " << channel_exists(channelName) << '\n';
-            	if (!it->first.empty() && channel_exists(channelName) == false){
-	                create_channel(it->first, clients[i]);
-                }
-            	else if (channel_exists(channelName) == true){
-					if (channelMap[channelName]->getRequiresPass() == true){
-                        std::cout << "pass " << it->second << '\n';
-                        pass kib9a empty string wa9ila name ghalt idk 
-                        if (channelMap[channelName]->getPass() == it->second)
-                            puts("here");// join_channel
-                        else // reply dial you need a password
-                            puts("pass incorrect");
-                    }
-                    else
-                        append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member
+			std::string channelName = it->first;
+            if (!it->first.empty() && channel_exists(channelName) == false){
+	            create_channel(it->first, clients[i]);
+            }
+            else if (channel_exists(channelName) == true){
+				if (channelMap[channelName]->getRequiresPass() == true){
+                    if (channelMap[channelName]->getPass() == it->second)
+                        append_user_to_channel(channelMap[channelName], clients[i]);
+                    else // reply dial you need a password
+                        puts("pass incorrect");
+                 }
+                else
+                    append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member
                 	// check if it requires a password
                 }
 			}
