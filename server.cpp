@@ -129,6 +129,7 @@ void Server::multiplexing_func()
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
+                close(clients[i]->get_socket_fd());
                 _poll_fds.erase(_poll_fds.begin() + i);
                 delete clients[i];
                 clients.erase(clients.begin() + i);
