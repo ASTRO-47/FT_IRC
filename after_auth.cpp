@@ -106,7 +106,11 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
             }
         }
         else if (sign == '-'){
-            
+            if (clients[i]->get_buffer_size() > 3){
+                Client *removeOp = find_user(clients[i]->get_cmd(3), i, channel);
+                channel->getMembers()[removeOp] = false;
+                puts("7aydna lih operator");
+            }
         }
     }
     else if (oper == 'i'){
@@ -136,6 +140,7 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
         if (sign == '+'){
             if (clients[i]->get_buffer_size() > 3){
                 std::string pass = clients[i]->get_cmd(3);
+                puts("here");
                 channel->setRequiresPass(true);
                 channel->setPass(pass);
                 channelAndPass[channel->getChannelName()] = pass;
@@ -155,9 +160,14 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
         
 }
 
+bool Server::requiresArg(char sign, char oper){
+    return (sign == '+' && oper == 'o' || (sign == '-' && oper == 'o') || (sign == '+' && oper == 'l') || (sign == '+' && oper == 'k'));
+}
+
 void  Server::check_operations(const std::string &opers, int i, Channel *channel){
     char modeSign = '+';
-    std::vector<char> operations;
+    std::vector<std::pair<char, char> > operations;
+    std::vector<std::string> options; knt hna
     if (opers.empty()){
         // needmoreparams
         return;
@@ -165,12 +175,23 @@ void  Server::check_operations(const std::string &opers, int i, Channel *channel
     for (auto it = opers.begin(); it != opers.end(); it++){
         if (*it == '+' || *it == '-')
             modeSign = *it;
-        std::set<char>::const_iterator mode_it = modes.find(*it);
-        if (mode_it != modes.end()){
-            operations.push_back(*it);// lcase dial +l wla -l second arg
-            process_operation(modeSign, *it, i, channel);
-                // pop ila tprocessat
+        else if (modes.find(*it) != modes.end())
+            operations.push_back(std::make_pair(*it, modeSign));
+    }
+    for (auto it = operations.begin(); it != operations.end(); ){ // we dont increment here erase returns next valid iterator
+        if (requiresArg(it->second,it->first)){
+            try{
+                process_operation(it->second, it->first, i, channel);
+                clients[i]->get_cmd(3).erase();// we only erase if the operation succeeds
+            }
+            catch(std::exception &e){
+                std::cout << "ERROR: " << e.what() << std::endl;
+            }
+            it = operations.erase(it); // we should always erase not just inside the try block
+            // 7it la t throwat exception l iterator aywli invalid
         }
+        else
+            it++;
     }
 }
 
@@ -243,21 +264,16 @@ void    Server::handle_cmd_1(int i)
                     if (channelMap[channelName]->getPass() == it->second)
                         append_user_to_channel(channelMap[channelName], clients[i]);
                     else // reply dial you need a password
+                    {
+                        std::cout << "pass entered was " << it->second << '\n';
+                        std::cout << "it was compared with" << channelMap[channelName]->getPass() << '\n';
                         puts("pass incorrect");
+                    }
                  }
                 else
                     append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member
-                	// check if it requires a password
                 }
 			}
-                // }
-				// std::string lastOrOnlyChan = input.substr(start);
-				// if (!lastOrOnlyChan.empty() && !channel_exists(lastOrOnlyChan))
-				// 	create_channel(lastOrOnlyChan, clients[i]);
-                // break;
-            // case 3: // hna best case scenario houa join #foo bar
-            // default: //hna an9lb 3la channel wlpass w nignori dakchi lakhr
-            // default: throw std::runtime_error("wazbi hhhhh"); makhsnich nthrowi 7it y9d ykon khdam dakchi
         }
         else if (clients[i]->get_cmd(0) == "mode" || clients[i]->get_cmd(0) == "MODE"){
 			if (clients[i]->get_buffer_size() < 3)

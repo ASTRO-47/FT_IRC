@@ -49,17 +49,17 @@ class Server
         void                         change_nick_name(int);
         std::map<std::string ,Channel*>channelMap;
         std::map<std::string, std::string>channelAndPass;
+        std::set<char> modes;
         void extract_channels(const std::string &, int, const std::string &);
         bool channel_exists(const std::string&);
         void create_channel(const std::string&, Client *);
         std::string parse_join_input(const std::string &, size_t &);
         std::string parse_passwords(const std::string &, size_t &);
-        // bool valid_channel(const std::string &);
         void check_operations(const std::string &, int, Channel *);
         void process_operation(char, const char &, int, Channel *);
         Client* find_user(const std::string &, int, Channel *);
         void append_user_to_channel(Channel * ,Client *);
-        std::set<char> modes;
+        bool requiresArg(char, char );
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
