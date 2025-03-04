@@ -96,18 +96,20 @@ Client* Server::find_user(const std::string &user, int i, Channel *channel){
     return NULL;// change this later
 }
 
-void Server::process_operation(char sign, const char &oper, int i, Channel *channel){
+void Server::process_operation(char sign, const char &oper, int i, std::string &arg, Channel *channel){
     if (oper == 'o'){
         if (sign == '+'){
             if (clients[i]->get_buffer_size() > 3){
-                Client *newOp = find_user(clients[i]->get_cmd(3), i, channel);
+                // Client *newOp = find_user(clients[i]->get_cmd(3), i, channel);
+                Client *newOp = find_user(arg, i, channel);
                 channel->getMembers()[newOp] = true;
                 puts("he is now an operator");
             }
         }
         else if (sign == '-'){
             if (clients[i]->get_buffer_size() > 3){
-                Client *removeOp = find_user(clients[i]->get_cmd(3), i, channel);
+                // Client *removeOp = find_user(clients[i]->get_cmd(3), i, channel);
+                Client *removeOp = find_user(arg, i, channel);
                 channel->getMembers()[removeOp] = false;
                 puts("7aydna lih operator");
             }
@@ -122,7 +124,8 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
     else if (oper == 'l'){
         if (sign == '+'){
             if (clients[i]->get_buffer_size() > 3){
-                std::string limit = clients[i]->get_cmd(3);
+                // std::string limit = clients[i]->get_cmd(3);
+                std::string limit = arg;
 	            std::stringstream ss(limit);
 	            long userLimit = 0;
 	            ss >> userLimit;
@@ -139,7 +142,8 @@ void Server::process_operation(char sign, const char &oper, int i, Channel *chan
     else if (oper == 'k'){
         if (sign == '+'){
             if (clients[i]->get_buffer_size() > 3){
-                std::string pass = clients[i]->get_cmd(3);
+                // std::string pass = clients[i]->get_cmd(3);
+                std::string pass = arg;
                 puts("here");
                 channel->setRequiresPass(true);
                 channel->setPass(pass);
@@ -167,7 +171,7 @@ bool Server::requiresArg(char sign, char oper){
 void  Server::check_operations(const std::string &opers, int i, Channel *channel){
     char modeSign = '+';
     std::vector<std::pair<char, char> > operations;
-    std::vector<std::string> options; knt hna
+    std::vector<std::string> options; 
     if (opers.empty()){
         // needmoreparams
         return;
@@ -178,11 +182,16 @@ void  Server::check_operations(const std::string &opers, int i, Channel *channel
         else if (modes.find(*it) != modes.end())
             operations.push_back(std::make_pair(*it, modeSign));
     }
+    for (size_t j = 3; j < clients[i]->get_buffer_size(); j++) //  machi dima ghaykon idan hadchi mzl chwiya flawed
+        options.push_back(clients[i]->get_cmd(j));
     for (auto it = operations.begin(); it != operations.end(); ){ // we dont increment here erase returns next valid iterator
         if (requiresArg(it->second,it->first)){
             try{
-                process_operation(it->second, it->first, i, channel);
-                clients[i]->get_cmd(3).erase();// we only erase if the operation succeeds
+                if (!options.empty()){
+                    std::string arg = options.front();
+                    options.erase(options.begin());
+                    process_operation(it->second, it->first, i, arg,channel);
+                }
             }
             catch(std::exception &e){
                 std::cout << "ERROR: " << e.what() << std::endl;

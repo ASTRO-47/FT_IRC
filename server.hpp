@@ -56,7 +56,7 @@ class Server
         std::string parse_join_input(const std::string &, size_t &);
         std::string parse_passwords(const std::string &, size_t &);
         void check_operations(const std::string &, int, Channel *);
-        void process_operation(char, const char &, int, Channel *);
+        void process_operation(char, const char &, int,std::string &, Channel *);
         Client* find_user(const std::string &, int, Channel *);
         void append_user_to_channel(Channel * ,Client *);
         bool requiresArg(char, char );
