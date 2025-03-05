@@ -150,8 +150,9 @@ void Server::multiplexing_func()
 
 void    Server::send_reply(int i, std::string message)
 {
-    int fd = clients[i]->get_socket_fd();
-    _poll_fds[i].revents = POLLOUT;
+    clients[i]->add_message(message);
+    // int fd = clients[i]->get_socket_fd();
+    _poll_fds[i].revents = POLLOUT; //specify that the client need to pollout data
     // if (!clients[i]->get_replys_size())
     //     _poll_fds[i].revents = POLLIN;
     // int bytes = send(fd, message.c_str(), message.length(), 0);

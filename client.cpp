@@ -74,6 +74,10 @@ size_t  Client::get_replys_size()
     return replys.size();
 }
 
+void    Client::add_message(std::string m)
+{
+    replys.push_back(m);
+}
 void Client::parse_command()
 {
     std::stringstream ss(_buffer);

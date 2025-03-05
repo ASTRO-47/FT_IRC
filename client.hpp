@@ -59,6 +59,7 @@ public:
     bool            check_connection();
     std::string get_hostname() const;
     std::string get_ip() const;
+    void            add_message(std::string);
     bool            check_first_nick();
 
     ~Client();
