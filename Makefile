@@ -1,6 +1,6 @@
 # FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++98 -g -fsanitize=address
+CPPC = c++ -std=c++98 #-g -fsanitize=address
 
 SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
@@ -20,17 +20,17 @@ RESET       = \e[0m
 all : $(NAME)
 
 $(NAME): $(OBJECTS)
-	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(NAME)... $(RESET)\n"
+	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(NAME)... $(RESET)\r\n"
 	@$(CPPC) $(FLAGS) $(OBJECTS) -o $(NAME)
 	@printf "$(GREEN)    - Executable ready.\n$(RESET)"
 
 clean:
 	@$(RM) $(OBJECTS)
-	@printf "$(YELLOW)    - objects removed.$(RESET)\n"
+	@printf "$(YELLOW)    - objects removed.$(RESET)\r\n"
 	
 fclean: clean
 	@$(RM) $(NAME)
-	@printf "$(YELLOW)    - Executable removed.$(RESET)\n"
+	@printf "$(YELLOW)    - Executable removed.$(RESET)\r\n"
 
 re : fclean all
 

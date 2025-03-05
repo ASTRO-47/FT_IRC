@@ -2,7 +2,6 @@
 
 Server::Server() 
 {
-
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
 }
 
@@ -21,19 +20,19 @@ void    Server::registration_msge(int i)
     std::string nick = clients[i]->get_nick_name();
     taken_nick_name(i);
     std::string message = 
-            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\n"
-            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\n"
-            ":ft_irc 254 " + nick + " :channels formed\n"
-            ":ft_irc 255 " + nick + " :We have 1 clients\n";
+            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\r\n"
+            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\r\n"
+            ":ft_irc 254 " + nick + " :channels formed\r\n"
+            ":ft_irc 255 " + nick + " :We have 1 clients\r\n";
     std::string motd = 
-        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \n"
-        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\n"
-        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \n"
-        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \n"
-        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \n"
-        ":ft_irc 372 " + nick + " :-          |_____|                                     \n"
-        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\n"
-        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\n";
+        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
+        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
+        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
+        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
+        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
+        ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
+        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
+        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
     message += motd;
     send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
     clients[i]->showed_messgae();
@@ -88,23 +87,21 @@ void    Server::handle_new_client()
     }
     clients.push_back(new_client); // add the client to the vector
     _poll_fds.push_back(new_client->get_socket_struct());
-    std::cout << "Client connected, on fd: "  <<  new_client->get_socket_fd()  << "\n";
+    std::cout << "Client connected, on fd: "  <<  new_client->get_socket_fd()  << "\r\n";
 }
 
 void Server::handle_event_fd(int i)
 {
     char buffer[500]; // change this later
     int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
-    // if (bytes <= 0)
-    // {
-    //     std::cout << "client disconnected\n";
-    //     close (clients[i]->get_socket_fd());
-    //     _poll_fds.erase(_poll_fds.begin() + i);
-    //     delete clients[i];
-    //     clients.erase(clients.begin() + i);
-    //     i--;
-    // }
-    // else
+    if (bytes == -1)
+        return ;
+    if (bytes == 0)
+    {
+        close (clients[i]->get_socket_fd());
+        clients[i]->disconnected();
+    }
+    else
     {
         buffer[bytes] = '\0'; // trim the new line at the end
         clients[i]->append_buffer(buffer);
@@ -141,19 +138,28 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(i);
+                clients[i]->reset();
+            }
+            if (_poll_fds[i].revents & POLLOUT)
+            {
+                puts("need to send some thing");
             }
         }
     }
 }
 
-void    Server::send_reply(int fd, std::string message)
+void    Server::send_reply(int i, std::string message)
 {
-    int bytes = send(fd, message.c_str(), message.length(), 0);
-    if (bytes < 0)
-    {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-            std::cerr << "send function failed\n";
-    }
+    int fd = clients[i]->get_socket_fd();
+    _poll_fds[i].revents = POLLOUT;
+    // if (!clients[i]->get_replys_size())
+    //     _poll_fds[i].revents = POLLIN;
+    // int bytes = send(fd, message.c_str(), message.length(), 0);
+    // if (bytes < 0)
+    // {
+    //     if (errno == EAGAIN || errno == EWOULDBLOCK)
+    //         std::cerr << "send function failed\r\n";
+    // }
 }
 
 Server::~Server()

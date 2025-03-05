@@ -25,8 +25,10 @@ private:
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
     bool                            first;
+    std::vector<std::string>        replys;
 public:
     Client();
+    size_t          get_replys_size();
     bool            check_all() const;
     void            disconnected();
     bool            check_pass() const;
@@ -38,7 +40,7 @@ public:
     void            connect(int);
     pollfd&          get_socket_struct();
     socklen_t       &get_socket_addr_length();
-    void            append_buffer(char *);
+    void            append_buffer(std::string);
     std::string     get_buffer() const;
     void            correct_pass();
     void            wrong_pass();

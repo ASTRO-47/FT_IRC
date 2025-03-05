@@ -69,6 +69,11 @@ std::string trim(const std::string& str)
     return str.substr(first, last - first + 1);
 }
 
+size_t  Client::get_replys_size()
+{
+    return replys.size();
+}
+
 void Client::parse_command()
 {
     std::stringstream ss(_buffer);
@@ -80,7 +85,7 @@ void Client::parse_command()
         if (!trimmed.empty())
             _command_buffer.push_back(trimmed);
     }
-
+    // std::cout << _buffer << ']' << std::endl;
     // debug printing
     // std::cout << '[';
     // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
@@ -89,9 +94,9 @@ void Client::parse_command()
 }
 
 
-void Client::append_buffer(char *res)
+void Client::append_buffer(std::string res)
 {
-    if (!strlen(res) || (strlen(res) == 1 && res[0] == '\n'))
+    if (!res.length() || ((res.length() == 1 && res[0] == '\n')) || (res.length() == 2 && res[0] == '\r' && res[1] == '\n'))
         return ;
     _buffer.append(res);
 }
