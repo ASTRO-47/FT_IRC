@@ -9,7 +9,7 @@ void Server::taken_nick_name(int i)
         if ((*it)->get_nick_name() == _n && !(*it)->check_all())
         {
             std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\r\n";
-            send_reply((*it)->get_socket_fd(), msge);
+            send_reply((*it), msge);
             close((*it)->get_socket_fd());
             (*it)->disconnected();
         }
@@ -48,14 +48,14 @@ void Server::parse_nick(int i)
     if (clients[i]->get_buffer_size() == 1) // add the nick name is in use
     {
         msge = server_prefix + "431 :No nickname given\r\n";
-        send_reply(i, msge);
+        send_reply(clients[i], msge);
     }
     else
     {
         if (!check_nick_name(i))
         {
             std::string msge = server_prefix +  "431 * " + clients[i]->get_cmd(1) +" :Erroneus nickname\r\n";
-            send_reply(i, msge);
+            send_reply(clients[i], msge);
         }
         else if (taken_nick_name_1(clients[i]->get_cmd(1)))
         {
@@ -64,21 +64,21 @@ void Server::parse_nick(int i)
                 if (clients[i]->check_first_nick())
                 {
                     msge = clients[i]->get_nick_name() + "!@ NICK :" + clients[i]->get_cmd(1) + '\n';
-                    send_reply(i, msge);
+                    send_reply(clients[i], msge);
                 }
                 // send info to all the joined channels that the nik is changed
             }
             else if (clients[i]->check_all())
             {
                 msge = ":" + clients[i]->get_nick_name() + "!~d@197.230.30.146 NICK :" + clients[i]->get_cmd(1) + "\r\n";
-                send_reply(i, msge);
+                send_reply(clients[i], msge);
             }
             clients[i]->set_nick_name();
         }
         else
         {
             msge = server_prefix + "433" +  " * :Nickname is already in use\r\n";
-            send_reply(i, msge);
+            send_reply(clients[i], msge);
         }
     }
 }
@@ -89,13 +89,13 @@ void Server::parse_user(int i)
     if (clients[i]->check_all())
     {
         msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\r\n";
-        send_reply(i, msge);
+        send_reply(clients[i], msge);
     }
     // else if (clients[i]->get_buffer_size() < 5)
     // {
         
     //     msge = server_prefix + "461 " +  "USER :Not enough parameters\r\n";
-    //     send_reply(i, msge);
+    //     send_reply(clients[i], msge);
     // }
     else
         clients[i]->set_user_infos();
@@ -107,12 +107,12 @@ void Server::try_to_auth(int i)
     if (clients[i]->check_message())
     {
         std::string msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\r\n";
-        send_reply(i, msge);
+        send_reply(clients[i], msge);
     }
     else if (clients[i]->get_buffer_size() == 1)
     {
         std::string msge = server_prefix + "461 PASS: Not enough parameters\r\n";
-        send_reply(i, msge);
+        send_reply(clients[i], msge);
     }
     else if (clients[i]->get_buffer_size() > 1)
     {
@@ -121,7 +121,7 @@ void Server::try_to_auth(int i)
         else
         {
             std::string msge = server_prefix + "464 " +  clients[i]->get_cmd(1) + " :Password incorrect\r\n";
-            send_reply(i, msge);
+            send_reply(clients[i], msge);
             clients[i]->wrong_pass();
         }
     }
@@ -130,6 +130,7 @@ void Server::try_to_auth(int i)
 void Server::handle_cmd(int i)
 {
     clients[i]->parse_command();
+    // std::cout << clients[i]->get_buffer() << std::endl;
     if (clients[i]->get_cmd(0) == "quit" || clients[i]->get_cmd(0) == "QUIT")
     {
         handle_quit_cmd(i);
@@ -138,7 +139,7 @@ void Server::handle_cmd(int i)
     if (!clients[i]->check_pass() && (clients[i]->get_cmd(0) != "pass" && clients[i]->get_cmd(0) != "PASS"))
     {
         std::string msge = server_prefix + "451 :You have not registered\r\n";
-        send_reply(i, msge);
+        send_reply(clients[i], msge);
         return ;
     }
     if (clients[i]->get_cmd(0) == "pass" || clients[i]->get_cmd(0) == "PASS")

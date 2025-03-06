@@ -94,7 +94,7 @@ void Server::handle_event_fd(int i)
 {
     char buffer[500]; // change this later
     int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
-    if (bytes == -1)
+    if (bytes == -1) // print debug message
         return ;
     if (bytes == 0)
     {
@@ -134,6 +134,7 @@ void Server::multiplexing_func()
             }
             if (_poll_fds[i].revents & POLLIN && clients[i]->check_connection()) // if a connection to the socket requested and its writing request
             {
+
                 if (_poll_fds[i].fd == server_socket) // new events is on the socket file desctiptor
                     handle_new_client();
                 else
@@ -156,11 +157,11 @@ void Server::multiplexing_func()
     }
 }
 
-void    Server::send_reply(int i, std::string message)
+void    Server::send_reply(Client *C, std::string message)
 {
-    clients[i]->add_message(message);
+    C->add_message(message);
     // int fd = clients[i]->get_socket_fd();
-    _poll_fds[i].revents = POLLOUT; // specify that the client need to pollout data
+    C->get_socket_struct().events = POLLOUT; // specify that the client need to pollout data
     // if (!clients[i]->get_replys_size())
     //     _poll_fds[i].revents = POLLIN;
     // int bytes = send(fd, message.c_str(), message.length(), 0);

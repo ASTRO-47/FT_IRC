@@ -10,7 +10,7 @@ void Server::handle_prv_msge(int i)
 
 void Server::send_private_message(Client *sender, std::string msge)
 {
-    send_reply(sender->get_reciever()->get_socket_fd(), msge);
+    send_reply(sender->get_reciever(), msge);
 }
 
 bool    Server::check_user(int i)
@@ -26,7 +26,7 @@ bool    Server::check_user(int i)
         }
     }
     std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel\r\n";
-    send_reply(i, msge);
+    send_reply(clients[i], msge);
     return false;
 }
 bool Server::channel_exists(const std::string& channelName){
@@ -139,9 +139,9 @@ void    Server::handle_quit_cmd(int i)
     else
         msge += "*";
     msge += "!~f@197.230.30.146 QUIT :Client Quit\r\n";
-    send_reply(i, msge);
+    send_reply(clients[i], msge);
     msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)\r\n";
-    send_reply(i, msge);
+    send_reply(clients[i], msge);
     close(clients[i]->get_socket_fd());
     clients[i]->disconnected();
 }
@@ -157,14 +157,14 @@ bool Server::check_command(int i)
         if (clients[i]->get_buffer_size() == 1)
         {
             msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\r\n";
-            send_reply(i, msge);
+            send_reply(clients[i], msge);
             clients[i]->reset();
             return true;
         }
         if (clients[i]->get_buffer_size() == 2)
         {
             msge = server_prefix + "412 " + clients[i]->get_nick_name() + " :No text to send\r\n";
-            send_reply(i, msge);
+            send_reply(clients[i], msge);
             clients[i]->reset();
             return true;
         }
@@ -241,7 +241,7 @@ void    Server::handle_cmd_1(int i)
     else if (clients[i]->get_cmd(0) != "pong" && clients[i]->get_cmd(0) != "PONG" )
     {
         msge = server_prefix + "421 " + clients[i]->get_cmd(0) +  ": unkown command\r\n";
-        send_reply(i, msge);
+        send_reply(clients[i], msge);
     }
     clients[i]->reset();
 }
