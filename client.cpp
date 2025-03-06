@@ -97,6 +97,15 @@ void Client::parse_command()
     // std::cout << ']' << std::endl;
 }
 
+void    Client::send_buffer()
+{
+    // while (1)
+    // {
+        send(client_socket, replys[0].c_str(), replys[0].length(),  0);
+        replys.pop_back();
+        
+    // }
+}
 
 void Client::append_buffer(std::string res)
 {

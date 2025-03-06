@@ -11,7 +11,6 @@ void Server::handle_prv_msge(int i)
 void Server::send_private_message(Client *sender, std::string msge)
 {
     send_reply(sender->get_reciever()->get_socket_fd(), msge);
-
 }
 
 bool    Server::check_user(int i)

@@ -1,6 +1,6 @@
 # FLAGS = -Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++98 #-g -fsanitize=address
+CPPC = c++ -std=c++98 -g -fsanitize=address
 
 SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp
 OBJECTS = $(SOURCES:.cpp=.o)

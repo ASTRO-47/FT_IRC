@@ -138,12 +138,20 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(i);
-                clients[i]->reset();
             }
             if (_poll_fds[i].revents & POLLOUT)
             {
-                puts("need to send some thing");
+                while (1)
+                {
+                    clients[i]->send_buffer();
+                    if (!clients[i]->get_replys_size())
+                    {
+                        _poll_fds[i].events = POLLIN;
+                        break ;
+                    }
+                }
             }
+            clients[i]->reset();
         }
     }
 }
@@ -152,7 +160,7 @@ void    Server::send_reply(int i, std::string message)
 {
     clients[i]->add_message(message);
     // int fd = clients[i]->get_socket_fd();
-    _poll_fds[i].revents = POLLOUT; //specify that the client need to pollout data
+    _poll_fds[i].revents = POLLOUT; // specify that the client need to pollout data
     // if (!clients[i]->get_replys_size())
     //     _poll_fds[i].revents = POLLIN;
     // int bytes = send(fd, message.c_str(), message.length(), 0);
