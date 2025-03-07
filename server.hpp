@@ -47,9 +47,11 @@ class Server
         void                         send_reply(int, std::string);
         void                         send_private_message(Client *, std::string);
         void                         change_nick_name(int);
+        bool                         kick_user(Client *, std::string&, std::string&);
         std::map<std::string ,Channel*>channelMap;
         std::map<std::string, std::string>channelAndPass;
         std::set<char> modes;
+        Client * find_client(std::string &);
         void extract_channels(const std::string &, int, const std::string &);
         bool channel_exists(const std::string&);
         void create_channel(const std::string&, Client *);

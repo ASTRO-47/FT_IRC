@@ -41,4 +41,5 @@ class Channel{
 	bool & getTopicFlag();
 	void setTopicFlag(bool);
 	std::string & getChannelName();
+	void removeMember(Client *);
 };

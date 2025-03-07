@@ -59,6 +59,11 @@ bool & Channel::getRequiresPass(){
 	return requiresPass;
 }
 
+void Channel::removeMember(Client *toRemove){
+	if (members.find(toRemove) != members.end())
+		members.erase(toRemove);
+}
+
 bool Channel::isMember(Client* client){
 	std::map<Client*,bool>::iterator it = members.find(client);
 	if (it != members.end())
