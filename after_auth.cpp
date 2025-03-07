@@ -34,11 +34,7 @@ bool Server::channel_exists(const std::string& channelName){
     return channelMap.find(channelName) != channelMap.end();
 }
 
-void Server::create_channel(const std::string& channelName, Client *creator){
-    Channel *newChannel = new Channel(channelName, creator);
-    channelMap[channelName] = newChannel;
-    return;
-}
+
 
 std::string Server::parse_join_input(const std::string &arg, size_t &start){
     if (arg.empty() || (arg.front() != '#' && arg.front() != '&'))
@@ -63,26 +59,7 @@ std::string Server::parse_passwords(const std::string &passwords, size_t &start)
         start = std::string::npos;
     return pass;
 }
-// check edge cases kayn chi 8
-// makhdmtch ga3 bdak i tat7ydo prototype
-
-void Server::extract_channels(const std::string &chans, int i, const std::string &passwords){ 
-    size_t start = 0;
-    size_t start2 = 0;
-    std::string pass;
-	while (start != std::string::npos){
-	    const std::string chan = parse_join_input(chans, start);
-        if (!passwords.empty() && start2 != std::string::npos){
-            pass = parse_passwords(passwords, start2);
-        }
-        else
-            pass = "";
-        channelAndPass[chan] = pass;
-    }
-}
-// khasni n ignori ila makanch formatted correctlly
-// check password if channel exists moraha addi lclient ldik channel, operator kikon endo @ 9bl
-// join replies
+// check edge cases kayn chi 8 dial mode
 
 Client* Server::find_user(const std::string &user, int i, Channel *channel){
     if (clients[i]->get_nick_name() == user)
@@ -207,18 +184,6 @@ void  Server::check_operations(const std::string &opers, int i, Channel *channel
     }
 }
 
-void Server::append_user_to_channel(Channel *channel, Client *newMember){
-    auto it = channel->getMembers().find(newMember);
-    if (it != channel->getMembers().end()){
-        std::cout << newMember->get_nick_name() << " is already member of " << channel->getChannelName() << '\n';
-        return;
-    }
-    if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit())
-        channel->appendMember(newMember);
-    else
-        puts("baraka ajmi"); // reply
-}
-
 void    Server::change_nick_name(int i)
 {
     parse_nick(i);
@@ -280,6 +245,7 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
         puts("client makaynch");
         return false;
     }
+    // segv here when user changes his nick after logging in
     if (!channelMap[chan]->isMember(oper) || !channelMap[chan]->isOperator(oper) || !channelMap[chan]->isMember(toKick)){
         puts("machi operator || machi member dak lighaytkicka");
         return false;
@@ -287,15 +253,17 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
     channelMap[chan]->removeMember(toKick);
     puts("kicked");
 }
-
+// when we change the nick kan3tabro b7ala user jdid 
 // bghiti tkhdm bl exceptions khs dir try catch ajmi
 void    Server::handle_cmd_1(int i)
 {
     std::string msge;
     clients[i]->parse_command();
-    if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
+    std::string input = clients[i]->get_cmd(0);
+    toLower(input);
+    if (input == "nick")
         change_nick_name(i);
-    else if (clients[i]->get_cmd(0) == "privmsg" || clients[i]->get_cmd(0) == "PRIVMSG")
+    else if (input == "privmsg")
     {
         if (clients[i]->get_buffer_size() == 1)
         {
@@ -319,7 +287,7 @@ void    Server::handle_cmd_1(int i)
         handle_prv_msge(i);
     }
     // join &chan || join #chan not the same thing
-    else if (clients[i]->get_cmd(0) == "join" || clients[i]->get_cmd(0) == "JOIN" ){ // tolower w compari
+    else if (input == "join"){ // tolower w compari
         if (clients[i]->get_buffer_size() < 2){
             clients[i]->reset();
             return;
@@ -327,13 +295,13 @@ void    Server::handle_cmd_1(int i)
         std::string channels = clients[i]->get_cmd(1);
         if (clients[i]->get_buffer_size() > 2){
             std::string pass = clients[i]->get_cmd(2);
-            extract_channels(channels, i, pass);
+            extract_channels(channels, pass);
             // for (auto it= channelAndPass.begin();it != channelAndPass.end();it++){ debugging channel name key
             //     std::cout << "name:" << it->first << " pass: " << it->second << '\n';
             // }
         }
         else
-            extract_channels(channels, i, "");
+            extract_channels(channels, "");
         auto it = channelAndPass.begin();
         while (it != channelAndPass.end()){  // i can use a for loop bla increment ghir khasni n3rf imta n erasi w imta la
 				// 7iyd lprefix hna w hni rask bach matb9ach dirha kola mra => lblan dial &chan #chan makit7sboch kifkif
@@ -359,7 +327,7 @@ void    Server::handle_cmd_1(int i)
                 it = channelAndPass.erase(it);
 			}
         }
-        else if (clients[i]->get_cmd(0) == "mode" || clients[i]->get_cmd(0) == "MODE"){
+        else if (input == "mode"){
 			if (clients[i]->get_buffer_size() < 3)
 				return;
             std::string chan = clients[i]->get_cmd(1);
@@ -379,7 +347,7 @@ void    Server::handle_cmd_1(int i)
             }
         }
         // chi user 3ndo smia dial chi channel anfr9 binathom b #
-        else if (clients[i]->get_cmd(0) == "INVITE" || clients[i]->get_cmd(0) == "invite"){
+        else if (input == "INVITE"){
             if (clients[i]->get_buffer_size() < 3 || !check_user(i)){
                 clients[i]->reset();
                 return ;
@@ -388,7 +356,7 @@ void    Server::handle_cmd_1(int i)
             std::string chan = clients[i]->get_cmd(2);
             invite_user(invited, clients[i], chan);
         }
-        else if (clients[i]->get_cmd(0) == "TOPIC" || clients[i]->get_cmd(0) == "topic"){
+        else if (input == "TOPIC"){
             if (clients[i]->get_buffer_size() < 2) // needmoreparams
                 return;
             else if (clients[i]->get_buffer_size() == 2){
@@ -425,7 +393,7 @@ void    Server::handle_cmd_1(int i)
             else
                 std::string topic = clients[i]->get_cmd(2);
         }
-        else if (clients[i]->get_cmd(0) == "KICK" || clients[i]->get_cmd(0) == "kick"){
+        else if (input == "kick"){
             if (clients[i]->get_buffer_size() < 3){
                 // need more params
                 return;
@@ -455,7 +423,7 @@ void    Server::handle_cmd_1(int i)
                 }
             }
         }
-    else if (clients[i]->get_cmd(0) != "pong" && clients[i]->get_cmd(0) != "PONG" )
+    else if (input != "pong" && input != "PONG" )
     {
         msge = server_prefix + "421 " + clients[i]->get_cmd(0) +  ": unkown command\n";
         send_reply(clients[i]->get_socket_fd(), msge);

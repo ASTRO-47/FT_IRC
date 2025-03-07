@@ -16,6 +16,7 @@
 #include <exception>
 #include <set>
 #include <sstream>
+#include "utils.hpp"
 
 class Client;
 class Channel;
@@ -52,7 +53,7 @@ class Server
         std::map<std::string, std::string>channelAndPass;
         std::set<char> modes;
         Client * find_client(std::string &);
-        void extract_channels(const std::string &, int, const std::string &);
+        void extract_channels(const std::string &, const std::string &);
         bool channel_exists(const std::string&);
         void create_channel(const std::string&, Client *);
         std::string parse_join_input(const std::string &, size_t &);

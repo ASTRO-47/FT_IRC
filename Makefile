@@ -2,11 +2,11 @@
 
 CPPC = c++ -std=c++98 -g -fsanitize=address
 
-SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp
+SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp utils.cpp join.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 NAME = ircserv
-HEADERS = Makefile server.hpp client.hpp Channel.hpp
+HEADERS = Makefile server.hpp client.hpp Channel.hpp utils.hpp
 RM = rm -f
 #anssi Colors:
 GREEN       = \e[38;5;118m
