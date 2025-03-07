@@ -46,7 +46,7 @@ void Server::server_setup(std::string _port, std::string passwd)
     if (checker[0] != '\0')
         throw std::runtime_error("invalid port format");
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
-    if (server_socket == -1) 
+    if (server_socket == -1)
         throw std::runtime_error("failed to create socket");
     // fcntl(server_socket, F_SETFL, O_NONBLOCK);
     sock_addr.sin_family = AF_INET; //  select the ipv4 family
@@ -134,42 +134,24 @@ void Server::multiplexing_func()
             }
             if (_poll_fds[i].revents & POLLIN && clients[i]->check_connection()) // if a connection to the socket requested and its writing request
             {
-
                 if (_poll_fds[i].fd == server_socket) // new events is on the socket file desctiptor
                     handle_new_client();
                 else
                     handle_event_fd(i);
-            }
-            if (_poll_fds[i].revents & POLLOUT)
-            {
-                while (1)
-                {
-                    clients[i]->send_buffer();
-                    if (!clients[i]->get_replys_size())
-                    {
-                        _poll_fds[i].events = POLLIN;
-                        break ;
-                    }
-                }
             }
             clients[i]->reset();
         }
     }
 }
 
-void    Server::send_reply(Client *C, std::string message)
+void    Server::send_reply(int fd, std::string message)
 {
-    C->add_message(message);
-    // int fd = clients[i]->get_socket_fd();
-    C->get_socket_struct().events = POLLOUT; // specify that the client need to pollout data
-    // if (!clients[i]->get_replys_size())
-    //     _poll_fds[i].revents = POLLIN;
-    // int bytes = send(fd, message.c_str(), message.length(), 0);
-    // if (bytes < 0)
-    // {
-    //     if (errno == EAGAIN || errno == EWOULDBLOCK)
-    //         std::cerr << "send function failed\r\n";
-    // }
+    int bytes = send(fd, message.c_str(), message.length(), 0);
+    if (bytes < 0)
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            std::cerr << "an error occured while sending data\n";
+    }
 }
 
 Server::~Server()

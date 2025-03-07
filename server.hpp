@@ -45,8 +45,8 @@ class Server
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
-        void                         send_reply(Client *, std::string);
-        void                         send_private_message(Client *, std::string);
+        void                         send_reply(int, std::string);
+        void                         send_private_message(int, std::string);
         void                         change_nick_name(int);
         std::map<std::string ,Channel*>channelMap;
         std::map<std::string, std::string>channelAndPass;

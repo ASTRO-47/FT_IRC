@@ -77,6 +77,7 @@ size_t  Client::get_replys_size()
 void    Client::add_message(std::string m)
 {
     replys.push_back(m);
+    __poll.revents = POLLOUT;
 }
 
 void Client::parse_command()

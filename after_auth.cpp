@@ -5,13 +5,14 @@ void Server::handle_prv_msge(int i)
 {
     clients[i]->trim_message();
     std::string msge = ":" + clients[i]->get_nick_name() +"!~" + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + "\r\n";
-    send_private_message(clients[i],  msge);
+    // clients[i]->get_reciever()
+    send_reply(clients[i]->get_reciever()->get_socket_fd(), msge);
 }
 
-void Server::send_private_message(Client *sender, std::string msge)
-{
-    send_reply(sender->get_reciever(), msge);
-}
+// void Server::send_private_message(int i, std::string msge)
+// {
+//     send_reply(clients[i]->get_socket_fd(), msge);
+// }
 
 bool    Server::check_user(int i)
 {
@@ -26,7 +27,7 @@ bool    Server::check_user(int i)
         }
     }
     std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel\r\n";
-    send_reply(clients[i], msge);
+    send_reply(clients[i]->get_socket_fd(), msge);
     return false;
 }
 bool Server::channel_exists(const std::string& channelName){
@@ -139,9 +140,9 @@ void    Server::handle_quit_cmd(int i)
     else
         msge += "*";
     msge += "!~f@197.230.30.146 QUIT :Client Quit\r\n";
-    send_reply(clients[i], msge);
+    send_reply(clients[i]->get_socket_fd(), msge);
     msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)\r\n";
-    send_reply(clients[i], msge);
+    send_reply(clients[i]->get_socket_fd(), msge);
     close(clients[i]->get_socket_fd());
     clients[i]->disconnected();
 }
@@ -157,23 +158,22 @@ bool Server::check_command(int i)
         if (clients[i]->get_buffer_size() == 1)
         {
             msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\r\n";
-            send_reply(clients[i], msge);
+            send_reply(clients[i]->get_socket_fd(), msge);
             clients[i]->reset();
             return true;
         }
         if (clients[i]->get_buffer_size() == 2)
         {
             msge = server_prefix + "412 " + clients[i]->get_nick_name() + " :No text to send\r\n";
-            send_reply(clients[i], msge);
-            clients[i]->reset();
+            send_reply(clients[i]->get_socket_fd(), msge);
             return true;
         }
         if (!check_user(i))
-            return (clients[i]->reset(), true);
+            return true;
         return (handle_prv_msge(i), true);
     }
     else if (clients[i]->get_cmd(0) == "quit" || clients[i]->get_cmd(0) == "QUIT")
-        return (handle_quit_cmd(i), true);
+        return true;
     return false;
 }
 
@@ -241,7 +241,7 @@ void    Server::handle_cmd_1(int i)
     else if (clients[i]->get_cmd(0) != "pong" && clients[i]->get_cmd(0) != "PONG" )
     {
         msge = server_prefix + "421 " + clients[i]->get_cmd(0) +  ": unkown command\r\n";
-        send_reply(clients[i], msge);
+        send_reply(clients[i]->get_socket_fd(), msge);
     }
     clients[i]->reset();
 }
