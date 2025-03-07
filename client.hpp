@@ -31,6 +31,7 @@ public:
     bool            check_pass() const;
     int             get_buffer_size() const;
     std::string&    get_cmd(int);
+    std::vector<std::string>& get_cmd_buffer();
     void            parse_command();
     void            add_server_to_poll(int);
     int             get_socket_fd() const;
@@ -38,7 +39,7 @@ public:
     pollfd&          get_socket_struct();
     socklen_t       &get_socket_addr_length();
     void            append_buffer(char *);
-    std::string     get_buffer() const;
+    const std::string&     get_buffer() const;
     void            correct_pass();
     void            wrong_pass();
     void            set_nick_name();

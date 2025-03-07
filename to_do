@@ -1,2 +1,4 @@
 segv in multiple close fd with the given nickname
 compile in codespaces with all flags + fsanitize
+
+const for the getters

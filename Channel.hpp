@@ -20,6 +20,7 @@ class Channel{
 	std::string & getPass();
 	bool & getRequiresPass();
 	bool isOperator(Client*);
+	bool isMember(Client*);
 	void setOperator(Client* ,bool);
 	
 	void setPass(const std::string&);
@@ -27,6 +28,7 @@ class Channel{
 	void setRequiresPass(const bool&);
 	void appendMember(Client *);
 	void setInviteOnly(bool);
+	bool & getInviteOnly();
 	std::map<Client*, bool>& getMembers();
 
 	Channel(std::string, Client*);

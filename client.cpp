@@ -68,6 +68,9 @@ std::string trim(const std::string& str)
     size_t last = str.find_last_not_of(whitespace);
     return str.substr(first, last - first + 1);
 }
+std::vector<std::string>& Client::get_cmd_buffer(){
+    return _command_buffer;
+}
 
 void Client::parse_command()
 {
@@ -106,7 +109,7 @@ bool Client::check_nick() const
     return _nick;
 }
 
-std::string Client::get_buffer() const
+const std::string& Client::get_buffer() const
 {
     return _buffer;
 }

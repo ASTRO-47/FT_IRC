@@ -60,6 +60,7 @@ class Server
         Client* find_user(const std::string &, int, Channel *);
         void append_user_to_channel(Channel * ,Client *);
         bool requiresArg(char, char );
+        void invite_user(const std::string &, Client *, const std::string &);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

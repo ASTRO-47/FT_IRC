@@ -8,6 +8,7 @@ Channel::Channel(std::string ChannelName, Client* Creator){
 	requiresPass = false;
 	limitSet = false;
 	topicSettable = false;
+	topic = "";
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
 	// setOperator(Creator, true);
 	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + name + "\n"; 
@@ -58,6 +59,13 @@ bool & Channel::getRequiresPass(){
 	return requiresPass;
 }
 
+bool Channel::isMember(Client* client){
+	std::map<Client*,bool>::iterator it = members.find(client);
+	if (it != members.end())
+		return true;
+	return false;
+}
+
 bool Channel::isOperator(Client* client){
 	std::map<Client*,bool>::iterator it = members.find(client);
 	if (it != members.end())
@@ -75,6 +83,10 @@ std::map<Client*, bool>& Channel::getMembers(){
 
 void Channel::setInviteOnly(bool flag){
 	isInviteOnly = flag;
+}
+
+bool & Channel::getInviteOnly(){
+	return isInviteOnly;
 }
 
 void Channel::setUserLimit(size_t newLimit){
