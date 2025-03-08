@@ -30,229 +30,13 @@ bool    Server::check_user(int i)
     send_reply(clients[i]->get_socket_fd(), msge);
     return false;
 }
-bool Server::channel_exists(const std::string& channelName){
-    return channelMap.find(channelName) != channelMap.end();
-}
-
-
-
-std::string Server::parse_join_input(const std::string &arg, size_t &start){
-    if (arg.empty() || (arg.front() != '#' && arg.front() != '&'))
-        throw std::runtime_error("args not formatted correctly");
-    size_t comma = arg.find(',' , start);
-    std::string chan = arg.substr(start, comma - start);
-    if (comma != std::string::npos)
-        start = comma + 1;
-    else
-        start = std::string::npos;
-    return chan;
-}
-
-std::string Server::parse_passwords(const std::string &passwords, size_t &start){
-    if (passwords.empty())
-        throw std::runtime_error("no passwords");
-    size_t comma = passwords.find(',' , start);
-    std::string pass = passwords.substr(start, comma - start);
-    if (comma != std::string::npos)
-        start = comma + 1;
-    else
-        start = std::string::npos;
-    return pass;
-}
-// check edge cases kayn chi 8 dial mode
-
-Client* Server::find_user(const std::string &user, int i, Channel *channel){
-    if (clients[i]->get_nick_name() == user)
-        puts("cant promote yourself"); // self promotion nono
-    else { // khasni n9lb 3lih fchannel
-        for (auto it = channel->getMembers().begin(); it != channel->getMembers().end(); it++){
-            if (it->first->get_nick_name() == user)
-                return it->first;
-        }
-    }
-    return NULL;// change this later
-}
-
-void Server::process_operation(char sign, const char &oper, int i, std::string &arg, Channel *channel){
-    if (oper == 'o'){
-        if (sign == '+'){
-            if (clients[i]->get_buffer_size() > 3){
-                // Client *newOp = find_user(clients[i]->get_cmd(3), i, channel);
-                Client *newOp = find_user(arg, i, channel);
-                channel->getMembers()[newOp] = true;
-                puts("he is now an operator");
-            }
-        }
-        else if (sign == '-'){
-            if (clients[i]->get_buffer_size() > 3){
-                // Client *removeOp = find_user(clients[i]->get_cmd(3), i, channel);
-                Client *removeOp = find_user(arg, i, channel);
-                channel->getMembers()[removeOp] = false;
-                puts("7aydna lih operator");
-            }
-        }
-    }
-    else if (oper == 'i'){
-        if (sign == '+')
-            channel->setInviteOnly(true);// replies ajmi
-        else if (sign == '-')
-            channel->setInviteOnly(false); //replies ajmi
-    }
-    else if (oper == 'l'){
-        if (sign == '+'){
-            if (clients[i]->get_buffer_size() > 3){
-                // std::string limit = clients[i]->get_cmd(3);
-                std::string limit = arg;
-	            std::stringstream ss(limit);
-	            long userLimit = 0;
-	            ss >> userLimit;
-	            if (!ss.fail() && ss.eof() && (userLimit < 0 || userLimit > 2147483647))
-                    puts("error number");
-                channel->setLimitSet(true);
-                channel->setUserLimit(userLimit);
-            }
-        }
-        else if (sign == '-'){
-            channel->setLimitSet(false);
-        }
-    }
-    else if (oper == 'k'){
-        if (sign == '+'){
-            if (clients[i]->get_buffer_size() > 3){
-                // std::string pass = clients[i]->get_cmd(3);
-                std::string pass = arg;
-                puts("here");
-                channel->setRequiresPass(true);
-                channel->setPass(pass);
-                channelAndPass[channel->getChannelName()] = pass;
-            }
-        }
-        else if (sign == '-'){
-            channel->setRequiresPass(false);
-            channel->setPass(""); // hmmmm tanchof wach blan
-        }
-    }
-    else if (oper == 't'){
-        if (sign == '+')
-            channel->setTopicFlag(true);
-        else if (sign == '-')
-            channel->setTopicFlag(false);
-    }
-        
-}
-
-bool Server::requiresArg(char sign, char oper){
-    return (sign == '+' && oper == 'o' || (sign == '-' && oper == 'o') || (sign == '+' && oper == 'l') || (sign == '+' && oper == 'k'));
-}
-
-void  Server::check_operations(const std::string &opers, int i, Channel *channel){
-    char modeSign = '+';
-    std::vector<std::pair<char, char> > operations;
-    std::vector<std::string> options;
-    if (opers.empty()){
-        // needmoreparams
-        return;
-    }
-    for (auto it = opers.begin(); it != opers.end(); it++){
-        if (*it == '+' || *it == '-')
-            modeSign = *it;
-        else if (modes.find(*it) != modes.end())
-            operations.push_back(std::make_pair(*it, modeSign));
-    }
-    std::cout << clients[i]->get_buffer_size() << '\n';
-    for (size_t j = 3; j < clients[i]->get_buffer_size(); j++) //  machi dima ghaykon idan hadchi mzl chwiya flawed
-        options.push_back(clients[i]->get_cmd(j));
-    for (auto it = operations.begin(); it != operations.end(); ){ // we dont increment here erase returns next valid iterator
-        if (requiresArg(it->second,it->first)){
-            try{
-                if (!options.empty()){
-                    std::string arg = options.front();
-                    options.erase(options.begin());
-                    process_operation(it->second, it->first, i, arg ,channel);
-                }
-            }
-            catch(std::exception &e){
-                std::cout << "ERROR: " << e.what() << std::endl;
-            }
-            it = operations.erase(it); // we should always erase not just inside the try block
-            // 7it la t throwat exception l iterator aywli invalid
-        }
-        else{
-            process_operation(it->second, it->first, i, options.front(), channel); // sawb function khra lhadok li may7tajoch args
-            it++;
-        }
-    }
-}
-
 void    Server::change_nick_name(int i)
 {
     parse_nick(i);
     //broadcast to all channels
 }
 
-void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
-    if (channelMap[chan]->getInviteOnly()
-        && !channelMap[chan]->isOperator(sender)){
-            //ERR_CHANOPRIVSNEEDED
-            return;
-    }
-    Client *cinvited = NULL;
-    for (auto it = clients.begin(); it != clients.end(); it++){
-        if ((*it)->get_nick_name() == invited){
-            cinvited = *it;
-            break;
-        }
-    }
-    if (!cinvited){
-        puts("no such nick err");
-        return;
-    }
-    auto iter = channelMap.find(chan);
-    if (iter != channelMap.end()){
-        auto member = iter->second->getMembers().find(cinvited);
-        if (member != iter->second->getMembers().end()){
-            puts("already a member of the channel");
-            return;
-        }
-    }
-    // ila kan already fdik channel
-    std::string msg = server_prefix + " you're invited to join the channel\n";
-    // send_reply(clientsget_socket_fd(), msg);
-// channel makaynch - user makaynch fdik channel
-// invite message
-// mat invitich rask
-}
-Client* Server::find_client(std::string &tokick){
-    for (int i = 0; i < clients.size(); i++){
-        if (clients[i]->get_nick_name() == tokick)
-            return clients[i];
-    }
-    return NULL;
-}
-// maykikich raso
-// checki wach khona mod
-// wach kicked valid user 
-bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
-    if (kicked.empty() || chan.empty())
-        return false; // appropriate error
-    if (oper->get_nick_name() == kicked){
-        puts("can't kick yourself");
-        return false;
-    }
-    Client *toKick = NULL;
-    toKick = find_client(kicked);
-    if (!toKick){
-        puts("client makaynch");
-        return false;
-    }
-    // segv here when user changes his nick after logging in
-    if (!channelMap[chan]->isMember(oper) || !channelMap[chan]->isOperator(oper) || !channelMap[chan]->isMember(toKick)){
-        puts("machi operator || machi member dak lighaytkicka");
-        return false;
-    }
-    channelMap[chan]->removeMember(toKick);
-    puts("kicked");
-}
+
 // when we change the nick kan3tabro b7ala user jdid 
 // bghiti tkhdm bl exceptions khs dir try catch ajmi
 void    Server::handle_cmd_1(int i)
@@ -261,174 +45,66 @@ void    Server::handle_cmd_1(int i)
     clients[i]->parse_command();
     std::string input = clients[i]->get_cmd(0);
     toLower(input);
+    Client &client = *clients[i];
+    size_t buffer_size = clients[i]->get_buffer_size();
     if (input == "nick")
         change_nick_name(i);
     else if (input == "privmsg")
     {
-        if (clients[i]->get_buffer_size() == 1)
+        if (buffer_size == 1)
         {
-            msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\n";
-            send_reply(clients[i]->get_socket_fd(), msge);
-            clients[i]->reset();
+            msge = server_prefix + "411 " + client.get_nick_name() + " :No recipient given (PRIVMSG)\n";
+            send_reply(client.get_socket_fd(), msge);
+            client.reset();
             return ;
         }
-        if (clients[i]->get_buffer_size() == 2)
+        if (buffer_size == 2)
         {
-            msge = server_prefix + "412 " + clients[i]->get_nick_name() + " :No text to send\n";
-            send_reply(clients[i]->get_socket_fd(), msge);
-            clients[i]->reset();
+            msge = server_prefix + "412 " + client.get_nick_name() + " :No text to send\n";
+            send_reply(client.get_socket_fd(), msge);
+            client.reset();
             return ;
         }
         if (!check_user(i))
         {
-            clients[i]->reset();
+            client.reset();
             return ;
         }
         handle_prv_msge(i);
     }
     // join &chan || join #chan not the same thing
     else if (input == "join"){ // tolower w compari
-        if (clients[i]->get_buffer_size() < 2){
-            clients[i]->reset();
+        if (buffer_size < 2){
+            client.reset();
             return;
         }
-        std::string channels = clients[i]->get_cmd(1);
-        if (clients[i]->get_buffer_size() > 2){
-            std::string pass = clients[i]->get_cmd(2);
-            extract_channels(channels, pass);
-            // for (auto it= channelAndPass.begin();it != channelAndPass.end();it++){ debugging channel name key
-            //     std::cout << "name:" << it->first << " pass: " << it->second << '\n';
-            // }
+        join_handler(client);
+    }
+    else if (input == "mode"){
+		if (buffer_size < 3)
+			return;
+        mode_handler(client);
+    }
+    // chi user 3ndo smia dial chi channel anfr9 binathom b #
+    else if (input == "invite"){
+        if (buffer_size < 3 || !check_user(i)){
+            client.reset();
+            return ;
         }
-        else
-            extract_channels(channels, "");
-        auto it = channelAndPass.begin();
-        while (it != channelAndPass.end()){  // i can use a for loop bla increment ghir khasni n3rf imta n erasi w imta la
-				// 7iyd lprefix hna w hni rask bach matb9ach dirha kola mra => lblan dial &chan #chan makit7sboch kifkif
-			std::string channelName = it->first;
-            // std::cout << channelName << " channel name is" << '\n';
-            if (!channelName.empty() && channel_exists(channelName) == false){
-	            create_channel(channelName, clients[i]);
-            }
-            else if (channel_exists(channelName) == true){ // check invite only !!!!!!!
-				if (channelMap[channelName]->getRequiresPass() == true){
-                    if (channelMap[channelName]->getPass() == it->second)
-                        append_user_to_channel(channelMap[channelName], clients[i]);// 9waada hna kfch member
-                    else // reply dial you need a password
-                    {
-                        // std::cout << "pass entered was " << it->second << '\n';
-                        // std::cout << "it was compared with" << channelMap[channelName]->getPass() << '\n';
-                        puts("pass incorrect");
-                    }
-                }
-                else
-                    append_user_to_channel(channelMap[channelName] ,clients[i]); // ila makanch already member
-                }
-                it = channelAndPass.erase(it);
-			}
-        }
-        else if (input == "mode"){
-			if (clients[i]->get_buffer_size() < 3)
-				return;
-            std::string chan = clients[i]->get_cmd(1);
-                // check if channel valid and user has operator role fdik channel
-            if (channel_exists(chan) == true){
-                if (channelMap[chan]->isOperator(clients[i]) == true){
-					// what operation
-					std::string oper = clients[i]->get_cmd(2);
-                    check_operations(oper, i, channelMap[chan]);
-					// ERR_UNKNOWNMODE
-				}
-				else
-					puts("no permission to perform hadchi");
-            }
-            else{
-                puts("channel doesn't exist");
-            }
-        }
-        // chi user 3ndo smia dial chi channel anfr9 binathom b #
-        else if (input == "INVITE"){
-            if (clients[i]->get_buffer_size() < 3 || !check_user(i)){
-                clients[i]->reset();
-                return ;
-            }
-            std::string invited = clients[i]->get_cmd(1);
-            std::string chan = clients[i]->get_cmd(2);
-            invite_user(invited, clients[i], chan);
-        }
-        else if (input == "TOPIC"){
-            if (clients[i]->get_buffer_size() < 2) // needmoreparams
-                return;
-            else if (clients[i]->get_buffer_size() == 2){
-                std::string name = clients[i]->get_cmd(1);
-                std::string msg = channelMap[name]->getTopic();
-                if (msg.empty()){
-                    puts("no topic set");
-                    return;
-                }
-	            send(clients[i]->get_socket_fd(), msg.c_str(), msg.length(), 0);
-                return;
-            }
-            std::vector<std::string> vec = clients[i]->get_cmd_buffer();
-            auto it = std::find(vec.begin(), vec.end(), ":");
-            if (it != vec.end()){
-                it++;
-            std::string name = clients[i]->get_cmd(1);
-            while (it != vec.end()){
-                channelMap[name]->getTopic() + *it + ' ';
-                it++;
-            }
-            std::string topic = channelMap[clients[i]->get_cmd(1)]->getTopic();
-            topic[topic.length() - 1] = '\0';
-            channelMap[clients[i]->get_cmd(1)]->setTopic(topic);
-            std::cout << "topic set" << '\n';
-            return;
-            }
-            size_t pos = clients[i]->get_buffer().find(':');
-            if (pos != std::string::npos){
-                std::string topic = clients[i]->get_buffer().substr(pos + 1, clients[i]->get_buffer().length() - pos - 2); // tatbdl hadchi
-                std::cout << "topic is " << topic << '\n';
-    // khs topic ndiro lfo9 bach fga3 l7alat nreturnih
-            }
-            else
-                std::string topic = clients[i]->get_cmd(2);
-        }
-        else if (input == "kick"){
-            if (clients[i]->get_buffer_size() < 3){
-                // need more params
-                return;
-            }
-            else if (clients[i]->get_buffer_size() == 3){
-                std::string chan = clients[i]->get_cmd(1);
-                std::string kicked = clients[i]->get_cmd(2);
-                kick_user(clients[i], kicked, chan);
-                // print_reason ansawbha wnwli ncalliha
-            }
-            else if (clients[i]->get_buffer_size() > 3){
-                std::vector<std::string> vec = clients[i]->get_cmd_buffer();
-                auto it = std::find(vec.begin(), vec.end(), ":");
-                if (it != vec.end()){
-                    it++;
-                    std::string reason;
-                    while (it != vec.end()){
-                        reason += *it + ' ';
-                        it++;
-                    }
-                    size_t pos = clients[i]->get_buffer().find(':');
-                    if (pos != std::string::npos){
-                        std::string reason = clients[i]->get_buffer().substr(pos + 1, clients[i]->get_buffer().length() - pos - 2);
-                    }
-                    else
-                        std::string reason = clients[i]->get_cmd(2);
-                }
-            }
-        }
+        std::string invited = client.get_cmd(1);
+        std::string chan = client.get_cmd(2);
+        invite_user(invited, &client, chan);
+    }
+        else if (input == "topic")
+            topic_handler(client, buffer_size);
+        else if (input == "kick")
+            kick_handler(client, buffer_size);
     else if (input != "pong" && input != "PONG" )
     {
-        msge = server_prefix + "421 " + clients[i]->get_cmd(0) +  ": unkown command\n";
-        send_reply(clients[i]->get_socket_fd(), msge);
+        msge = server_prefix + "421 " + client.get_cmd(0) +  ": unkown command\n";
+        send_reply(client.get_socket_fd(), msge);
     }
-    clients[i]->reset();
+    client.reset();
 }
 
 //vector 
@@ -449,3 +125,4 @@ void    Server::handle_cmd_1(int i)
 // pk makhdamach
 
 // check if its a member of the channel before checking if it has a password
+

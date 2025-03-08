@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-Client::Client() : pass(false) , _nick(false), user(false), _msg(false), _disconnected(true)
+Client::Client() : _msg(false),_nick(false), pass(false), user(false), _disconnected(true)
 {
     addr_len = sizeof(socket_addr); 
     memset(&socket_addr, 0, addr_len);
@@ -55,7 +55,7 @@ std::string &Client::get_cmd(int i)
     return _command_buffer[i];
 }
 
-int Client::get_buffer_size() const
+size_t Client::get_buffer_size() const
 {
     return _command_buffer.size();
 }
@@ -150,7 +150,7 @@ void Client::set_user_infos()
     host_name = _command_buffer[2];
     std::string r_name ;
     server_name = _command_buffer[3];
-    for (int i = 4; i < _command_buffer.size();i++)
+    for (size_t i = 4; i < _command_buffer.size();i++)
         r_name += _command_buffer[i] + ' ';
     real_name = r_name;
     user = true;

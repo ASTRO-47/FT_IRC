@@ -45,6 +45,7 @@ void Server::parse_nick(int i)
                 msge = clients[i]->get_nick_name() + "!@ NICK :" + clients[i]->get_cmd(1) + '\n';
                 send_reply(clients[i]->get_socket_fd(), msge);
                 // send info to all the joined channels that the nik is changed
+                // hna
             }
             clients[i]->set_nick_name();
         }

@@ -29,7 +29,7 @@ public:
     bool            check_all() const;
     void            disconnected();
     bool            check_pass() const;
-    int             get_buffer_size() const;
+    size_t             get_buffer_size() const;
     std::string&    get_cmd(int);
     std::vector<std::string>& get_cmd_buffer();
     void            parse_command();
