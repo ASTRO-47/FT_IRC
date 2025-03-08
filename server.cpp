@@ -65,7 +65,7 @@ void Server::server_setup(std::string _port, std::string passwd)
         close (server_socket);
         throw std::runtime_error("listen failed"); // try to print the errno
     }
-    Client* poll_server = new Client();
+    Client* poll_server = new Client(); // throwed exc will catched in the main and the program wont start
     poll_server->add_server_to_poll(server_socket);
     clients.push_back(poll_server);
     _poll_fds.push_back(poll_server->get_socket_struct());
@@ -74,20 +74,20 @@ void Server::server_setup(std::string _port, std::string passwd)
 
 void    Server::handle_new_client()
 {
-    Client *new_client = new Client;
+    Client *new_client = NULL;
     try
     {
+        new_client = new Client;
         new_client->connect(server_socket);
+        clients.push_back(new_client); // add the client to the vector
+        _poll_fds.push_back(new_client->get_socket_struct());
+        std::cout << "Client connected, on fd: "  << new_client->get_socket_fd() << "\r\n";
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
         delete new_client;
-        return ;
     }
-    clients.push_back(new_client); // add the client to the vector
-    _poll_fds.push_back(new_client->get_socket_struct());
-    std::cout << "Client connected, on fd: "  <<  new_client->get_socket_fd()  << "\r\n";
 }
 
 void Server::handle_event_fd(int i)
@@ -108,9 +108,15 @@ void Server::handle_event_fd(int i)
         if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
             throw std::runtime_error("server stoped by a client request");
         if (clients[i]->cmd_end() && !clients[i]->check_all())
-            handle_cmd(i);
+        {
+            while (clients[i]->get_buffer().length()) // split the request to handle bot connection
+                handle_cmd(i);
+        }
         else if (clients[i]->cmd_end())
-            handle_cmd_1(i);
+        {
+            while (clients[i]->get_buffer().length())
+                handle_cmd_1(i);
+        }
     }
 }
 

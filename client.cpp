@@ -82,7 +82,11 @@ void    Client::add_message(std::string m)
 
 void Client::parse_command()
 {
-    std::stringstream ss(_buffer);
+    int pos = _buffer.find("\r\n");
+    std::string test = _buffer.substr(0, pos);
+    // std::cout << "test :"<< test << ']' << std::endl;
+    // std::cout << "what still in buffer :"<< _buffer << ']' << std::endl;exit (0);
+    std::stringstream ss(test);
     std::string command;
     
     while (std::getline(ss, command, ' ')) 
@@ -91,8 +95,10 @@ void Client::parse_command()
         if (!trimmed.empty())
             _command_buffer.push_back(trimmed);
     }
+    _buffer = _buffer.substr(pos + 2, _buffer.length() + 1);
+    // std::cout << "buffer : " << _buffer << std::endl;
     // std::cout << _buffer << ']' << std::endl;
-    // debug printing
+    // debug printing   
     // std::cout << '[';
     // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
     //     std::cout << *it << "," ;

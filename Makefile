@@ -2,11 +2,15 @@
 
 CPPC = c++ -std=c++98 -g -fsanitize=address
 
-SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp
+SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp broadcast.cpp
+B_SOURCES =	 BONUS/bot.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
+B_OBJECTS = $(B_SOURCES:.cpp=.o)
 
+BONUS = bot
 NAME = ircserv
 HEADERS = Makefile server.hpp client.hpp Channel.hpp
+B_HEADERS = BONUS/bot.hpp
 RM = rm -f
 #anssi Colors:
 GREEN       = \e[38;5;118m
@@ -22,6 +26,13 @@ all : $(NAME)
 $(NAME): $(OBJECTS)
 	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(NAME)... $(RESET)\r\n"
 	@$(CPPC) $(FLAGS) $(OBJECTS) -o $(NAME)
+	@printf "$(GREEN)    - Executable ready.\n$(RESET)"
+
+bonus: $(BONUS)
+
+$(BONUS) : $(B_OBJECTS)
+	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(BONUS)... $(RESET)\r\n"
+	@$(CPPC) $(FLAGS) $(B_OBJECTS) -o $(BONUS)
 	@printf "$(GREEN)    - Executable ready.\n$(RESET)"
 
 clean:

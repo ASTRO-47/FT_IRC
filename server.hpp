@@ -64,6 +64,7 @@ class Server
         bool                         check_nick_name(int);
         bool                         check_command(int);
         void                         handle_quit_cmd(int);
+        void                         broadcast_msge(std::string);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

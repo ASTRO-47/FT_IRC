@@ -5,14 +5,8 @@ void Server::handle_prv_msge(int i)
 {
     clients[i]->trim_message();
     std::string msge = ":" + clients[i]->get_nick_name() +"!~" + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + "\r\n";
-    // clients[i]->get_reciever()
     send_reply(clients[i]->get_reciever()->get_socket_fd(), msge);
 }
-
-// void Server::send_private_message(int i, std::string msge)
-// {
-//     send_reply(clients[i]->get_socket_fd(), msge);
-// }
 
 bool    Server::check_user(int i)
 {
