@@ -36,11 +36,11 @@ $(BONUS) : $(B_OBJECTS)
 	@printf "$(GREEN)    - Executable ready.\n$(RESET)"
 
 clean:
-	@$(RM) $(OBJECTS)
+	@$(RM) $(OBJECTS) $(B_OBJECTS)
 	@printf "$(YELLOW)    - objects removed.$(RESET)\r\n"
 	
 fclean: clean
-	@$(RM) $(NAME)
+	@$(RM) $(NAME) $(BONUS)
 	@printf "$(YELLOW)    - Executable removed.$(RESET)\r\n"
 
 re : fclean all

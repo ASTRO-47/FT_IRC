@@ -19,14 +19,17 @@
 class Bot
 {
 private:
-    int                 _port;
-    std::string         _ip;
-    std::string         _nick;
-    std::string         _pass;
-    std::string         _user;
-    int                 _socket;
-    sockaddr_in         _addr;
+    int                         _port;
+    std::string                 _ip;
+    std::string                 _nick;
+    std::string                 _pass;
+    std::string                 _user;
+    int                         _socket;
+    sockaddr_in                 _addr;
+    std::vector<std::string>    _jokes;
+    std::string                 random_joke();
 public:
+    Bot();
     void                parse(char **av);
     void                _connect();
 } ;

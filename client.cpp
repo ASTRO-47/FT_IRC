@@ -80,39 +80,55 @@ void    Client::add_message(std::string m)
     __poll.revents = POLLOUT;
 }
 
+void    Client::set_buffer(std::string _m)
+{
+    _second_buffer = _m;
+}
+
+void Client::clear_buffer()
+{
+    _second_buffer.clear();
+}
+
 void Client::parse_command()
 {
     int pos = _buffer.find("\r\n");
+    if (pos < 0)
+        pos = _buffer.find("\n");
     std::string test = _buffer.substr(0, pos);
     // std::cout << "test :"<< test << ']' << std::endl;
     // std::cout << "what still in buffer :"<< _buffer << ']' << std::endl;exit (0);
     std::stringstream ss(test);
     std::string command;
-    
+
     while (std::getline(ss, command, ' ')) 
     {
         std::string trimmed = trim(command);
         if (!trimmed.empty())
             _command_buffer.push_back(trimmed);
     }
-    _buffer = _buffer.substr(pos + 2, _buffer.length() + 1);
-    // std::cout << "buffer : " << _buffer << std::endl;
+    // std::cout << pos << "]" << std::endl;
+    // std::cout << _buffer.length() << "]" << std::endl;
+    if (pos == _buffer.length() - 1)
+        _buffer.clear();
+    else
+    if (pos != _buffer.length() - 1)
+        _buffer = _buffer.substr(pos + 2, _buffer.length());
+    // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
     // std::cout << _buffer << ']' << std::endl;
-    // debug printing   
+    // debug printing 
     // std::cout << '[';
     // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
     //     std::cout << *it << "," ;
     // std::cout << ']' << std::endl;
+    // exit (0);
 }
 
 void    Client::send_buffer()
 {
-    // while (1)
-    // {
-        send(client_socket, replys[0].c_str(), replys[0].length(),  0);
-        replys.pop_back();
-        
-    // }
+    send(client_socket, replys[0].c_str(), replys[0].length(),  0);
+    replys.pop_back();
+
 }
 
 void Client::append_buffer(std::string res)
@@ -151,7 +167,7 @@ bool Client::check_all() const
 
 void Client::reset()
 {
-    _buffer.clear();
+    // _buffer.clear();
     _command_buffer.clear();
     _message.clear();
 }
@@ -166,9 +182,9 @@ void Client::wrong_pass()
     pass = false;
 }
 
-void Client::set_nick_name()
+void Client::set_nick_name(std::string _n)
 {
-    nick  = _command_buffer[1]; // take one or more ??
+    nick  = _n; // take one or more ??
     _nick = true;
     first = true;
 }
@@ -230,11 +246,12 @@ void Client::trim_message()
         _message[_message.length() - 1] = '\0';
         return ;
     }
-    size_t pos = _buffer.find(':');
+    size_t pos = _second_buffer.find(':');
     if (std::string::npos != pos)
     {
-        _message = _buffer.substr(pos + 1, _buffer.length() - pos - 2);
-        // std::cout << _message << ']' << std::endl;
+        puts("hello");
+        _message = _second_buffer.substr(pos + 1, _second_buffer.length() - pos - 2);
+        std::cout << _message << ']' << std::endl;
     }
     else
     {

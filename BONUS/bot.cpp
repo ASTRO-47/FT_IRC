@@ -1,10 +1,23 @@
 #include "bot.hpp"
 
+Bot::Bot()
+{
+    _jokes.push_back("Why don’t skeletons fight each other? They don’t have the guts!");
+    _jokes.push_back("I told my wife she should embrace her mistakes. She gave me a hug.");
+    _jokes.push_back("Parallel lines have so much in common. It’s a shame they’ll never meet.");
+    _jokes.push_back("Why was the math book sad? It had too many problems.");
+    _jokes.push_back("Why don’t programmers like nature? It has too many bugs.");
+    _jokes.push_back("I told my computer I needed a break, and now it won’t stop sending me vacation ads.");
+    _jokes.push_back("Why do cows have hooves instead of feet? Because they lactose.");
+    _jokes.push_back("I asked the librarian if the library had any books on paranoia. She whispered, 'They're right behind you...'");
+    _jokes.push_back("What did the big flower say to the little flower? 'Hey, bud!'");
+    _jokes.push_back("Why did the scarecrow win an award? Because he was outstanding in his field!");
+}
 
 void Bot::parse(char **av)
 {
     _port = 8080;
-    _nick = "nick bot\r\n";
+    _nick = "nick my_irc_bot_22112003\r\n";
     _user = "user\r\n";
     _pass = "pass hello\r\n";
 }
@@ -25,15 +38,16 @@ void    Bot::_connect()
     while (1) 
     {
         char buffer[1024] = {0};
-        int bytesReceived = recv(_socket, buffer, sizeof(buffer), 0);
-        if (bytesReceived < 0) 
+        int bytes = recv(_socket, buffer, sizeof(buffer), 0);
+        if (bytes < 0) 
         {
             // Handle disconnection or error
             std::cerr << "Connection lost, attempting to reconnect..." << std::endl;
             close(_socket);
             _connect(); // Attempt to reconnect
         }
-        std::cout << buffer;
+        buffer[bytes] = '\0'; // /urandom error
+        // std::cout << buffer;
         // if (buffer == "bot\n")
         // {
         //     send(_socket, "hello from bot", 15, 0);

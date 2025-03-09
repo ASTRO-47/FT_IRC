@@ -1,19 +1,10 @@
 #include "server.hpp"
 
-Server::Server() 
+Server::Server() : bot_status(false)
 {
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
+    
 }
-
-// bool check_numeric(std::string m)
-// {
-//     for (size_t i = 0; i , m.length();i++)
-//     {
-//         if (!std::isdigit(m[i]))
-//             return false;
-//     }
-//     return true;
-// }
 
 void    Server::registration_msge(int i)
 {
@@ -22,8 +13,8 @@ void    Server::registration_msge(int i)
     std::string message = 
             ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\r\n"
             ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\r\n"
-            ":ft_irc 254 " + nick + " :channels formed\r\n"
-            ":ft_irc 255 " + nick + " :We have 1 clients\r\n";
+            ":ft_irc 254 " + nick + " :channels formed\r\n" // add number of channels
+            ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients\r\n";
     std::string motd = 
         ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
         ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
@@ -42,7 +33,7 @@ void Server::server_setup(std::string _port, std::string passwd)
 {
     password = passwd;
     char *checker = NULL;
-    port = std::strtod(_port.c_str(), &checker);
+    port = std::strtod(_port.c_str(), &checker); // handle 0
     if (checker[0] != '\0')
         throw std::runtime_error("invalid port format");
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
@@ -105,18 +96,27 @@ void Server::handle_event_fd(int i)
     {
         buffer[bytes] = '\0'; // trim the new line at the end
         clients[i]->append_buffer(buffer);
-        if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
-            throw std::runtime_error("server stoped by a client request");
+        // if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
+        //     throw std::runtime_error("server stoped by a client request");
+        // std::cout << clients[i]->get_buffer() << std::endl;
+        clients[i]->set_buffer(buffer);
         if (clients[i]->cmd_end() && !clients[i]->check_all())
         {
             while (clients[i]->get_buffer().length()) // split the request to handle bot connection
+            {
                 handle_cmd(i);
+                clients[i]->reset();
+            }
         }
         else if (clients[i]->cmd_end())
         {
             while (clients[i]->get_buffer().length())
+            {
                 handle_cmd_1(i);
+                clients[i]->reset();
+            }
         }
+        clients[i]->clear_buffer();
     }
 }
 
@@ -145,7 +145,6 @@ void Server::multiplexing_func()
                 else
                     handle_event_fd(i);
             }
-            clients[i]->reset();
         }
     }
 }

@@ -26,6 +26,8 @@ private:
     std::string                     _ip;
     bool                            first;
     std::vector<std::string>        replys;
+    bool                            _end_msge;
+    std::string                     _second_buffer;
 public:
     Client();
     size_t                         get_replys_size();
@@ -44,7 +46,7 @@ public:
     std::string                    get_buffer() const;
     void                           correct_pass();
     void                           wrong_pass();
-    void                           set_nick_name();
+    void                           set_nick_name(std::string);
     std::string                    get_nick_name() const; 
     void                           reset();
     void                           showed_messgae();
@@ -61,6 +63,8 @@ public:
     std::string                    get_ip() const;
     void                            add_message(std::string);
     bool                            check_first_nick();
-    void                            send_buffer();                    
+    void                            send_buffer();
+    void                            set_buffer(std::string);             
+    void                            clear_buffer();             
     ~Client();
 } ;

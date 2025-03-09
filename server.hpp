@@ -24,6 +24,8 @@ class Channel;
 class Server
 {
     private:
+        int                          bot_fd;
+        bool                         bot_status;
         std::vector<Client *>        clients;
         std::string                  message;
         std::string                  _draw;
@@ -65,6 +67,7 @@ class Server
         bool                         check_command(int);
         void                         handle_quit_cmd(int);
         void                         broadcast_msge(std::string);
+        void                         handle_bot_cmd(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

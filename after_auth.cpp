@@ -141,19 +141,31 @@ void    Server::handle_quit_cmd(int i)
     clients[i]->disconnected();
 }
 
+void    Server::handle_bot_cmd(int i)
+{
+    if (!bot_status)
+    {
+        std::string msge = "bot not activated yet\n";
+        // send_reply(clients[i]->get_socket_fd(), "")
+    }
+}
+
 bool Server::check_command(int i)
 {
     std::string msge;
 
+    if (clients[i]->get_buffer() == "!joke")
+    {
+        // return (handle_bot_cmd(i), true)
+    }
     if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
         return (change_nick_name(i), true);
     else if (clients[i]->get_cmd(0) == "privmsg" || clients[i]->get_cmd(0) == "PRIVMSG")
     {
         if (clients[i]->get_buffer_size() == 1)
         {
-            msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\r\n";
+            msge = server_prefix + "411 " + clients[i]->get_nick_name() + " :No recipient given (PRIVMSG)\r\n"; // need to fix something  in parsing
             send_reply(clients[i]->get_socket_fd(), msge);
-            clients[i]->reset();
             return true;
         }
         if (clients[i]->get_buffer_size() == 2)
@@ -237,7 +249,6 @@ void    Server::handle_cmd_1(int i)
         msge = server_prefix + "421 " + clients[i]->get_cmd(0) +  ": unkown command\r\n";
         send_reply(clients[i]->get_socket_fd(), msge);
     }
-    clients[i]->reset();
 }
 
 
