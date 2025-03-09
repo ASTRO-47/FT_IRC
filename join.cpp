@@ -2,7 +2,7 @@
 #include "Channel.hpp"
 
 bool Server::channel_exists(const std::string& channelName){
-    return channelMap.find(channelName) != channelMap.end();
+    return channelMap.find(channelName.substr(1)) != channelMap.end();
 }
 
 std::string Server::parse_join_input(const std::string &arg, size_t &start){
@@ -49,7 +49,7 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
 
 void Server::create_channel(const std::string& channelName, Client *creator){
     Channel *newChannel = new Channel(channelName, creator);
-    channelMap[channelName] = newChannel;
+    channelMap[channelName.substr(1)] = newChannel;
     return;
 }
 
@@ -67,36 +67,32 @@ void Server::append_user_to_channel(Channel *channel, Client *newMember){
 
 void Server::join_handler(Client &client){
     std::string channels = client.get_cmd(1);
-    if (client.get_buffer_size() > 2){
-        std::string pass = client.get_cmd(2);
-        extract_channels(channels, pass);
-        // for (auto it= channelAndPass.begin();it != channelAndPass.end();it++){ debugging channel name key
-        //     std::cout << "name:" << it->first << " pass: " << it->second << '\n';
-        // }
-    }
+    std::string pass;
+    if (client.get_buffer_size() > 2)
+        pass = client.get_cmd(2);
     else
-        extract_channels(channels, "");
+        pass = "";
+    extract_channels(channels, pass);
     std::map<std::string, std::string>::iterator it = channelAndPass.begin();
-    while (it != channelAndPass.end()){  // i can use a for loop bla increment ghir khasni n3rf imta n erasi w imta la
-			// 7iyd lprefix hna w hni rask bach matb9ach dirha kola mra => lblan dial &chan #chan makit7sboch kifkif
+    // i can use a for loop bla increment ghir khasni n3rf imta n erasi w imta la
+    while (it != channelAndPass.end()){
 		std::string channelName = it->first;
-        // std::cout << channelName << " channel name is" << '\n';
-        if (!channelName.empty() && channel_exists(channelName) == false){
-	        create_channel(channelName, &client);
+        std::string password = it->second;
+        if (channelName.empty()){
+            it++;
+            continue;
         }
-        else if (channel_exists(channelName) == true){ // check invite only !!!!!!!
-			if (channelMap[channelName]->getRequiresPass() == true){
-                if (channelMap[channelName]->getPass() == it->second)
-                    append_user_to_channel(channelMap[channelName], &client);// 9waada hna kfch member
-                else // reply dial you need a password
-                {
-                    // std::cout << "pass entered was " << it->second << '\n';
-                    // std::cout << "it was compared with" << channelMap[channelName]->getPass() << '\n';
-                    puts("pass incorrect");
-                }
-            }
+        bool exists = channel_exists(channelName);
+        if (!exists)
+	        create_channel(channelName, &client);
+        else {
+            Channel* channel = channelMap[channelName.substr(1)];
+            if (channel->getInviteOnly() && !client.isInvited(channelName))
+                send_reply(client.get_socket_fd(), ERR_INVITEONLYCHAN(client.get_nick_name(),channelName));
+			else if (channel->getRequiresPass() && channel->getPass() != password)
+                send_reply(client.get_socket_fd(), ERR_BADCHANNELKEY(client.get_nick_name(), channelName));
             else
-                append_user_to_channel(channelMap[channelName] , &client); // ila makanch already member
+                append_user_to_channel(channel, &client);
             }
             it = channelAndPass.erase(it);
 		}

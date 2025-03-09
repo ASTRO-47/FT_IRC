@@ -150,7 +150,7 @@ void Client::set_user_infos()
     host_name = _command_buffer[2];
     std::string r_name ;
     server_name = _command_buffer[3];
-    for (size_t i = 4; i < _command_buffer.size();i++)
+    for (size_t i = 4; i < get_buffer_size() ;i++)
         r_name += _command_buffer[i] + ' ';
     real_name = r_name;
     user = true;
@@ -231,4 +231,20 @@ void Client::set_reciever(Client* _rec)
 Client::~Client()
 {
     // close (client_socket);
+}
+
+std::vector<std::string>& Client::getInvitedChannels(){
+    return invitedChannels;
+}
+
+void Client::appendInvitedChannels(std::string invitedTo){
+    invitedChannels.push_back(invitedTo);
+}
+
+
+bool Client::isInvited(std::string &chan){
+    std::vector<std::string>::iterator it = std::find(invitedChannels.begin(), invitedChannels.end(), chan);
+    if (it != invitedChannels.end())
+        return true;
+    return false;
 }

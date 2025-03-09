@@ -17,6 +17,7 @@
 #include <set>
 #include <sstream>
 #include "utils.hpp"
+#include "replies.hpp"
 
 class Client;
 class Channel;

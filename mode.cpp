@@ -20,7 +20,7 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
         else if (modes.find(*it) != modes.end())
             operations.push_back(std::make_pair(*it, modeSign));
     }
-    std::cout << client.get_buffer_size() << '\n';
+    // std::cout << client.get_buffer_size() << '\n';
     for (size_t j = 3; j < client.get_buffer_size(); j++) //  machi dima ghaykon idan hadchi mzl chwiya flawed
         options.push_back(client.get_cmd(j));
     for (std::vector<std::pair<char, char> >::iterator it = operations.begin(); it != operations.end(); ){ // we dont increment here erase returns next valid iterator
@@ -49,10 +49,10 @@ void Server::mode_handler(Client &client){
 	std::string chan = client.get_cmd(1);
     // check if channel valid and user has operator role fdik channel
     if (channel_exists(chan) == true){
-        if (channelMap[chan]->isOperator(&client) == true){
+        if (channelMap[chan.substr(1)]->isOperator(&client) == true){
 		// what operation
 		std::string oper = client.get_cmd(2);
-            check_operations(oper, client, channelMap[chan]);
+            check_operations(oper, client, channelMap[chan.substr(1)]);
 		// ERR_UNKNOWNMODE
 	}
 	else

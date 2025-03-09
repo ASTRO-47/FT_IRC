@@ -22,6 +22,7 @@ private:
     std::string                     _message;
     Client                          *_reciever;
     bool                            _disconnected;
+    std::vector<std::string>        invitedChannels;
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
 public:
@@ -55,8 +56,10 @@ public:
     void            set_reciever(Client *);
     Client*         get_reciever() const;
     bool            check_connection();
-    std::string get_hostname() const;
-    std::string get_ip() const;
-
+    std::string     get_hostname() const;
+    std::string     get_ip() const;
+    std::vector<std::string> & getInvitedChannels();
+    void        appendInvitedChannels(std::string );
+	bool isInvited(std::string &);
     ~Client();
 } ;

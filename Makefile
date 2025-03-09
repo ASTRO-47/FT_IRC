@@ -6,7 +6,7 @@ SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.
 OBJECTS = $(SOURCES:.cpp=.o)
 
 NAME = ircserv
-HEADERS = Makefile server.hpp client.hpp Channel.hpp utils.hpp
+HEADERS = Makefile server.hpp client.hpp Channel.hpp utils.hpp replies.hpp
 RM = rm -f
 #anssi Colors:
 GREEN       = \e[38;5;118m

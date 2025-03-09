@@ -11,7 +11,7 @@ Channel::Channel(std::string ChannelName, Client* Creator){
 	topic = "";
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
 	// setOperator(Creator, true);
-	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + name + "\n"; 
+	std::string msg = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + name + "\r\n"; 
 	// std::string msg2 = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + ChannelName + " +t" + "\n"; 
 	// setTopic("");
 	//rpl topic 332 && RPL_NAMREPLY 353 && ENDOFNAMES 366

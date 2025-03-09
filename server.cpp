@@ -25,19 +25,19 @@ void    Server::registration_msge(int i)
     std::string nick = clients[i]->get_nick_name();
     taken_nick_name(i);
     std::string message = 
-            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\n"
-            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\n"
-            ":ft_irc 254 " + nick + " :channels formed\n"
-            ":ft_irc 255 " + nick + " :We have 1 clients\n";
+            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\r\n"
+            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\r\n"
+            ":ft_irc 254 " + nick + " :channels formed\r\n"
+            ":ft_irc 255 " + nick + " :We have 1 clients\r\n";
     std::string motd = 
-        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \n"
-        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\n"
-        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \n"
-        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \n"
-        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \n"
-        ":ft_irc 372 " + nick + " :-          |_____|                                     \n"
-        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\n"
-        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\n";
+        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
+        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
+        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
+        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
+        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
+        ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
+        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
+        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
     message += motd;
     send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
     clients[i]->showed_messgae();
@@ -97,7 +97,7 @@ void    Server::handle_new_client()
 
 void Server::handle_event_fd(int i)
 {
-    char buffer[500]; // change this later
+    char buffer[500] = {0};
     int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
     // if (bytes <= 0)
     // {
@@ -112,7 +112,7 @@ void Server::handle_event_fd(int i)
     {
         buffer[bytes] = '\0'; // trim the new line at the end
         clients[i]->append_buffer(buffer);
-        if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
+        if (!strcmp(clients[i]->get_buffer().c_str(), "halt\r\n"))
             throw std::runtime_error("server stoped by a client request");
         if (clients[i]->cmd_end() && !clients[i]->check_all())
             handle_cmd(i);
@@ -132,7 +132,7 @@ void Server::multiplexing_func()
         {
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
-                std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\n";
+                std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\r\n";
                 send_reply(clients[i]->get_socket_fd(), msge);
                 close(clients[i]->get_socket_fd());
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
@@ -147,6 +147,7 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(i);
+                clients[i]->reset();
             }
         }
     }

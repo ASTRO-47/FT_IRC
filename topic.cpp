@@ -6,7 +6,7 @@ void Server::topic_handler(Client &client, size_t buffer_size){
         return;
     else if (buffer_size == 2){
         std::string name = client.get_cmd(1);
-        std::string msg = channelMap[name]->getTopic();
+        std::string msg = channelMap[name.substr(1)]->getTopic();
         if (msg.empty()){
             puts("no topic set");
             return;
@@ -20,12 +20,12 @@ void Server::topic_handler(Client &client, size_t buffer_size){
         it++;
     std::string name = client.get_cmd(1);
     while (it != vec.end()){
-        channelMap[name]->getTopic() + *it + ' ';
+        channelMap[name.substr(1)]->getTopic() + *it + ' ';
         it++;
     }
-    std::string topic = channelMap[client.get_cmd(1)]->getTopic();
+    std::string topic = channelMap[client.get_cmd(1).substr(1)]->getTopic();
     topic[topic.length() - 1] = '\0';
-    channelMap[client.get_cmd(1)]->setTopic(topic);
+    channelMap[client.get_cmd(1).substr(1)]->setTopic(topic);
     std::cout << "topic set" << '\n';
     return;
     }

@@ -4,7 +4,7 @@
 void Server::handle_prv_msge(int i)
 {
     clients[i]->trim_message();
-    std::string msge = ":" + clients[i]->get_nick_name() +"!~" + clients[i]->get_nick_name() + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + '\n';
+    std::string msge = ":" + clients[i]->get_nick_name() +"!~" + clients[i]->get_nick_name() + "@197.23.30.146" +  " PRIVMSG " +clients[i]->get_reciever()->get_nick_name() + " :" + clients[i]->get_message() + "\r\n";
     send_private_message(clients[i],  msge);
 }
 
@@ -26,7 +26,7 @@ bool    Server::check_user(int i)
             return true;
         }
     }
-    std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel\n";
+    std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel\r\n";
     send_reply(clients[i]->get_socket_fd(), msge);
     return false;
 }
@@ -53,14 +53,14 @@ void    Server::handle_cmd_1(int i)
     {
         if (buffer_size == 1)
         {
-            msge = server_prefix + "411 " + client.get_nick_name() + " :No recipient given (PRIVMSG)\n";
+            msge = server_prefix + "411 " + client.get_nick_name() + " :No recipient given (PRIVMSG)\r\n";
             send_reply(client.get_socket_fd(), msge);
             client.reset();
             return ;
         }
         if (buffer_size == 2)
         {
-            msge = server_prefix + "412 " + client.get_nick_name() + " :No text to send\n";
+            msge = server_prefix + "412 " + client.get_nick_name() + " :No text to send\r\n";
             send_reply(client.get_socket_fd(), msge);
             client.reset();
             return ;
@@ -75,24 +75,28 @@ void    Server::handle_cmd_1(int i)
     // join &chan || join #chan not the same thing
     else if (input == "join"){ // tolower w compari
         if (buffer_size < 2){
+            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), clients[i]->get_cmd(0)));
             client.reset();
             return;
         }
         join_handler(client);
     }
     else if (input == "mode"){
-		if (buffer_size < 3)
+		if (buffer_size < 3){
+            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), clients[i]->get_cmd(0)));
 			return;
+        }
         mode_handler(client);
     }
     // chi user 3ndo smia dial chi channel anfr9 binathom b #
     else if (input == "invite"){
-        if (buffer_size < 3 || !check_user(i)){
+        if (buffer_size < 3 || !check_user(i)){ // fach kansift lrasi katl3 no such nick
+            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), clients[i]->get_cmd(0)));
             client.reset();
             return ;
         }
         std::string invited = client.get_cmd(1);
-        std::string chan = client.get_cmd(2);
+        std::string chan = client.get_cmd(2).substr(1);
         invite_user(invited, &client, chan);
     }
         else if (input == "topic")
@@ -101,10 +105,11 @@ void    Server::handle_cmd_1(int i)
             kick_handler(client, buffer_size);
     else if (input != "pong" && input != "PONG" )
     {
-        msge = server_prefix + "421 " + client.get_cmd(0) +  ": unkown command\n";
+        msge = server_prefix + "421 " + client.get_cmd(0) +  ": unkown command\r\n";
         send_reply(client.get_socket_fd(), msge);
     }
     client.reset();
+// reply dial unknow command ???
 }
 
 //vector 

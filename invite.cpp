@@ -2,6 +2,7 @@
 #include "Channel.hpp"
 
 void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
+    std::cout << "name is " <<chan << '\n';
     if (channelMap[chan]->getInviteOnly()
         && !channelMap[chan]->isOperator(sender)){
             //ERR_CHANOPRIVSNEEDED
@@ -18,6 +19,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
         puts("no such nick err");
         return;
     }
+    // ila kan already fdik channel
     std::map<std::string, Channel *>::iterator iter = channelMap.find(chan);
     if (iter != channelMap.end()){
         std::map<Client *, bool >::iterator member = iter->second->getMembers().find(cinvited);
@@ -26,9 +28,18 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
             return;
         }
     }
-    // ila kan already fdik channel
-    std::string msg = server_prefix + " you're invited to join the channel\n";
-    // send_reply(clientsget_socket_fd(), msg);
+    std::vector<std::string> vec = cinvited->getInvitedChannels();
+    std::vector<std::string>::iterator it = std::find(vec.begin(), vec.end(), chan);
+    if (it != vec.end()){
+
+    std::string msg = server_prefix + " you're invited to join the channe\r\n";
+    send_reply(cinvited->get_socket_fd(), msg);
+    cinvited->appendInvitedChannels(chan);
+    }
+    // else
+        // you werent invited
+    // reply mgada
+
 // channel makaynch - user makaynch fdik channel
 // invite message
 // mat invitich rask
