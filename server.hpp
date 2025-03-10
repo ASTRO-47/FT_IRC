@@ -18,6 +18,7 @@
 #include <sstream>
 #include "utils.hpp"
 #include "replies.hpp"
+#include <exception>
 
 class Client;
 class Channel;
@@ -51,7 +52,7 @@ class Server
         void                         change_nick_name(int);
         bool                         kick_user(Client *, std::string&, std::string&);
         std::map<std::string ,Channel*>channelMap;
-        std::map<std::string, std::string>channelAndPass;
+        std::vector<std::pair<std::string, std::string> >channelAndPass;
         std::set<char> modes;
         Client * find_client(std::string &);
         void extract_channels(const std::string &, const std::string &);

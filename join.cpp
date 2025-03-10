@@ -5,21 +5,9 @@ bool Server::channel_exists(const std::string& channelName){
     return channelMap.find(channelName.substr(1)) != channelMap.end();
 }
 
-std::string Server::parse_join_input(const std::string &arg, size_t &start){
-    if (arg.empty() || (arg.front() != '#' && arg.front() != '&'))
-        throw std::runtime_error("args not formatted correctly");
-    size_t comma = arg.find(',' , start);
-    std::string chan = arg.substr(start, comma - start);
-    if (comma != std::string::npos)
-        start = comma + 1;
-    else
-        start = std::string::npos;
-    return chan;
-}
-
 std::string Server::parse_passwords(const std::string &passwords, size_t &start){
-    if (passwords.empty())
-        throw std::runtime_error("no passwords");
+    // if (passwords.empty())
+    //     throw std::runtime_error("no passwords");
     size_t comma = passwords.find(',' , start);
     std::string pass = passwords.substr(start, comma - start);
     if (comma != std::string::npos)
@@ -27,6 +15,25 @@ std::string Server::parse_passwords(const std::string &passwords, size_t &start)
     else
         start = std::string::npos;
     return pass;
+}
+
+std::string Server::parse_join_input(const std::string &arg, size_t &start){
+    // if (arg.empty() || (arg.front() != '#' && arg.front() != '&')){
+    //     send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(arg));
+    //     return ("");
+    // }
+    size_t comma = arg.find(',' , start);
+    std::string chan = arg.substr(start, comma - start);
+    // if ((chan.front() == '#' || chan.front() == '&') && chan.size() == 1){
+        // std::cout << "chan is: " <<chan << '\n';
+        // send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(chan));
+        // return("");
+    // }
+    if (comma != std::string::npos)
+        start = comma + 1;
+    else
+        start = std::string::npos;
+    return chan;
 }
 
 void Server::extract_channels(const std::string &chans, const std::string &passwords){ 
@@ -40,7 +47,7 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
         }
         else
             pass = "";
-        channelAndPass[chan] = pass;
+        channelAndPass.push_back(std::make_pair(chan, pass));
     }
 }
 // khasni n ignori ila makanch formatted correctlly
@@ -48,7 +55,8 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
 // join replies
 
 void Server::create_channel(const std::string& channelName, Client *creator){
-    Channel *newChannel = new Channel(channelName, creator);
+    Channel *newChannel = new Channel(channelName, creator, channelName.front());
+    // std::cout << channelName << "|||" << std::endl;
     channelMap[channelName.substr(1)] = newChannel;
     return;
 }
@@ -73,11 +81,18 @@ void Server::join_handler(Client &client){
     else
         pass = "";
     extract_channels(channels, pass);
-    std::map<std::string, std::string>::iterator it = channelAndPass.begin();
+    std::vector<std::pair<std::string, std::string> >::iterator it = channelAndPass.begin();
     // i can use a for loop bla increment ghir khasni n3rf imta n erasi w imta la
     while (it != channelAndPass.end()){
 		std::string channelName = it->first;
         std::string password = it->second;
+        std::cout << it->first  << "is:" << '\n';
+        if (channelName.empty() || (channelName.front() != '#' && channelName.front() != '&')
+            || ((channelName.front() == '#' || channelName.front() == '&') && channelName.size() == 1)){
+            send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(channelName));
+            it = channelAndPass.erase(it);
+            continue;
+        }
         if (channelName.empty()){
             it++;
             continue;
@@ -95,5 +110,5 @@ void Server::join_handler(Client &client){
                 append_user_to_channel(channel, &client);
             }
             it = channelAndPass.erase(it);
-		}
+	}
 }

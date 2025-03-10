@@ -31,7 +31,7 @@ class Channel{
 	bool & getInviteOnly();
 	std::map<Client*, bool>& getMembers();
 
-	Channel(std::string, Client*);
+	Channel(std::string, Client*, char);
 	~Channel();
 	void setUserLimit(size_t newLimit);
 	size_t & getUserLimit();

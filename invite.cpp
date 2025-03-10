@@ -5,7 +5,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
     std::cout << "name is " <<chan << '\n';
     if (channelMap[chan]->getInviteOnly()
         && !channelMap[chan]->isOperator(sender)){
-            //ERR_CHANOPRIVSNEEDED
+            // send_reply(sender->get_socket_fd(), ERR_CHANOPRIVSNEEDED(sender->get_nick_name(), chan)) knt hna
             return;
     }
     Client *cinvited = NULL;

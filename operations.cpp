@@ -61,10 +61,14 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
             if (client.get_buffer_size() > 3){
                 // std::string pass = client.get_cmd(3);
                 std::string pass = arg;
-                puts("here");
                 channel->setRequiresPass(true);
                 channel->setPass(pass);
-                channelAndPass[channel->getChannelName()] = pass;
+                std::string &channelName = channel->getChannelName();
+                for (std::vector<std::pair<std::string, std::string> >::iterator it = channelAndPass.begin(); it != channelAndPass.end(); ++it){
+                    if (it->first == channelName){
+                        it->second = pass;
+                    }
+                }
             }
         }
         else if (sign == '-'){

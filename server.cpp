@@ -30,14 +30,24 @@ void    Server::registration_msge(int i)
             ":ft_irc 254 " + nick + " :channels formed\r\n"
             ":ft_irc 255 " + nick + " :We have 1 clients\r\n";
     std::string motd = 
+        // ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
+        // ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
+        // ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
+        // ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
+        // ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
+        // ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
+        // ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
+        // ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
         ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
         ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
         ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
         ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
         ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
         ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
-        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
-        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
+        ":ft_irc 372 " + nick + " :-                                                   \r\n"
+        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!                 \r\n"
+        ":ft_irc 372 " + nick + " :- No spamming please, thank you!                    \r\n";
+
     message += motd;
     send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
     clients[i]->showed_messgae();

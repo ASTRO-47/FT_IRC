@@ -4,3 +4,10 @@ compile in codespaces with all flags + fsanitize
 const for the getters
 
 9ad folder dial commands folder dial auth...
+
+
+when the operator of the channel exits we set a random member as operator
+
+broadcast nick change to all users
+
+last user f channel kanm7i channel
