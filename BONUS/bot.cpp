@@ -14,12 +14,12 @@ Bot::Bot()
     _jokes.push_back("Why did the scarecrow win an award? Because he was outstanding in his field!");
 }
 
-void Bot::parse(char **av)
+void Bot::parse(char **av) // use the arg from the user input
 {
     _port = 8080;
-    _nick = "nick my_irc_bot_22112003\n";
-    _user = "user\n";
-    _pass = "pass hello\n";
+    _nick = "nick bot\r\n";
+    _user = "user f f f f f\r\n";
+    _pass = "pass hello\r\n";
 }
 
 void    Bot::_connect()
@@ -29,12 +29,12 @@ void    Bot::_connect()
         throw std::runtime_error("socket creation failed");
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
-    _addr.sin_addr.s_addr = inet_addr("10.12.6.15");
+    _addr.sin_addr.s_addr = inet_addr("10.12.7.15");
     if (connect(_socket, (struct sockaddr *)&_addr, sizeof(_addr)) < -1)
         throw std::runtime_error("failed to connect to server");
     send(_socket, _pass.c_str(), _pass.length(), 0);
     send(_socket, _nick.c_str(), _nick.length(), 0);
-    send(_socket, _user.c_str(), _user.length(), 0);
+    send(_socket, _user.c_str(), _user.length(), 0);// check the response from the serve 
     while (1) 
     {
         char buffer[1024] = {0};

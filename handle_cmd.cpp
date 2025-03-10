@@ -59,19 +59,6 @@ void Server::parse_nick(int i)
         }
         else if (taken_nick_name_1(clients[i]->get_cmd(1)))
         {
-
-            if (clients[i]->get_cmd(1) == "bot")
-            {
-                std::string msge = server_prefix +  "* " + clients[i]->get_cmd(1) +" : this nick reserved for the bot please chose another one!!\r\n";
-                send_reply(clients[i]->get_socket_fd(), msge);
-                return ;
-            }
-            if (clients[i]->get_cmd(1) == "my_irc_bot_22112003" && !bot_status) // check for second connect
-            {
-                bot_status = true;
-                clients[i]->set_nick_name("bot");
-                return ;
-            }
             if (!clients[i]->check_all() && clients[i]->check_nick())
             {
                 if (clients[i]->check_first_nick())
@@ -90,7 +77,7 @@ void Server::parse_nick(int i)
         }
         else
         {
-            msge = server_prefix + "433" +  " * :Nickname is already in use\r\n";
+            msge = server_prefix + "433" + " * :Nickname is already in use\r\n";
             send_reply(clients[i]->get_socket_fd(), msge);
         }
     }
@@ -156,9 +143,7 @@ void Server::handle_cmd(int i)
         return ;
     }
     if (clients[i]->get_cmd(0) == "pass" || clients[i]->get_cmd(0) == "PASS")
-    {
         try_to_auth(i);
-    }
     if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
         parse_nick(i);
     if (clients[i]->get_cmd(0) == "user" || clients[i]->get_cmd(0) == "USER")

@@ -19,7 +19,7 @@
 class Bot
 {
 private:
-    int                         _port;
+    unsigned int                         _port;
     std::string                 _ip;
     std::string                 _nick;
     std::string                 _pass;

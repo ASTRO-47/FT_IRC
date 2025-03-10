@@ -29,13 +29,45 @@ void    Server::registration_msge(int i)
     clients[i]->showed_messgae();
 }
 
+bool white_space(const std::string& str) 
+{
+    for (size_t i = 0; i < str.length(); ++i)
+    {
+        if (std::isspace(static_cast<char>(str[i])))
+            return true;
+    }
+    return false;
+}
+
+void    Server::check_pass(std::string _pass)
+{
+    if (white_space(_pass))
+        throw std::runtime_error("invalid password format");
+    if (_pass.length() < 3)
+        throw std::runtime_error("too short passwrod");
+    if (_pass.length() > 20)
+        throw std::runtime_error("too long passwrod");
+}
+
+void    Server::check_port(std::string _p)
+{
+    for (size_t i = 0; i < _p.length();i++)
+    {
+        if (!std::isdigit(_p[0]))
+            throw std::runtime_error("invalid port format");
+    }
+    char *checker;
+    port = std::strtod(_p.c_str(), &checker);
+    if (checker[0] != '\0' || port < 1 || port > 65535)
+            throw std::runtime_error("invalid port format");
+}
+
 void Server::server_setup(std::string _port, std::string passwd)
 {
     password = passwd;
     char *checker = NULL;
-    port = std::strtod(_port.c_str(), &checker); // handle 0
-    if (checker[0] != '\0')
-        throw std::runtime_error("invalid port format");
+    check_port(_port);
+    check_pass(passwd);
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
     if (server_socket == -1)
         throw std::runtime_error("failed to create socket");
@@ -104,6 +136,7 @@ void Server::handle_event_fd(int i)
         }
         if (clients[i]->cmd_end() && !clients[i]->check_all())
         {
+            std::cout << clients[i]->get_buffer() << std::endl;
             while (clients[i]->get_buffer().length()) // split the request to handle bot connection
             {
                 handle_cmd(i);

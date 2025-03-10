@@ -48,8 +48,9 @@ class Server
         bool                         check_user(int);
         void                         handle_prv_msge(int);
         void                         send_reply(int, std::string);
-        void                         send_private_message(int, std::string);
+        void                         check_port(std::string);
         void                         change_nick_name(int);
+
         std::map<std::string ,Channel*>channelMap;
         std::map<std::string, std::string>channelAndPass;
         void extract_channels(const std::string &, int, const std::string &);
@@ -68,6 +69,7 @@ class Server
         void                         handle_quit_cmd(int);
         void                         broadcast_msge(std::string);
         void                         handle_bot_cmd(int);
+        void                         check_pass(std::string);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
