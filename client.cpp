@@ -92,12 +92,14 @@ void Client::clear_buffer()
 
 void Client::parse_command()
 {
+    int del = 2;
     int pos = _buffer.find("\r\n");
     if (pos < 0)
+    {
         pos = _buffer.find("\n");
+        del--;
+    }
     std::string test = _buffer.substr(0, pos);
-    // std::cout << "test :"<< test << ']' << std::endl;
-    // std::cout << "what still in buffer :"<< _buffer << ']' << std::endl;exit (0);
     std::stringstream ss(test);
     std::string command;
 
@@ -107,16 +109,14 @@ void Client::parse_command()
         if (!trimmed.empty())
             _command_buffer.push_back(trimmed);
     }
-    // std::cout << pos << "]" << std::endl;
-    // std::cout << _buffer.length() << "]" << std::endl;
-    if (pos == _buffer.length() - 1)
+    if (pos == _buffer.length() - del)
         _buffer.clear();
     else
-    if (pos != _buffer.length() - 1)
-        _buffer = _buffer.substr(pos + 2, _buffer.length());
-    // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
-    // std::cout << _buffer << ']' << std::endl;
+        _buffer = _buffer.substr(pos + del, _buffer.length());
+
     // debug printing 
+
+    // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
     // std::cout << '[';
     // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
     //     std::cout << *it << "," ;
@@ -191,13 +191,16 @@ void Client::set_nick_name(std::string _n)
 
 void Client::set_user_infos()
 {
-    // user_name = _command_buffer[1];
-    // host_name = _command_buffer[2];
-    // std::string r_name ;
-    // server_name = _command_buffer[3];
-    // for (int i = 4; i < _command_buffer.size();i++)
-    //     r_name += _command_buffer[i] + ' ';
-    // real_name = r_name;
+    user_name = _command_buffer[1];
+    host_name = _command_buffer[2];
+    std::string r_name ;
+    server_name = _command_buffer[3];
+    for (int i = 4; i < get_buffer_size();i++)
+    {
+        
+        r_name += _command_buffer[i] + ' ';
+    }
+    real_name = r_name;  // check this later
     user = true;
 }
 
@@ -225,10 +228,13 @@ bool Client::check_message() const
     return _msg;
 }
 
-bool    Client::cmd_end() const
+bool    Client::cmd_end()
 {
     if ((_buffer[_buffer.length() - 1] == '\n'  && _buffer[_buffer.length() - 2] == '\r' ) || _buffer[_buffer.length() - 1] == '\n')
+    {
+        _second_buffer = _buffer;
         return true;
+    }
     return false;
 }
 
@@ -248,15 +254,9 @@ void Client::trim_message()
     }
     size_t pos = _second_buffer.find(':');
     if (std::string::npos != pos)
-    {
-        puts("hello");
         _message = _second_buffer.substr(pos + 1, _second_buffer.length() - pos - 2);
-        std::cout << _message << ']' << std::endl;
-    }
     else
-    {
         _message = _command_buffer[2];
-    }
 }
 
 std::string Client::get_message() const

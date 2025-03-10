@@ -52,7 +52,7 @@ public:
     void                           showed_messgae();
     bool                           check_message() const;
     void                           set_user_infos();
-    bool                           cmd_end() const;
+    bool                           cmd_end();
     void                           trim_message();
     bool                           check_nick() const;
     std::string                    get_message() const;
@@ -61,10 +61,10 @@ public:
     bool                           check_connection();
     std::string                    get_hostname() const;
     std::string                    get_ip() const;
-    void                            add_message(std::string);
-    bool                            check_first_nick();
-    void                            send_buffer();
-    void                            set_buffer(std::string);             
-    void                            clear_buffer();             
+    void                           add_message(std::string);
+    bool                           check_first_nick();
+    void                           send_buffer();
+    void                           set_buffer(std::string);             
+    void                           clear_buffer();             
     ~Client();
 } ;

@@ -17,9 +17,9 @@ Bot::Bot()
 void Bot::parse(char **av)
 {
     _port = 8080;
-    _nick = "nick my_irc_bot_22112003\r\n";
-    _user = "user\r\n";
-    _pass = "pass hello\r\n";
+    _nick = "nick my_irc_bot_22112003\n";
+    _user = "user\n";
+    _pass = "pass hello\n";
 }
 
 void    Bot::_connect()
@@ -29,7 +29,7 @@ void    Bot::_connect()
         throw std::runtime_error("socket creation failed");
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
-    _addr.sin_addr.s_addr = inet_addr("10.12.7.15");
+    _addr.sin_addr.s_addr = inet_addr("10.12.6.15");
     if (connect(_socket, (struct sockaddr *)&_addr, sizeof(_addr)) < -1)
         throw std::runtime_error("failed to connect to server");
     send(_socket, _pass.c_str(), _pass.length(), 0);
@@ -47,7 +47,7 @@ void    Bot::_connect()
             _connect(); // Attempt to reconnect
         }
         buffer[bytes] = '\0'; // /urandom error
-        // std::cout << buffer;
+        std::cout << buffer;
         // if (buffer == "bot\n")
         // {
         //     send(_socket, "hello from bot", 15, 0);

@@ -16,7 +16,7 @@
 #include <exception>
 #include <set>
 
-#define MAX_NICK_LEN 20 // think about this later
+#define MAX_NICK_LEN 9 // think about this later
 
 class Client;
 class Channel;

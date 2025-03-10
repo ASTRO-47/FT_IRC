@@ -104,12 +104,12 @@ void Server::parse_user(int i)
         msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\r\n";
         send_reply(clients[i]->get_socket_fd(), msge);
     }
-    // else if (clients[i]->get_buffer_size() < 5)
-    // {
+    else if (clients[i]->get_buffer_size() < 5)
+    {
         
-    //     msge = server_prefix + "461 " +  "USER :Not enough parameters\r\n";
-    //     send_reply(clients[i]->get_socket_fd(), msge);
-    // }
+        msge = server_prefix + "461 " +  "USER :Not enough parameters\r\n";
+        send_reply(clients[i]->get_socket_fd(), msge);
+    }
     else
         clients[i]->set_user_infos();
 }
@@ -156,7 +156,9 @@ void Server::handle_cmd(int i)
         return ;
     }
     if (clients[i]->get_cmd(0) == "pass" || clients[i]->get_cmd(0) == "PASS")
+    {
         try_to_auth(i);
+    }
     if (clients[i]->get_cmd(0) == "nick" || clients[i]->get_cmd(0) == "NICK")
         parse_nick(i);
     if (clients[i]->get_cmd(0) == "user" || clients[i]->get_cmd(0) == "USER")

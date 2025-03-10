@@ -83,23 +83,25 @@ void    Server::handle_new_client()
 
 void Server::handle_event_fd(int i)
 {
-    char buffer[500]; // change this later
+    char buffer[500] = {0};
     int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
-    if (bytes == -1) // print debug message
-        return ;
-    if (bytes == 0)
+    if (bytes <= 0)
     {
         close (clients[i]->get_socket_fd());
         clients[i]->disconnected();
     }
     else
     {
-        buffer[bytes] = '\0'; // trim the new line at the end
+        buffer[bytes] = '\0';
         clients[i]->append_buffer(buffer);
-        // if (!strcmp(clients[i]->get_buffer().c_str(), "halt\n"))
-        //     throw std::runtime_error("server stoped by a client request");
-        // std::cout << clients[i]->get_buffer() << std::endl;
-        clients[i]->set_buffer(buffer);
+        if (clients[i]->get_buffer().length() > 10000)
+        {
+            std::string msge =  server_prefix + "input line too long\n";
+            send_reply(clients[i]->get_socket_fd(), msge);
+            clients[i]->reset();
+            clients[i]->clear_buffer();
+            return ;
+        }
         if (clients[i]->cmd_end() && !clients[i]->check_all())
         {
             while (clients[i]->get_buffer().length()) // split the request to handle bot connection
