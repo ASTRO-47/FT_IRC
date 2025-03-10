@@ -67,8 +67,14 @@ void Server::append_user_to_channel(Channel *channel, Client *newMember){
         std::cout << newMember->get_nick_name() << " is already member of " << channel->getChannelName() << '\n';
         return;
     }
-    if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit())
+    if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit()){
         channel->appendMember(newMember);
+        std::string name = channel->getPrefix() + channel->getChannelName();
+        broadcastMsg(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()), channel->getChannelName());
+	    // Server::send_reply(newMember->get_socket_fd(), CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
+        Server::send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name));
+	    Server::send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));
+    }
     else
         puts("baraka ajmi"); // reply
 }
@@ -86,7 +92,6 @@ void Server::join_handler(Client &client){
     while (it != channelAndPass.end()){
 		std::string channelName = it->first;
         std::string password = it->second;
-        std::cout << it->first  << "is:" << '\n';
         if (channelName.empty() || (channelName.front() != '#' && channelName.front() != '&')
             || ((channelName.front() == '#' || channelName.front() == '&') && channelName.size() == 1)){
             send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(channelName));

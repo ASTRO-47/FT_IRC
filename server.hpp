@@ -47,7 +47,6 @@ class Server
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
-        void                         send_reply(int, std::string);
         void                         send_private_message(Client *, std::string);
         void                         change_nick_name(int);
         bool                         kick_user(Client *, std::string&, std::string&);
@@ -73,6 +72,8 @@ class Server
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
+        void broadcastMsg(std::string, std::string);
+        static void send_reply(int, std::string);
 
         Server();
         ~Server();

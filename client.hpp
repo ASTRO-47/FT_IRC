@@ -25,6 +25,7 @@ private:
     std::vector<std::string>        invitedChannels;
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
+    std::vector<std::string>        joinedChannels;
 public:
     Client();
     bool            check_all() const;
@@ -58,8 +59,11 @@ public:
     bool            check_connection();
     std::string     get_hostname() const;
     std::string     get_ip() const;
+    void            set_ip(std::string );
     std::vector<std::string> & getInvitedChannels();
     void        appendInvitedChannels(std::string );
 	bool isInvited(std::string &);
+    bool isMemberOf(std::string);
+    std::vector<std::string>& getJoinedChannels();
     ~Client();
 } ;

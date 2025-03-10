@@ -119,6 +119,7 @@ void Server::handle_event_fd(int i)
     //     i--;
     // }
     // else
+    // std::cout << buffer << '\n';
     {
         buffer[bytes] = '\0'; // trim the new line at the end
         clients[i]->append_buffer(buffer);
@@ -184,4 +185,11 @@ Server::~Server()
     clients.clear();
     if (server_socket != -1)
         close(server_socket);
+}
+
+void Server::broadcastMsg(std::string msg, std::string chan){
+    for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
+        if ((*it)->check_connection() && (*it)->isMemberOf(chan))
+            send_reply((*it)->get_socket_fd(), msg);
+    }
 }

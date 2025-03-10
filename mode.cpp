@@ -62,3 +62,7 @@ void Server::mode_handler(Client &client){
         puts("channel doesn't exist");
     }
 }
+
+
+
+// unknown mode to me

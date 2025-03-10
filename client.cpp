@@ -31,6 +31,7 @@ void Client::connect(int server_socket)
     client_socket = accept(server_socket, (struct sockaddr*)&socket_addr, &addr_len);
     if (client_socket < 0)
         throw std::runtime_error("can not add new client at this time");
+    set_ip(inet_ntoa(socket_addr.sin_addr));
     __poll.fd = client_socket;
     __poll.events = POLLIN;
     __poll.revents = 0;
@@ -166,6 +167,10 @@ std::string Client::get_hostname() const
     return host_name;
 }
 
+void Client::set_ip(std::string newIp){
+    _ip = newIp;
+}
+
 std::string Client::get_ip() const{
     return _ip;
 }
@@ -247,4 +252,15 @@ bool Client::isInvited(std::string &chan){
     if (it != invitedChannels.end())
         return true;
     return false;
+}
+
+bool Client::isMemberOf(std::string chan){
+    std::vector<std::string>::iterator it = std::find(joinedChannels.begin(), joinedChannels.end(), chan);
+    if (it != joinedChannels.end())
+        return true;
+    return false;
+}
+
+std::vector<std::string>& Client::getJoinedChannels(){
+    return joinedChannels;
 }
