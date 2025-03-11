@@ -31,3 +31,6 @@
 
 
 #define RPL_NOTOPIC(target, channel) (std::string(sprefix) + " 331 " + target + " " + channel + " :No topic is set.\r\n")
+
+
+#define RPL_TOPIC(target ,channel, topic) (std::string(sprefix) + " 332 " + target + " " + channel + topic)

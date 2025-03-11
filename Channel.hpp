@@ -2,8 +2,6 @@
 
 #include "client.hpp"
 
-#define RPL_TOPIC 
-
 class Channel{
 	private:
 	std::string name;

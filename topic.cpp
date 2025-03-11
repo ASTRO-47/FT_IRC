@@ -11,7 +11,7 @@ void Server::topic_handler(Client &client, size_t buffer_size){
             send_reply(client.get_socket_fd(), RPL_NOTOPIC(client.get_nick_name(), name));
             return;
         }
-        send(client.get_socket_fd(), msg.c_str(), msg.length(), 0);
+        channelMap[name]->broadcastToAllMembers(RPL_TOPIC(client.get_nick_name(), name, msg));
         return;
     }
     std::vector<std::string> vec = client.get_cmd_buffer();
@@ -42,4 +42,4 @@ void Server::topic_handler(Client &client, size_t buffer_size){
 }
 
 
-// ila mal9ach channel :::: :ft_irc.1337.ma 331 marin #chan :No topic is set.
+// ila mal9ach topic :::: :ft_irc.1337.ma 331 marin #chan :No topic is set.
