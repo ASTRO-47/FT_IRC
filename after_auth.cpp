@@ -43,6 +43,7 @@ void    Server::handle_quit_cmd(int i)
         msge += "*";
     msge += "!~f@197.230.30.146 QUIT :Client Quit" + CRLF;
     send_reply(clients[i]->get_socket_fd(), msge);
+    // handle if operator 
     msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)" + CRLF;
     send_reply(clients[i]->get_socket_fd(), msge);
     close(clients[i]->get_socket_fd());

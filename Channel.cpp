@@ -108,7 +108,6 @@ void Channel::setUserLimit(size_t newLimit){
 size_t & Channel::getUserLimit(){
 	static size_t defaultVal = 0;
 	if (limitSet == false){
-		puts("no limit was set");
 		return defaultVal;
 	}
 	return userLimit;
@@ -136,7 +135,8 @@ void Channel::setTopicFlag(bool flag){
 
 void Channel::broadcastToAllMembers(std::string msg){
 	for (std::map<Client*, bool>::iterator it = members.begin(); it != members.end(); it++){
-		Server::send_reply(it->first->get_socket_fd(), msg);
+		if (it->first)
+			Server::send_reply(it->first->get_socket_fd(), msg);
 	}
 }
 

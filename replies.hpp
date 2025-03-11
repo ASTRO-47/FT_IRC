@@ -36,3 +36,6 @@
 #define RPL_TOPIC(target ,channel, topic) (std::string(sprefix) + " 332 " + target + " " + channel + topic)
 
 #define ERR_UNKNOWNMODE(target, oper) (std::string(sprefix) + " 472 " + target + oper + " :is an unknown mode char to me\r\n")
+
+#define ERR_NOSUCHNICK(target, nick, invited) (std::string(sprefix) + " 401 " + target + " " + nick + " :No such nick/channel\r\n")
+

@@ -17,52 +17,49 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
     for (std::string::const_iterator it = opers.begin(); it != opers.end(); it++){
         if (*it == '+' || *it == '-')
             modeSign = *it;
-        else if (modes.find(*it) != modes.end())
+        else
             operations.push_back(std::make_pair(*it, modeSign));
     }
     // std::cout << client.get_buffer_size() << '\n';
     for (size_t j = 3; j < client.get_buffer_size(); j++) //  machi dima ghaykon idan hadchi mzl chwiya flawed
         options.push_back(client.get_cmd(j));
-    for (std::vector<std::pair<char, char> >::iterator it = operations.begin(); it != operations.end(); ){ // we dont increment here erase returns next valid iterator
-        if (requiresArg(it->second,it->first)){
-            try{
+    for (std::vector<std::pair<char, char> >::iterator it = operations.begin(); it != operations.end(); it++){ // we dont increment here erase returns next valid iterator
+        char charMode = it->first;
+        char sign = it->second;
+        if (modes.find(charMode) == modes.end()){
+            send_reply(client.get_socket_fd(), ERR_UNKNOWNMODE(client.get_nick_name(), charMode));
+            continue;
+        }
+        if (requiresArg(sign, charMode)){
                 if (!options.empty()){
                     std::string arg = options.front();
                     options.erase(options.begin());
-                    process_operation(it->second, it->first, client, arg ,channel);
+                    process_operation(sign, charMode, client, arg ,channel);
                 }
+                else
+                    send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
             }
-            catch(std::exception &e){
-                std::cout << "ERROR: " << e.what() << std::endl;
-            }
-            it = operations.erase(it); // we should always erase not just inside the try block
-            // 7it la t throwat exception l iterator aywli invalid
+        else
+            process_operation(sign, charMode, client, options.front(), channel); // sawb function khra lhadok li may7tajoch args
         }
-        else{
-            process_operation(it->second, it->first, client, options.front(), channel); // sawb function khra lhadok li may7tajoch args
-            it++;
-        }
-    }
 }
 
 void Server::mode_handler(Client &client){
 	std::string chan = client.get_cmd(1);
-    // check if channel valid and user has operator role fdik channel
     if (channel_exists(chan) == true){// protecti channel invalid 
         if (channelMap[chan]->isOperator(&client) == true){
-		// what operation
-		std::string oper = client.get_cmd(2);
-        check_operations(oper, client, channelMap[chan]);
-		// ERR_UNKNOWNMODE()
-	}
-	else
-		puts("no permission to perform hadchi");
-    }
-    else{
-        puts("channel doesn't exist");
-    }
+		    std::string oper = client.get_cmd(2);
+            check_operations(oper, client, channelMap[chan]);
+	    }
+	    else
+            send_reply(client.get_socket_fd(), ERR_CHANOPRIVSNEEDED(client.get_nick_name(), chan));
+        }
+    else
+        send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(chan));
 }
 
+// mode #chan ++++hol marin 10
 
+// segv here
 
 // unknown mode to me

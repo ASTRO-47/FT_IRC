@@ -16,7 +16,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
         }
     }
     if (!cinvited){
-        puts("no such nick err");
+        send_reply(sender->get_socket_fd(), ERR_NOSUCHNICK(sender->get_nick_name(), invited));
         return;
     }
     // ila kan already fdik channel
