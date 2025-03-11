@@ -1,10 +1,10 @@
 #include "server.hpp"
 #include "Channel.hpp"
 
+// user kay inviti raso hhhhh
 void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
-    std::cout << "name is " <<chan << '\n';
-    if (channelMap[chan]->getInviteOnly()
-        && !channelMap[chan]->isOperator(sender)){
+    if (channelMap[chan.substr(1)] && channelMap[chan.substr(1)]->getInviteOnly()
+        && !channelMap[chan.substr(1)]->isOperator(sender)){
             // send_reply(sender->get_socket_fd(), ERR_CHANOPRIVSNEEDED(sender->get_nick_name(), chan)) knt hna
             return;
     }
@@ -20,22 +20,22 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
         return;
     }
     // ila kan already fdik channel
-    std::map<std::string, Channel *>::iterator iter = channelMap.find(chan);
+    std::map<std::string, Channel *>::iterator iter = channelMap.find(chan.substr(1));
     if (iter != channelMap.end()){
         std::map<Client *, bool >::iterator member = iter->second->getMembers().find(cinvited);
         if (member != iter->second->getMembers().end()){
+            std::cout << member->first->get_nick_name() << "-+-+" << '\n';
             puts("already a member of the channel");
             return;
         }
     }
-    std::vector<std::string> vec = cinvited->getInvitedChannels();
-    std::vector<std::string>::iterator it = std::find(vec.begin(), vec.end(), chan);
-    if (it != vec.end()){
-
-    std::string msg = server_prefix + " you're invited to join the channe\r\n";
-    send_reply(cinvited->get_socket_fd(), msg);
-    cinvited->appendInvitedChannels(chan);
-    }
+    // std::vector<std::string> vec = cinvited->getInvitedChannels();
+    // std::vector<std::string>::iterator it = std::find(vec.begin(), vec.end(), chan);
+    // if (it != vec.end()){
+        std::string msg = server_prefix + " you're invited to join the channe\r\n";
+        send_reply(cinvited->get_socket_fd(), msg);
+        cinvited->appendInvitedChannels(chan);
+    // }// ila kan already invited ldik channel n ignori wsf
     // else
         // you werent invited
     // reply mgada

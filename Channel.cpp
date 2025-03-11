@@ -10,7 +10,6 @@ Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
 	limitSet = false;
 	topicSettable = false;
 	topic = "";
-	Creator->getJoinedChannels().push_back(name);
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
 	// setOperator(Creator, true);
 	// broadcast lkolchi hadi fach kijoini chiwahd the same channel li fiha chi wahd akhr
@@ -23,7 +22,7 @@ Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
 	// mode notification
 	Server::send_reply(Creator->get_socket_fd(), CHANNEL_JOIN(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
 	Server::send_reply(Creator->get_socket_fd(), CHANNEL_MODES(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
-	Server::send_reply(Creator->get_socket_fd(), RPL_NAMREPLY(Creator->get_nick_name(), ChannelName));
+	Server::send_reply(Creator->get_socket_fd(), RPL_NAMREPLY(Creator->get_nick_name(), ChannelName, '@' + Creator->get_nick_name()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_ENDOFNAMES(Creator->get_nick_name(), ChannelName));
 }
 
@@ -137,4 +136,22 @@ bool & Channel::getTopicFlag(){
 
 void Channel::setTopicFlag(bool flag){
 	topicSettable = flag;
+}
+
+void Channel::broadcastToAllMembers(std::string msg){
+	for (std::map<Client*, bool>::iterator it = members.begin(); it != members.end(); it++){
+		Server::send_reply(it->first->get_socket_fd(), msg);
+	}
+}
+
+std::string Channel::print_members(){
+	std::stringstream ss;
+	for (std::map<Client *, bool>::iterator it = members.begin(); it != members.end(); it++){
+		if (it != members.begin())
+			ss << " ";
+		if (it->second == true)
+			ss << "@";
+		ss << it->first->get_nick_name();
+	}
+	return ss.str();
 }

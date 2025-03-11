@@ -96,7 +96,7 @@ void    Server::handle_cmd_1(int i)
             return ;
         }
         std::string invited = client.get_cmd(1);
-        std::string chan = client.get_cmd(2).substr(1);
+        std::string chan = client.get_cmd(2);
         invite_user(invited, &client, chan);
     }
         else if (input == "topic")

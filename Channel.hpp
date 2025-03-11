@@ -11,6 +11,7 @@ class Channel{
 	std::string topic;
 	char _prefix;
 	std::map<Client*, bool> members;
+	// std::set<Client *> invited;
 	bool isInviteOnly;
 	bool requiresPass;
 	bool limitSet;
@@ -43,4 +44,6 @@ class Channel{
 	void setTopicFlag(bool);
 	std::string & getChannelName();
 	void removeMember(Client *);
+	void broadcastToAllMembers(std::string);
+	std::string print_members();
 };

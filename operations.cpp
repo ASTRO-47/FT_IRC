@@ -6,7 +6,7 @@ Client* Server::find_user(const std::string &user, Client &client, Channel *chan
         puts("cant promote yourself"); // self promotion nono
     else { // khasni n9lb 3lih fchannel
         for (std::map<Client *, bool>::iterator it = channel->getMembers().begin(); it != channel->getMembers().end(); it++){
-            if (it->first->get_nick_name() == user)
+            if (it->first && it->first->get_nick_name() == user && it->second != true)
                 return it->first;
         }
     }
@@ -33,10 +33,14 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
         }
     }
     else if (oper == 'i'){
-        if (sign == '+')
+        if (sign == '+'){
             channel->setInviteOnly(true);// replies ajmi
-        else if (sign == '-')
+            send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "+i", "MODE"));
+        }
+        else if (sign == '-'){
             channel->setInviteOnly(false); //replies ajmi
+            send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-i", "MODE"));
+        }
     }
     else if (oper == 'l'){
         if (sign == '+'){
@@ -50,10 +54,13 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                     puts("error number");
                 channel->setLimitSet(true);
                 channel->setUserLimit(userLimit);
+                std::string loper = "+l " + arg;
+                send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), loper, "MODE"));
             }
         }
         else if (sign == '-'){
             channel->setLimitSet(false);
+            send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-l", "MODE"));
         }
     }
     else if (oper == 'k'){
@@ -70,6 +77,8 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                     }
                 }
             }
+            // else
+                // Server::send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         }
         else if (sign == '-'){
             channel->setRequiresPass(false);

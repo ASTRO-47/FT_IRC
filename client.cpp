@@ -243,24 +243,15 @@ std::vector<std::string>& Client::getInvitedChannels(){
 }
 
 void Client::appendInvitedChannels(std::string invitedTo){
-    invitedChannels.push_back(invitedTo);
+    std::cout << "he was invited to " << invitedTo << '\n';
+    invitedChannels.push_back(invitedTo.substr(1)); // substr zdtha hna
 }
 
 
 bool Client::isInvited(std::string &chan){
-    std::vector<std::string>::iterator it = std::find(invitedChannels.begin(), invitedChannels.end(), chan);
+    std::string channel = chan.substr(1);
+    std::vector<std::string>::iterator it = std::find(invitedChannels.begin(), invitedChannels.end(), channel);
     if (it != invitedChannels.end())
         return true;
     return false;
-}
-
-bool Client::isMemberOf(std::string chan){
-    std::vector<std::string>::iterator it = std::find(joinedChannels.begin(), joinedChannels.end(), chan);
-    if (it != joinedChannels.end())
-        return true;
-    return false;
-}
-
-std::vector<std::string>& Client::getJoinedChannels(){
-    return joinedChannels;
 }

@@ -70,9 +70,10 @@ void Server::append_user_to_channel(Channel *channel, Client *newMember){
     if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit()){
         channel->appendMember(newMember);
         std::string name = channel->getPrefix() + channel->getChannelName();
-        broadcastMsg(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()), channel->getChannelName());
+        channel->broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
 	    // Server::send_reply(newMember->get_socket_fd(), CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
-        Server::send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name));
+        std::cout << "return dialha houa " << channel->print_members() << '\n';
+        Server::send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel->print_members()));
 	    Server::send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));
     }
     else
@@ -107,6 +108,7 @@ void Server::join_handler(Client &client){
 	        create_channel(channelName, &client);
         else {
             Channel* channel = channelMap[channelName.substr(1)];
+            // std::cout << "channel name is: " << channelName << '\n';
             if (channel->getInviteOnly() && !client.isInvited(channelName))
                 send_reply(client.get_socket_fd(), ERR_INVITEONLYCHAN(client.get_nick_name(),channelName));
 			else if (channel->getRequiresPass() && channel->getPass() != password)

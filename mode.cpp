@@ -48,11 +48,11 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
 void Server::mode_handler(Client &client){
 	std::string chan = client.get_cmd(1);
     // check if channel valid and user has operator role fdik channel
-    if (channel_exists(chan) == true){
+    if (channel_exists(chan) == true){// protecti channel invalid 
         if (channelMap[chan.substr(1)]->isOperator(&client) == true){
 		// what operation
 		std::string oper = client.get_cmd(2);
-            check_operations(oper, client, channelMap[chan.substr(1)]);
+        check_operations(oper, client, channelMap[chan.substr(1)]);
 		// ERR_UNKNOWNMODE
 	}
 	else

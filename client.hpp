@@ -22,10 +22,9 @@ private:
     std::string                     _message;
     Client                          *_reciever;
     bool                            _disconnected;
-    std::vector<std::string>        invitedChannels;
+    std::vector<std::string>        invitedChannels; // bad design
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
-    std::vector<std::string>        joinedChannels;
 public:
     Client();
     bool            check_all() const;
@@ -61,9 +60,7 @@ public:
     std::string     get_ip() const;
     void            set_ip(std::string );
     std::vector<std::string> & getInvitedChannels();
-    void        appendInvitedChannels(std::string );
+    void        appendInvitedChannels(std::string ); // 7ta hadi anbdlha 
 	bool isInvited(std::string &);
-    bool isMemberOf(std::string);
-    std::vector<std::string>& getJoinedChannels();
     ~Client();
 } ;

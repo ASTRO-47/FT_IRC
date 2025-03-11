@@ -14,10 +14,17 @@
 
 #define CHANNEL_JOIN(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " JOIN " + channel + "\r\n")
 
+
+// hadi ghi limechat kidir dik mode #chan donc khasni nsilenci dik mode #chan madir tachi reply
 #define CHANNEL_MODES(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " MODE " + channel + " +t\r\n")
 
 // had namreply khasha fch katjoini awl mra w fch kijoini chi7d khr
-#define RPL_NAMREPLY(target, channel) (std::string(sprefix) + " 353 " + target + " @ " + channel + " :" + target + "\r\n")
+#define RPL_NAMREPLY(target, channel, members) (std::string(sprefix) + " 353 " + target + " @ " + channel + " :" + members + "\r\n")
+// ila kan operator zid @@@@
 
 #define RPL_ENDOFNAMES(target, channel) (std::string(sprefix) + " 366 " + target + " " + channel + " :End of /NAMES list.\r\n")
 
+
+// :marin!~h@197.230.30.146 MODE #chan +i
+
+#define OPER_SUCCESS(target, channel, ip, hostname, oper, command) (":" + target + "!~" + hostname + "@" + ip + " " + command  +  " " +  channel + " " + oper + " \r\n")

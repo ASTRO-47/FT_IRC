@@ -143,6 +143,7 @@ void Server::multiplexing_func()
         {
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
+                // check here if operator etc...
                 std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\r\n";
                 send_reply(clients[i]->get_socket_fd(), msge);
                 close(clients[i]->get_socket_fd());
@@ -187,9 +188,9 @@ Server::~Server()
         close(server_socket);
 }
 
-void Server::broadcastMsg(std::string msg, std::string chan){
+void Server::broadcastMsg(std::string msg){
     for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
-        if ((*it)->check_connection() && (*it)->isMemberOf(chan))
+        if ((*it)->check_connection())
             send_reply((*it)->get_socket_fd(), msg);
     }
 }

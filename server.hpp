@@ -72,7 +72,7 @@ class Server
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
-        void broadcastMsg(std::string, std::string);
+        void broadcastMsg(std::string);
         static void send_reply(int, std::string);
 
         Server();
