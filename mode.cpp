@@ -11,7 +11,7 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
     std::vector<std::pair<char, char> > operations;
     std::vector<std::string> options;
     if (opers.empty()){
-        // needmoreparams
+        send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         return;
     }
     for (std::string::const_iterator it = opers.begin(); it != opers.end(); it++){

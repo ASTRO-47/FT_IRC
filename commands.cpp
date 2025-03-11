@@ -4,13 +4,13 @@
 
 void    Server::handle_cmd_1(int i)
 {
+    clients[i]->parse_command();
 	std::string input = clients[i]->get_cmd(0);
     toLower(input);
     std::cout << input << '\n';
     Client &client = *clients[i];
     size_t buffer_size = clients[i]->get_buffer_size();
     std::string msge;
-    clients[i]->parse_command();
     if (check_command(i))
         return ;
 	    // join &chan || join #chan not the same thing
