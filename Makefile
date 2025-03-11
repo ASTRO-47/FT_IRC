@@ -1,15 +1,15 @@
-# FLAGS = -Wall -Wextra -Werror 
+FLAGS = -Wall -Wextra -Werror 
 
 CPPC = c++ -std=c++98 -g -fsanitize=address
 
 SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp broadcast.cpp
-B_SOURCES =	 BONUS/bot.cpp
+B_SOURCES =	 BONUS/bot.cpp utils.cpp join.cpp mode.cpp operations.cpp invite.cpp topic.cpp kick.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 B_OBJECTS = $(B_SOURCES:.cpp=.o)
 
 BONUS = bot
 NAME = ircserv
-HEADERS = Makefile server.hpp client.hpp Channel.hpp
+HEADERS = Makefile server.hpp client.hpp Channel.hpp utils.hpp replies.hpp
 B_HEADERS = BONUS/bot.hpp
 RM = rm -f
 #anssi Colors:

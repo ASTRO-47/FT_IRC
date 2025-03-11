@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-Client::Client() : pass(false) , _nick(false), user(false), _msg(false), _disconnected(true), first(false)
+Client::Client() : _msg(false),_nick(false), pass(false), user(false), _disconnected(true)
 {
     addr_len = sizeof(socket_addr); 
     memset(&socket_addr, 0, addr_len);
@@ -31,6 +31,7 @@ void Client::connect(int server_socket)
     client_socket = accept(server_socket, (struct sockaddr*)&socket_addr, &addr_len);
     if (client_socket < 0)
         throw std::runtime_error("can not add new client at this time");
+    set_ip(inet_ntoa(socket_addr.sin_addr));
     __poll.fd = client_socket;
     __poll.events = POLLIN;
     __poll.revents = 0;
@@ -55,7 +56,7 @@ std::string &Client::get_cmd(int i)
     return _command_buffer[i];
 }
 
-int Client::get_buffer_size() const
+size_t Client::get_buffer_size() const
 {
     return _command_buffer.size();
 }
@@ -67,6 +68,9 @@ std::string trim(const std::string& str)
     if (first == std::string::npos) return "";
     size_t last = str.find_last_not_of(whitespace);
     return str.substr(first, last - first + 1);
+}
+std::vector<std::string>& Client::get_cmd_buffer(){
+    return _command_buffer;
 }
 
 size_t  Client::get_replys_size()
@@ -153,7 +157,7 @@ bool Client::check_nick() const
     return _nick;
 }
 
-std::string Client::get_buffer() const
+const std::string& Client::get_buffer() const
 {
     return _buffer;
 }
@@ -195,9 +199,7 @@ void Client::set_user_infos()
     host_name = _command_buffer[2];
     std::string r_name ;
     server_name = _command_buffer[3];
-    for (int i = 4; i < get_buffer_size();i++)
-    {
-        
+    for (size_t i = 4; i < get_buffer_size() ;i++)
         r_name += _command_buffer[i] + ' ';
     }
     real_name = r_name;  // check this later
@@ -212,6 +214,10 @@ std::string Client::get_nick_name() const
 std::string Client::get_hostname() const
 {
     return host_name;
+}
+
+void Client::set_ip(std::string newIp){
+    _ip = newIp;
 }
 
 std::string Client::get_ip() const{
@@ -277,4 +283,22 @@ void Client::set_reciever(Client* _rec)
 Client::~Client()
 {
     // close (client_socket);
+}
+
+std::vector<std::string>& Client::getInvitedChannels(){
+    return invitedChannels;
+}
+
+void Client::appendInvitedChannels(std::string invitedTo){
+    std::cout << "he was invited to " << invitedTo << '\n';
+    invitedChannels.push_back(invitedTo);
+}
+
+
+bool Client::isInvited(std::string &chan){
+    std::string channel = chan;
+    std::vector<std::string>::iterator it = std::find(invitedChannels.begin(), invitedChannels.end(), channel);
+    if (it != invitedChannels.end())
+        return true;
+    return false;
 }

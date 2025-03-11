@@ -15,6 +15,10 @@
 #include <string>
 #include <exception>
 #include <set>
+#include <sstream>
+#include "utils.hpp"
+#include "replies.hpp"
+#include <exception>
 
 #define CRLF (std::string)"\r\n"
 #define MAX_NICK_LEN 9 // think about this later
@@ -48,22 +52,28 @@ class Server
         void                         handle_cmd_1(int);
         bool                         check_user(int);
         void                         handle_prv_msge(int);
-        void                         send_reply(int, std::string);
         void                         check_port(std::string);
         void                         change_nick_name(int);
+        bool                         kick_user(Client *, std::string&, std::string&);
         std::map<std::string ,Channel*>channelMap;
-        std::map<std::string, std::string>channelAndPass;
-        void extract_channels(const std::string &, int, const std::string &);
+        std::vector<std::pair<std::string, std::string> >channelAndPass;
+        std::set<char> modes;
+        Client * find_client(std::string &);
+        void extract_channels(const std::string &, const std::string &);
         bool channel_exists(const std::string&);
         void create_channel(const std::string&, Client *);
         std::string parse_join_input(const std::string &, size_t &);
         std::string parse_passwords(const std::string &, size_t &);
-        // bool valid_channel(const std::string &);
-        void check_operations(const std::string &, int, Channel *);
-        void process_operation(char, const char &, int, Channel *);
-        void find_user(const std::string &, int, Channel *);
+        void check_operations(const std::string &, Client&, Channel *);
+        void process_operation(char, const char &, Client &,std::string &, Channel *);
+        Client* find_user(const std::string &, Client &, Channel *);
         void append_user_to_channel(Channel * ,Client *);
-        std::set<char> modes;
+        bool requiresArg(char, char );
+        void invite_user(const std::string &, Client *, const std::string &);
+        void join_handler(Client &);
+        void mode_handler(Client &);
+        void topic_handler(Client &, size_t);
+        void kick_handler(Client &, size_t);
         bool                         check_nick_name(int);
         bool                         check_command(int);
         void                         handle_quit_cmd(int);
@@ -74,6 +84,8 @@ class Server
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
+        void broadcastMsg(std::string);
+        static void send_reply(int, std::string);
 
         Server();
         ~Server();

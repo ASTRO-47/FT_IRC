@@ -22,6 +22,7 @@ private:
     std::string                     _message;
     Client                          *_reciever;
     bool                            _disconnected;
+    std::vector<std::string>        invitedChannels; // bad design
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
     bool                            first;
@@ -34,8 +35,9 @@ public:
     bool                           check_all() const;
     void                           disconnected();
     bool                           check_pass() const;
-    int                            get_buffer_size() const;
+    size_t                            get_buffer_size() const;
     std::string&                   get_cmd(int);
+    std::vector<std::string>& get_cmd_buffer();
     void                           parse_command();
     void                           add_server_to_poll(int);
     int                            get_socket_fd() const;
@@ -43,7 +45,7 @@ public:
     pollfd                         &get_socket_struct();
     socklen_t                      &get_socket_addr_length();
     void                           append_buffer(std::string);
-    std::string                    get_buffer() const;
+    const std::string               &     get_buffer() const;
     void                           correct_pass();
     void                           wrong_pass();
     void                           set_nick_name(std::string);
@@ -59,12 +61,15 @@ public:
     void                           set_reciever(Client *);
     Client*                        get_reciever() const;
     bool                           check_connection();
-    std::string                    get_hostname() const;
-    std::string                    get_ip() const;
+    std::string                        get_hostname() const;
+    std::string                        get_ip() const;
     void                           add_message(std::string);
     bool                           check_first_nick();
     void                           send_buffer();
     void                           set_buffer(std::string);             
-    void                           clear_buffer();             
+    void                           clear_buffer();                 void            set_ip(std::string );
+    std::vector<std::string> & getInvitedChannels();
+    void        appendInvitedChannels(std::string ); // 7ta hadi anbdlha 
+	bool isInvited(std::string &);
     ~Client();
 } ;

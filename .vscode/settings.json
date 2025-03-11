@@ -121,4 +121,8 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false
+    "vector": "cpp",
+    "set": "cpp",
+    "__functional_03": "cpp"
+  }
 }

@@ -4,6 +4,11 @@ Server* Server::ins = NULL;
 
 Server::Server()
 {
+    modes.insert('o');
+    modes.insert('k');
+    modes.insert('l');
+    modes.insert('i');
+    modes.insert('t');   
     ins = this;
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
     auth_guide = 
@@ -141,6 +146,7 @@ void Server::handle_event_fd(int i)
     //     clients[i]->disconnected();
     // }
     // else
+    // std::cout << buffer << '\n';
     {
         buffer[bytes] = '\0';
         clients[i]->append_buffer(buffer);
@@ -207,6 +213,7 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(i);
+                clients[i]->reset();
             }
         }
     }
@@ -238,4 +245,11 @@ void    Server::clean_server()
 Server::~Server()
 {
     clean_server();
+}
+
+void Server::broadcastMsg(std::string msg){
+    for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
+        if ((*it)->check_connection())
+            send_reply((*it)->get_socket_fd(), msg);
+    }
 }
