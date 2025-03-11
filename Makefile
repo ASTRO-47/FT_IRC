@@ -2,8 +2,8 @@ FLAGS = -Wall -Wextra -Werror
 
 CPPC = c++ -std=c++98 -g -fsanitize=address
 
-SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp broadcast.cpp
-B_SOURCES =	 BONUS/bot.cpp utils.cpp join.cpp mode.cpp operations.cpp invite.cpp topic.cpp kick.cpp
+SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp broadcast.cpp utils.cpp join.cpp mode.cpp operations.cpp invite.cpp topic.cpp kick.cpp commands.cpp
+B_SOURCES =	 BONUS/bot.cpp 
 OBJECTS = $(SOURCES:.cpp=.o)
 B_OBJECTS = $(B_SOURCES:.cpp=.o)
 

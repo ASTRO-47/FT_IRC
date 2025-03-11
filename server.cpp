@@ -87,7 +87,7 @@ void    Server::check_port(std::string _p)
 void Server::server_setup(std::string _port, std::string passwd)
 {
     password = passwd;
-    char *checker = NULL;
+    // char *checker = NULL;
     check_port(_port);
     check_pass(passwd);
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
@@ -97,7 +97,7 @@ void Server::server_setup(std::string _port, std::string passwd)
     sock_addr.sin_family = AF_INET; //  select the ipv4 family
     sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
     sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
-    int opt = 1;
+    // int opt = 1;
     // if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)) // keeping the socket alive after the program terminate (skep wait time to handle the packets in the socket)
     //     throw std::runtime_error("SETSOCKOPT FUNCTION FAILED");
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
@@ -163,6 +163,7 @@ void Server::handle_event_fd(int i)
             std::cout << clients[i]->get_buffer() << std::endl;
             while (clients[i]->get_buffer().length()) // split the request to handle bot connection
             {
+                puts("hello");
                 handle_cmd(i);
                 clients[i]->reset();
             }
@@ -181,6 +182,7 @@ void Server::handle_event_fd(int i)
 
 void Server::handler(int sig)
 {
+    (void)sig;
     if (ins)
         ins->clean_server();
     std::exit(1);

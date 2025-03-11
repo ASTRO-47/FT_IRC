@@ -34,7 +34,7 @@ bool    Server::check_nick_name(int i)
         return false;
     if (!isalpha(nick[0]))
         return false;
-    for (int i = 1; i < nick.length() ; i++) 
+    for (size_t i = 1; i < nick.length() ; i++) 
     {
         if (!isalnum(nick[i]) && nick[i] != '-' && nick[i] != '[' && nick[i] != ']' && nick[i] != '\\' && nick[i] != '_')
             return false;

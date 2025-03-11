@@ -27,7 +27,7 @@ private:
     std::string                     _ip;
     bool                            first;
     std::vector<std::string>        replys;
-    bool                            _end_msge;
+    // bool                            _end_msge;
     std::string                     _second_buffer;
 public:
     Client();

@@ -20,6 +20,7 @@
 #include "replies.hpp"
 #include <exception>
 
+
 #define CRLF (std::string)"\r\n"
 #define MAX_NICK_LEN 9 // think about this later
 

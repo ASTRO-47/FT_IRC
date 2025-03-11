@@ -92,13 +92,14 @@ void    Client::set_buffer(std::string _m)
 void Client::clear_buffer()
 {
     _second_buffer.clear();
+    _buffer.clear();
 }
 
 void Client::parse_command()
 {
     int del = 2;
-    int pos = _buffer.find(CRLF);
-    if (pos < 0)
+    size_t pos = _buffer.find(CRLF);
+    if (pos == std::string::npos)
     {
         pos = _buffer.find("\n");
         del--;
@@ -113,6 +114,7 @@ void Client::parse_command()
         if (!trimmed.empty())
             _command_buffer.push_back(trimmed);
     }
+    std::cout << pos << std::endl << _buffer.length() << std::endl;
     if (pos == _buffer.length() - del)
         _buffer.clear();
     else
@@ -122,7 +124,7 @@ void Client::parse_command()
 
     // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
     // std::cout << '[';
-    // for (auto it= _command_buffer.begin();it != _command_buffer.end();it++)
+    // for (std::vector<std::string>::iterator it= _command_buffer.begin();it != _command_buffer.end();it++)
     //     std::cout << *it << "," ;
     // std::cout << ']' << std::endl;
     // exit (0);
@@ -201,7 +203,6 @@ void Client::set_user_infos()
     server_name = _command_buffer[3];
     for (size_t i = 4; i < get_buffer_size() ;i++)
         r_name += _command_buffer[i] + ' ';
-    }
     real_name = r_name;  // check this later
     user = true;
 }

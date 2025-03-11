@@ -53,7 +53,7 @@ void Server::mode_handler(Client &client){
 		// what operation
 		std::string oper = client.get_cmd(2);
         check_operations(oper, client, channelMap[chan]);
-		// ERR_UNKNOWNMODE
+		// ERR_UNKNOWNMODE()
 	}
 	else
 		puts("no permission to perform hadchi");
