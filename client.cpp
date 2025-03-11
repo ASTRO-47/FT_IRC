@@ -93,7 +93,7 @@ void Client::clear_buffer()
 void Client::parse_command()
 {
     int del = 2;
-    int pos = _buffer.find("\r\n");
+    int pos = _buffer.find(CRLF);
     if (pos < 0)
     {
         pos = _buffer.find("\n");

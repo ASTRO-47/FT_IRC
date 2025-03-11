@@ -8,7 +8,7 @@ void Server::taken_nick_name(int i)
     {
         if ((*it)->get_nick_name() == _n && !(*it)->check_all())
         {
-            std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)\r\n";
+            std::string msge = "ERROR :Closing Link: " + clients[i]->get_nick_name() + " by :ft_irc (Overridden by other sign on)" + CRLF;
             send_reply(clients[i]->get_socket_fd(), msge);
             close((*it)->get_socket_fd());
             (*it)->disconnected();
@@ -47,14 +47,14 @@ void Server::parse_nick(int i)
     std::string msge;
     if (clients[i]->get_buffer_size() == 1) // add the nick name is in use
     {
-        msge = server_prefix + "431 :No nickname given\r\n";
+        msge = server_prefix + "431 :No nickname given" + CRLF;
         send_reply(clients[i]->get_socket_fd(), msge);
     }
     else
     {
         if (!check_nick_name(i))
         {
-            std::string msge = server_prefix +  "431 * " + clients[i]->get_cmd(1) +" :Erroneus nickname\r\n";
+            std::string msge = server_prefix +  "431 * " + clients[i]->get_cmd(1) +" :Erroneus nickname" + CRLF;
             send_reply(clients[i]->get_socket_fd(), msge);
         }
         else if (taken_nick_name_1(clients[i]->get_cmd(1)))
@@ -70,14 +70,14 @@ void Server::parse_nick(int i)
             }
             else if (clients[i]->check_all())
             {
-                msge = ":" + clients[i]->get_nick_name() + "!~d@197.230.30.146 NICK :" + clients[i]->get_cmd(1) + "\r\n";
+                msge = ":" + clients[i]->get_nick_name() + "!~d@197.230.30.146 NICK :" + clients[i]->get_cmd(1) + CRLF;
                 send_reply(clients[i]->get_socket_fd(), msge);
             }
             clients[i]->set_nick_name(clients[i]->get_cmd(1));
         }
         else
         {
-            msge = server_prefix + "433" + " * :Nickname is already in use\r\n";
+            msge = server_prefix + "433" + " * :Nickname is already in use" + CRLF;
             send_reply(clients[i]->get_socket_fd(), msge);
         }
     }
@@ -88,13 +88,13 @@ void Server::parse_user(int i)
     std::string  msge;
     if (clients[i]->check_all())
     {
-        msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\r\n";
+        msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister" + CRLF;
         send_reply(clients[i]->get_socket_fd(), msge);
     }
     else if (clients[i]->get_buffer_size() < 5)
     {
         
-        msge = server_prefix + "461 " +  "USER :Not enough parameters\r\n";
+        msge = server_prefix + "461 " +  "USER :Not enough parameters" + CRLF;
         send_reply(clients[i]->get_socket_fd(), msge);
     }
     else
@@ -106,12 +106,12 @@ void Server::try_to_auth(int i)
     std::string _n = clients[i]->get_nick_name();
     if (clients[i]->check_message())
     {
-        std::string msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister\r\n";
+        std::string msge = server_prefix + "462 " + clients[i]->get_nick_name() + " :You may not reregister" + CRLF;
         send_reply(clients[i]->get_socket_fd(), msge);
     }
     else if (clients[i]->get_buffer_size() == 1)
     {
-        std::string msge = server_prefix + "461 PASS: Not enough parameters\r\n";
+        std::string msge = server_prefix + "461 PASS: Not enough parameters" + CRLF;
         send_reply(clients[i]->get_socket_fd(), msge);
     }
     else if (clients[i]->get_buffer_size() > 1)
@@ -120,7 +120,7 @@ void Server::try_to_auth(int i)
             clients[i]->correct_pass();
         else
         {
-            std::string msge = server_prefix + "464 " +  clients[i]->get_cmd(1) + " :Password incorrect\r\n";
+            std::string msge = server_prefix + "464 " +  clients[i]->get_cmd(1) + " :Password incorrect" + CRLF;
             send_reply(clients[i]->get_socket_fd(), msge);
             clients[i]->wrong_pass();
         }
@@ -138,7 +138,7 @@ void Server::handle_cmd(int i)
     }
     if (!clients[i]->check_pass() && (clients[i]->get_cmd(0) != "pass" && clients[i]->get_cmd(0) != "PASS"))
     {
-        std::string msge = server_prefix + "451 :You have not registered\r\n";
+        std::string msge = server_prefix + "451 :You have not registered" + CRLF;
         send_reply(clients[i]->get_socket_fd(), msge);
         return ;
     }

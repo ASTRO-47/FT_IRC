@@ -1,9 +1,26 @@
 #include "server.hpp"
 
-Server::Server() : bot_status(false)
+Server* Server::ins = NULL;
+
+Server::Server()
 {
+    ins = this;
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
-    
+    auth_guide = 
+    "Welcome to our humble server!" + CRLF
+    "To authenticate, please follow these steps:" + CRLF
+    "1. Enter the server password:" + CRLF
+    "   PASS <password>" + CRLF
+    "2. Choose a nickname:" + CRLF
+    "   NICK <nickname>" + CRLF
+    "3. Register with a username and real name:" + CRLF
+    "   USER <username> 0 * :<realname>" + CRLF
+    "Example:" + CRLF
+    "   PASS ServerPass" + CRLF
+    "   NICK JohnDoe" + CRLF
+    "   USER johnd 0 * John Doe" + CRLF
+    "Once authenticated, you can start using the server!" + CRLF;
+
 }
 
 void    Server::registration_msge(int i)
@@ -11,19 +28,19 @@ void    Server::registration_msge(int i)
     std::string nick = clients[i]->get_nick_name();
     taken_nick_name(i);
     std::string message = 
-            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\r\n"
-            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\r\n"
-            ":ft_irc 254 " + nick + " :channels formed\r\n" // add number of channels
-            ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients\r\n";
+            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network" + CRLF
+            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
+            ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels
+            ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF;
     std::string motd = 
-        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
-        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
-        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
-        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
-        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
-        ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
-        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
-        ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
+        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF
+        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF
+        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / " + CRLF
+        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  " + CRLF
+        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   " + CRLF
+        ":ft_irc 372 " + nick + " :-          |_____|                                     " + CRLF
+        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
+        ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
     message += motd;
     send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
     clients[i]->showed_messgae();
@@ -33,7 +50,7 @@ bool white_space(const std::string& str)
 {
     for (size_t i = 0; i < str.length(); ++i)
     {
-        if (std::isspace(static_cast<char>(str[i])))
+        if (std::isspace((str[i]))) // cast to char
             return true;
     }
     return false;
@@ -76,8 +93,8 @@ void Server::server_setup(std::string _port, std::string passwd)
     sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
     sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
     int opt = 1;
-    if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) == -1) || (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)) // keeping the socket alive after the program terminate (skep wait time to handle the packets in the socket)
-        throw std::runtime_error("SETSOCKOPT FUNCTION FAILED");
+    // if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)) // keeping the socket alive after the program terminate (skep wait time to handle the packets in the socket)
+    //     throw std::runtime_error("SETSOCKOPT FUNCTION FAILED");
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
@@ -104,7 +121,8 @@ void    Server::handle_new_client()
         new_client->connect(server_socket);
         clients.push_back(new_client); // add the client to the vector
         _poll_fds.push_back(new_client->get_socket_struct());
-        std::cout << "Client connected, on fd: "  << new_client->get_socket_fd() << "\r\n";
+        std::cout << "Client connected, on fd: "  << new_client->get_socket_fd() << CRLF;
+        send_reply(new_client->get_socket_fd(), auth_guide);
     }
     catch(const std::exception& e)
     {
@@ -115,14 +133,14 @@ void    Server::handle_new_client()
 
 void Server::handle_event_fd(int i)
 {
-    char buffer[500] = {0};
-    int bytes = recv(clients[i]->get_socket_fd(), buffer, 499, 0); // put in the stream of the client
-    if (bytes <= 0)
-    {
-        close (clients[i]->get_socket_fd());
-        clients[i]->disconnected();
-    }
-    else
+    char buffer[512] = {0};
+    int bytes = recv(clients[i]->get_socket_fd(), buffer, 511, 0); // put in the stream of the client
+    // if (bytes <= 0)
+    // {
+    //     close (clients[i]->get_socket_fd());
+    //     clients[i]->disconnected();
+    // }
+    // else
     {
         buffer[bytes] = '\0';
         clients[i]->append_buffer(buffer);
@@ -155,8 +173,18 @@ void Server::handle_event_fd(int i)
     }
 }
 
+void Server::handler(int sig)
+{
+    if (ins)
+        ins->clean_server();
+    std::exit(1);
+}
+
 void Server::multiplexing_func()
 {
+    signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT, handler);
+    signal(SIGQUIT, handler);
     while (true)
     {
         int ready = poll(_poll_fds.data(), _poll_fds.size(), 0); // non-blocking poll
@@ -171,7 +199,7 @@ void Server::multiplexing_func()
                 _poll_fds.erase(_poll_fds.begin() + i);
                 delete clients[i];
                 clients.erase(clients.begin() + i);
-                --i;
+                i--;
             }
             if (_poll_fds[i].revents & POLLIN && clients[i]->check_connection()) // if a connection to the socket requested and its writing request
             {
@@ -194,7 +222,7 @@ void    Server::send_reply(int fd, std::string message)
     }
 }
 
-Server::~Server()
+void    Server::clean_server()
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
@@ -205,4 +233,9 @@ Server::~Server()
     clients.clear();
     if (server_socket != -1)
         close(server_socket);
+}
+
+Server::~Server()
+{
+    clean_server();
 }

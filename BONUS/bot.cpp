@@ -17,9 +17,9 @@ Bot::Bot()
 void Bot::parse(char **av) // use the arg from the user input
 {
     _port = 8080;
-    _nick = "nick bot\r\n";
-    _user = "user f f f f f\r\n";
-    _pass = "pass hello\r\n";
+    _nick = "nick bot" + CRLF;
+    _user = "user f f f f f" + CRLF;
+    _pass = "pass hello" + CRLF;
 }
 
 void    Bot::_connect()

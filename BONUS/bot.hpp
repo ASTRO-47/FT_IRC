@@ -16,6 +16,8 @@
 #include <exception>
 #include <set>
 
+#define CRLF (std::string)"\r\n"
+
 class Bot
 {
 private:

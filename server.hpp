@@ -16,6 +16,7 @@
 #include <exception>
 #include <set>
 
+#define CRLF (std::string)"\r\n"
 #define MAX_NICK_LEN 9 // think about this later
 
 class Client;
@@ -24,8 +25,8 @@ class Channel;
 class Server
 {
     private:
-        int                          bot_fd;
-        bool                         bot_status;
+        static Server                *ins;
+        std::string                  auth_guide;
         std::vector<Client *>        clients;
         std::string                  message;
         std::string                  _draw;
@@ -50,7 +51,6 @@ class Server
         void                         send_reply(int, std::string);
         void                         check_port(std::string);
         void                         change_nick_name(int);
-
         std::map<std::string ,Channel*>channelMap;
         std::map<std::string, std::string>channelAndPass;
         void extract_channels(const std::string &, int, const std::string &);
@@ -68,8 +68,9 @@ class Server
         bool                         check_command(int);
         void                         handle_quit_cmd(int);
         void                         broadcast_msge(std::string);
-        void                         handle_bot_cmd(int);
         void                         check_pass(std::string);
+        static void                  handler(int);
+        void                         clean_server();
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

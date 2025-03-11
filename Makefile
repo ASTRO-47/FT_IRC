@@ -24,24 +24,24 @@ RESET       = \e[0m
 all : $(NAME)
 
 $(NAME): $(OBJECTS)
-	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(NAME)... $(RESET)\r\n"
+	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(NAME)... $(RESET)\n"
 	@$(CPPC) $(FLAGS) $(OBJECTS) -o $(NAME)
 	@printf "$(GREEN)    - Executable ready.\n$(RESET)"
 
 bonus: $(BONUS)
 
 $(BONUS) : $(B_OBJECTS)
-	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(BONUS)... $(RESET)\r\n"
+	@printf "$(CURSIVE)$(GRAY) 	- Compiling $(BONUS)... $(RESET)\n"
 	@$(CPPC) $(FLAGS) $(B_OBJECTS) -o $(BONUS)
 	@printf "$(GREEN)    - Executable ready.\n$(RESET)"
 
 clean:
 	@$(RM) $(OBJECTS) $(B_OBJECTS)
-	@printf "$(YELLOW)    - objects removed.$(RESET)\r\n"
+	@printf "$(YELLOW)    - objects removed.$(RESET)\n"
 	
 fclean: clean
 	@$(RM) $(NAME) $(BONUS)
-	@printf "$(YELLOW)    - Executable removed.$(RESET)\r\n"
+	@printf "$(YELLOW)    - Executable removed.$(RESET)\n"
 
 re : fclean all
 
