@@ -3,8 +3,8 @@
 
 // user kay inviti raso hhhhh
 void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
-    if (channelMap[chan.substr(1)] && channelMap[chan.substr(1)]->getInviteOnly()
-        && !channelMap[chan.substr(1)]->isOperator(sender)){
+    if (channelMap[chan] && channelMap[chan]->getInviteOnly()
+        && !channelMap[chan]->isOperator(sender)){
             // send_reply(sender->get_socket_fd(), ERR_CHANOPRIVSNEEDED(sender->get_nick_name(), chan)) knt hna
             return;
     }
@@ -20,7 +20,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
         return;
     }
     // ila kan already fdik channel
-    std::map<std::string, Channel *>::iterator iter = channelMap.find(chan.substr(1));
+    std::map<std::string, Channel *>::iterator iter = channelMap.find(chan);
     if (iter != channelMap.end()){
         std::map<Client *, bool >::iterator member = iter->second->getMembers().find(cinvited);
         if (member != iter->second->getMembers().end()){

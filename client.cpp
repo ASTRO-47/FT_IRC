@@ -244,12 +244,12 @@ std::vector<std::string>& Client::getInvitedChannels(){
 
 void Client::appendInvitedChannels(std::string invitedTo){
     std::cout << "he was invited to " << invitedTo << '\n';
-    invitedChannels.push_back(invitedTo.substr(1)); // substr zdtha hna
+    invitedChannels.push_back(invitedTo);
 }
 
 
 bool Client::isInvited(std::string &chan){
-    std::string channel = chan.substr(1);
+    std::string channel = chan;
     std::vector<std::string>::iterator it = std::find(invitedChannels.begin(), invitedChannels.end(), channel);
     if (it != invitedChannels.end())
         return true;

@@ -20,26 +20,32 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 // Client *newOp = find_user(client.get_cmd(3), i, channel);
                 Client *newOp = find_user(arg, client, channel);
                 channel->getMembers()[newOp] = true;
-                puts("he is now an operator");
+                std::string operation = "+o " + arg;
+                channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), operation, "MODE"));
             }
+            else
+                send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         }
         else if (sign == '-'){
             if (client.get_buffer_size() > 3){
                 // Client *removeOp = find_user(client.get_cmd(3), i, channel);
                 Client *removeOp = find_user(arg, client, channel);
                 channel->getMembers()[removeOp] = false;
-                puts("7aydna lih operator");
+                std::string operation = "-o " + arg;
+                channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), operation, "MODE"));
             }
+            else
+                send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         }
     }
     else if (oper == 'i'){
         if (sign == '+'){
             channel->setInviteOnly(true);// replies ajmi
-            send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "+i", "MODE"));
+            channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "+i", "MODE"));
         }
         else if (sign == '-'){
             channel->setInviteOnly(false); //replies ajmi
-            send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-i", "MODE"));
+            channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-i", "MODE"));
         }
     }
     else if (oper == 'l'){
@@ -55,12 +61,14 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 channel->setLimitSet(true);
                 channel->setUserLimit(userLimit);
                 std::string loper = "+l " + arg;
-                send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), loper, "MODE"));
+                channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), loper, "MODE"));
             }
+            else
+                send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         }
         else if (sign == '-'){
             channel->setLimitSet(false);
-            send_reply(client.get_socket_fd(), OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-l", "MODE"));
+            channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-l", "MODE"));
         }
     }
     else if (oper == 'k'){
@@ -74,21 +82,28 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 for (std::vector<std::pair<std::string, std::string> >::iterator it = channelAndPass.begin(); it != channelAndPass.end(); ++it){
                     if (it->first == channelName){
                         it->second = pass;
+                        std::string key =  "+k " + pass;
+                        channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), key, "MODE"));
                     }
                 }
             }
-            // else
-                // Server::send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
+            else
+                send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         }
         else if (sign == '-'){
             channel->setRequiresPass(false);
             channel->setPass(""); // hmmmm tanchof wach blan
+            channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-k", "MODE"));
         }
     }
     else if (oper == 't'){
-        if (sign == '+')
+        if (sign == '+'){
             channel->setTopicFlag(true);
-        else if (sign == '-')
+            channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "+t", "MODE"));
+        }
+        else if (sign == '-'){
             channel->setTopicFlag(false);
+            channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-t", "MODE"));
+        }
     }   
 }

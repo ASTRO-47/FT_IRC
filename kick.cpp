@@ -26,11 +26,11 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
         return false;
     }
     // segv here when user changes his nick after logging in
-    if (!channelMap[chan.substr(1)]->isMember(oper) || !channelMap[chan.substr(1)]->isOperator(oper) || !channelMap[chan.substr(1)]->isMember(toKick)){
+    if (!channelMap[chan]->isMember(oper) || !channelMap[chan]->isOperator(oper) || !channelMap[chan]->isMember(toKick)){
         puts("machi operator || machi member dak lighaytkicka");
         return false;
     }
-    channelMap[chan.substr(1)]->removeMember(toKick);
+    channelMap[chan]->removeMember(toKick);
     puts("kicked");
     return true;
 }

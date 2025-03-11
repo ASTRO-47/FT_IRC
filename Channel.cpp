@@ -1,8 +1,7 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::string ChannelName, Client* Creator, char prefix){
-	_prefix = prefix;
-	name = ChannelName.substr(1);
+Channel::Channel(std::string ChannelName, Client* Creator){
+	name = ChannelName;
 	this->members[Creator] = true;
 	isInviteOnly = false;
 	pass = "";
@@ -32,9 +31,6 @@ void Channel::appendMember(Client *newMember){ // zid lprefix
 	// std::string msg = ":" + newMember->get_nick_name() + "!~" + newMember->get_hostname() + "@" + newMember->get_ip() +" JOIN " + name + "\n"; 
 	// send(newMember->get_socket_fd(), msg.c_str(), msg.length(), 0);
 	// sendiha lga3 lmembers bli joina 
-}
-char Channel::getPrefix(){
-	return _prefix;
 }
 
 std::string & Channel::getTopic(){

@@ -2,7 +2,7 @@
 #include "Channel.hpp"
 
 bool Server::channel_exists(const std::string& channelName){
-    return channelMap.find(channelName.substr(1)) != channelMap.end();
+    return channelMap.find(channelName) != channelMap.end();
 }
 
 std::string Server::parse_passwords(const std::string &passwords, size_t &start){
@@ -55,9 +55,9 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
 // join replies
 
 void Server::create_channel(const std::string& channelName, Client *creator){
-    Channel *newChannel = new Channel(channelName, creator, channelName.front());
+    Channel *newChannel = new Channel(channelName, creator);
     // std::cout << channelName << "|||" << std::endl;
-    channelMap[channelName.substr(1)] = newChannel;
+    channelMap[channelName] = newChannel;
     return;
 }
 
@@ -69,12 +69,12 @@ void Server::append_user_to_channel(Channel *channel, Client *newMember){
     }
     if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit()){
         channel->appendMember(newMember);
-        std::string name = channel->getPrefix() + channel->getChannelName();
+        std::string name = channel->getChannelName();
         channel->broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
 	    // Server::send_reply(newMember->get_socket_fd(), CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
-        std::cout << "return dialha houa " << channel->print_members() << '\n';
         Server::send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel->print_members()));
 	    Server::send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));
+        // mli ykon topic msetti nsift rpl topic
     }
     else
         puts("baraka ajmi"); // reply
@@ -107,7 +107,7 @@ void Server::join_handler(Client &client){
         if (!exists)
 	        create_channel(channelName, &client);
         else {
-            Channel* channel = channelMap[channelName.substr(1)];
+            Channel* channel = channelMap[channelName];
             // std::cout << "channel name is: " << channelName << '\n';
             if (channel->getInviteOnly() && !client.isInvited(channelName))
                 send_reply(client.get_socket_fd(), ERR_INVITEONLYCHAN(client.get_nick_name(),channelName));
