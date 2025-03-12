@@ -1,13 +1,11 @@
 #include "server.hpp"
 #include "Channel.hpp"
 
-
 void    Server::handle_cmd_1(int i)
 {
     clients[i]->parse_command();
 	std::string input = clients[i]->get_cmd(0);
     toLower(input);
-    std::cout << input << '\n';
     Client &client = *clients[i];
     size_t buffer_size = clients[i]->get_buffer_size();
     std::string msge;
@@ -56,7 +54,6 @@ void    Server::handle_cmd_1(int i)
 //vector 
 // l9it +o 
 // antraiter l arg wnpoppih
-
 
 // sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
 

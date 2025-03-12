@@ -78,6 +78,9 @@ bool Server::check_command(int i)
             return true;
         }
         handle_prv_msge(i);
+        return true;
     }
     return false;
 }
+
+// crash on join multiple times

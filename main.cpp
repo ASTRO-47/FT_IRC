@@ -8,7 +8,6 @@ void f()
 int main(int ac , char *av[])
 {
     // atexit(f);
-    // int integer;
     if (ac != 3)
         return (std::cerr << "invalid number of args\r\n", 1);
     Server server;
@@ -22,6 +21,5 @@ int main(int ac , char *av[])
     {
         std::cout << "ERROR: " << e.what() << std::endl;
     }
-
-    return 0; // disconnected when ctrl + c the client reading from urandom
+    return 0;
 }
