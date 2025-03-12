@@ -1,6 +1,8 @@
 #include "server.hpp"
 #include "Channel.hpp"
 
+// check channel member limits!!!
+
 // user kay inviti raso hhhhh
 void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
     if (channelMap[chan] && channelMap[chan]->getInviteOnly()
@@ -19,13 +21,11 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
         send_reply(sender->get_socket_fd(), ERR_NOSUCHNICK(sender->get_nick_name(), invited));
         return;
     }
-    // ila kan already fdik channel
     std::map<std::string, Channel *>::iterator iter = channelMap.find(chan);
     if (iter != channelMap.end()){
         std::map<Client *, bool >::iterator member = iter->second->getMembers().find(cinvited);
         if (member != iter->second->getMembers().end()){
-            std::cout << member->first->get_nick_name() << "-+-+" << '\n';
-            puts("already a member of the channel");
+            send_reply(sender->get_socket_fd(), ERR_USERONCHANNEL(invited, chan, sender->get_nick_name()));
             return;
         }
     }
@@ -44,3 +44,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
 // invite message
 // mat invitich rask
 }
+
+
+
+// 3awd checki replies d invite dik no such nick

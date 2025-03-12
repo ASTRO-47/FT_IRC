@@ -77,7 +77,7 @@ void Server::append_user_to_channel(Channel *channel, Client *newMember){
         // mli ykon topic msetti nsift rpl topic
     }
     else
-        puts("baraka ajmi"); // reply
+        send_reply(newMember->get_socket_fd(), ERR_CHANNELISFULL(channel->getChannelName(), newMember->get_nick_name()));
 }
 
 void Server::join_handler(Client &client){

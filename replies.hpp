@@ -37,5 +37,12 @@
 
 #define ERR_UNKNOWNMODE(target, oper) (std::string(sprefix) + " 472 " + target + oper + " :is an unknown mode char to me\r\n")
 
-#define ERR_NOSUCHNICK(target, nick, invited) (std::string(sprefix) + " 401 " + target + " " + nick + " :No such nick/channel\r\n")
+#define ERR_NOSUCHNICK(target, nick) (std::string(sprefix) + " 401 " + target + " " + nick + " :No such nick/channel\r\n")
 
+#define ERR_USERONCHANNEL(user, channel, target) (std::string(sprefix) + " 443 " + target + " " + user + " " + channel + " :is already on channel\r\n")
+
+#define ERR_CHANNELISFULL(channel, target) (std::string(sprefix) + " 471 " + target + " " + channel + " :Cannot join channel, Channel is full (+l)\r\n")
+
+#define ERR_USERNOTINCHANNEL(channel, target, tobekicked)(std::string(sprefix) + " 441 " + target + " " + tobekicked + " " + channel + " :They aren't on that channel\r\n")
+
+#define ERR_NOTONCHANNEL(channel, target) (std::string(sprefix) + " 442 " + target + " " + channel + " :You're not on that channel\r\n")

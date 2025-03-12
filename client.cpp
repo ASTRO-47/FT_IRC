@@ -292,6 +292,7 @@ std::vector<std::string>& Client::getInvitedChannels(){
 
 void Client::appendInvitedChannels(std::string invitedTo){
     std::cout << "he was invited to " << invitedTo << '\n';
+    // if (channel lmit)
     invitedChannels.push_back(invitedTo);
 }
 
