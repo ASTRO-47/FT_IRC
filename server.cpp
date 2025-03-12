@@ -203,6 +203,7 @@ void Server::multiplexing_func()
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
                 std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
+                removeUserFromChannels(*clients[i]);
                 close(clients[i]->get_socket_fd());
                 _poll_fds.erase(_poll_fds.begin() + i);
                 delete clients[i];
@@ -253,5 +254,12 @@ void Server::broadcastMsg(std::string msg){
     for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
         if ((*it)->check_connection())
             send_reply((*it)->get_socket_fd(), msg);
+    }
+}
+
+void Server::removeUserFromChannels(Client& client){
+    for (std::map<std::string, Channel*>::iterator it = channelMap.begin(); it != channelMap.end(); it++){
+        if (it->second)
+            it->second->removeMember(&client);
     }
 }

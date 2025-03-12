@@ -1,6 +1,7 @@
 #pragma once
 
-#include "client.hpp"
+#include "server.hpp"
+class Client;
 
 class Channel{
 	private:

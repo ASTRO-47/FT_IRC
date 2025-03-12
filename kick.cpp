@@ -80,3 +80,5 @@ void Server::kick_handler(Client &client, size_t buffer_size){
 
 
 // ana makaynch fdik channel w baghi nkicki chi7d jayn fdik channel
+
+//tester dik kick b reason

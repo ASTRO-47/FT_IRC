@@ -18,6 +18,7 @@
 #include <sstream>
 #include "utils.hpp"
 #include "replies.hpp"
+#include "Channel.hpp"
 #include <exception>
 
 
@@ -67,7 +68,7 @@ class Server
         std::string parse_passwords(const std::string &, size_t &);
         void check_operations(const std::string &, Client&, Channel *);
         void process_operation(char, const char &, Client &,std::string &, Channel *);
-        Client* find_user(const std::string &, Client &, Channel *);
+        Client* find_user(const std::string &, Channel *);
         void append_user_to_channel(Channel * ,Client *);
         bool requiresArg(char, char );
         void invite_user(const std::string &, Client *, const std::string &);
@@ -82,6 +83,7 @@ class Server
         void                         check_pass(std::string);
         static void                  handler(int);
         void                         clean_server();
+        void                         removeUserFromChannels(Client&);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
