@@ -114,13 +114,12 @@ void Client::parse_command()
         if (!trimmed.empty())
             _command_buffer.push_back(trimmed);
     }
-    std::cout << pos << std::endl << _buffer.length() << std::endl;
     if (pos == _buffer.length() - del)
         _buffer.clear();
     else
         _buffer = _buffer.substr(pos + del, _buffer.length());
 
-    // debug printing 
+    // debug printing
 
     // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
     // std::cout << '[';

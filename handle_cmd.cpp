@@ -130,7 +130,6 @@ void Server::try_to_auth(int i)
 void Server::handle_cmd(int i)
 {
     clients[i]->parse_command();
-    // std::cout << clients[i]->get_buffer() << std::endl;
     if (clients[i]->get_cmd(0) == "quit" || clients[i]->get_cmd(0) == "QUIT")
     {
         handle_quit_cmd(i);

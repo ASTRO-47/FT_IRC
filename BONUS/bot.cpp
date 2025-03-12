@@ -49,10 +49,6 @@ void    Bot::_connect()
         }
         buffer[bytes] = '\0'; // /urandom error
         std::cout << buffer;
-        // if (buffer == "bot\n")
-        // {
-        //     send(_socket, "hello from bot", 15, 0);
-        // }
     }
 }
 

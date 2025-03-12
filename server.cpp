@@ -146,7 +146,6 @@ void Server::handle_event_fd(int i)
     //     clients[i]->disconnected();
     // }
     // else
-    // std::cout << buffer << '\n';
     {
         buffer[bytes] = '\0';
         clients[i]->append_buffer(buffer);
@@ -160,10 +159,9 @@ void Server::handle_event_fd(int i)
         }
         if (clients[i]->cmd_end() && !clients[i]->check_all())
         {
-            std::cout << clients[i]->get_buffer() << std::endl;
+
             while (clients[i]->get_buffer().length()) // split the request to handle bot connection
             {
-                puts("hello");
                 handle_cmd(i);
                 clients[i]->reset();
             }
