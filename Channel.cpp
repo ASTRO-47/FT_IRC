@@ -33,7 +33,7 @@ void Channel::appendMember(Client *newMember){ // zid lprefix
 	// sendiha lga3 lmembers bli joina 
 }
 
-std::string & Channel::getTopic(){
+std::string & Channel::getTopicString(){
 	return topic;
 }
 
@@ -150,4 +150,12 @@ std::string Channel::print_members(){
 		ss << it->first->get_nick_name();
 	}
 	return ss.str();
+}
+
+void Channel::setTopic(bool newState){
+	topicSet = newState;
+}
+
+bool & Channel::getTopic(){
+	return topicSet;
 }

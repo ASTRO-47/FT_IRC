@@ -1,6 +1,7 @@
 broadcast message to all channels if nick name changed
 
-two clients connected and the first disconnectedcompile in codespaces with all flags + fsanitize
+two clients connected and the first disconnected
+compile in codespaces with all flags + fsanitize
 
 const for the getters
 
@@ -18,7 +19,7 @@ finma kayn map khasni nchecki wach lkey valid
 
 
 
-ctrl c w n3awd ndkhl w njoini chi channel kant kadir segv
+ctrl c w n3awd ndkhl w njoini chi channel kant kadir segv ======> fixed
 
 
 lockiw webserv w diro give up

@@ -23,7 +23,7 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
     // std::cout << client.get_buffer_size() << '\n';
     for (size_t j = 3; j < client.get_buffer_size(); j++) //  machi dima ghaykon idan hadchi mzl chwiya flawed
         options.push_back(client.get_cmd(j));
-    for (std::vector<std::pair<char, char> >::iterator it = operations.begin(); it != operations.end(); it++){ // we dont increment here erase returns next valid iterator
+    for (std::vector<std::pair<char, char> >::iterator it = operations.begin(); it != operations.end(); it++){
         char charMode = it->first;
         char sign = it->second;
         if (modes.find(charMode) == modes.end()){
@@ -41,12 +41,12 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
             }
         else
             process_operation(sign, charMode, client, options.front(), channel); // sawb function khra lhadok li may7tajoch args
-        }
+    }
 }
 
 void Server::mode_handler(Client &client){
 	std::string chan = client.get_cmd(1);
-    if (channel_exists(chan) == true){// protecti channel invalid 
+    if (channel_exists(chan) == true){
         if (channelMap[chan]->isOperator(&client) == true){
 		    std::string oper = client.get_cmd(2);
             check_operations(oper, client, channelMap[chan]);

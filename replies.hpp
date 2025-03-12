@@ -25,15 +25,13 @@
 #define RPL_ENDOFNAMES(target, channel) (std::string(sprefix) + " 366 " + target + " " + channel + " :End of /NAMES list.\r\n")
 
 
-// :marin!~h@197.230.30.146 MODE #chan +i
-
 #define OPER_SUCCESS(target, channel, ip, hostname, oper, command) (":" + target + "!~" + hostname + "@" + ip + " " + command  +  " " +  channel + " " + oper + " \r\n")
 
 
 #define RPL_NOTOPIC(target, channel) (std::string(sprefix) + " 331 " + target + " " + channel + " :No topic is set.\r\n")
 
 
-#define RPL_TOPIC(target ,channel, topic) (std::string(sprefix) + " 332 " + target + " " + channel + topic)
+#define RPL_TOPIC(target ,channel, topic) (std::string(sprefix) + " 332 " + target + " " + channel + topic + " \r\n")
 
 #define ERR_UNKNOWNMODE(target, oper) (std::string(sprefix) + " 472 " + target + oper + " :is an unknown mode char to me\r\n")
 

@@ -15,8 +15,9 @@ class Channel{
 	bool limitSet;
 	size_t userLimit;
 	bool topicSettable;
+	bool topicSet;
 	public:
-	std::string & getTopic();
+	std::string & getTopicString();
 	std::string & getPass();
 	bool & getRequiresPass();
 	bool isOperator(Client*);
@@ -38,6 +39,8 @@ class Channel{
 	void setLimitSet(bool flag);
 	unsigned long getNumMembers();
 	bool & getTopicFlag();
+	bool & getTopic();
+	void setTopic(bool);
 	void setTopicFlag(bool);
 	std::string & getChannelName();
 	void removeMember(Client *);

@@ -94,7 +94,7 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
         }
         else if (sign == '-'){
             channel->setRequiresPass(false);
-            channel->setPass(""); // hmmmm tanchof wach blan
+            channel->setPass("");
             channel->broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel->getChannelName(), client.get_ip(), client.get_hostname(), "-k", "MODE"));
         }
     }

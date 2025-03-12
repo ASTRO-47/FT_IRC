@@ -18,17 +18,8 @@ std::string Server::parse_passwords(const std::string &passwords, size_t &start)
 }
 
 std::string Server::parse_join_input(const std::string &arg, size_t &start){
-    // if (arg.empty() || (arg.front() != '#' && arg.front() != '&')){
-    //     send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(arg));
-    //     return ("");
-    // }
     size_t comma = arg.find(',' , start);
     std::string chan = arg.substr(start, comma - start);
-    // if ((chan.front() == '#' || chan.front() == '&') && chan.size() == 1){
-        // std::cout << "chan is: " <<chan << '\n';
-        // send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(chan));
-        // return("");
-    // }
     if (comma != std::string::npos)
         start = comma + 1;
     else
@@ -56,11 +47,10 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
 
 void Server::create_channel(const std::string& channelName, Client *creator){
     Channel *newChannel = new Channel(channelName, creator);
-    // std::cout << channelName << "|||" << std::endl;
     channelMap[channelName] = newChannel;
     return;
 }
-
+    // mli ykon topic msetti nsift rpl topic
 void Server::append_user_to_channel(Channel *channel, Client *newMember){
     std::map<Client *, bool>::iterator it = channel->getMembers().find(newMember);
     if (it != channel->getMembers().end()){
@@ -71,9 +61,10 @@ void Server::append_user_to_channel(Channel *channel, Client *newMember){
         channel->appendMember(newMember);
         std::string name = channel->getChannelName();
         channel->broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
-	    // Server::send_reply(newMember->get_socket_fd(), CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
-        Server::send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel->print_members()));
-	    Server::send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));
+        if (channel->getTopic() == true)
+            send_reply(newMember->get_socket_fd(), RPL_TOPIC(newMember->get_nick_name(), channel->getChannelName(), channel->getTopicString()));
+        send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel->print_members()));
+	    send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));// print channel modes +t
         // mli ykon topic msetti nsift rpl topic
     }
     else
@@ -89,7 +80,6 @@ void Server::join_handler(Client &client){
         pass = "";
     extract_channels(channels, pass);
     std::vector<std::pair<std::string, std::string> >::iterator it = channelAndPass.begin();
-    // i can use a for loop bla increment ghir khasni n3rf imta n erasi w imta la
     while (it != channelAndPass.end()){
 		std::string channelName = it->first;
         std::string password = it->second;
@@ -108,7 +98,6 @@ void Server::join_handler(Client &client){
 	        create_channel(channelName, &client);
         else {
             Channel* channel = channelMap[channelName];
-            // std::cout << "channel name is: " << channelName << '\n';
             if (channel->getInviteOnly() && !client.isInvited(channelName))
                 send_reply(client.get_socket_fd(), ERR_INVITEONLYCHAN(client.get_nick_name(),channelName));
 			else if (channel->getRequiresPass() && channel->getPass() != password)
