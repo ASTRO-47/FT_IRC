@@ -31,8 +31,6 @@ void    Server::change_nick_name(int i)
 }
 
 
-// when we change the nick kan3tabro b7ala user jdid 
-// bghiti tkhdm bl exceptions khs dir try catch ajmi
 void    Server::handle_quit_cmd(int i)
 {
     std::string msge;
@@ -43,7 +41,7 @@ void    Server::handle_quit_cmd(int i)
         msge += "*";
     msge += "!~f@197.230.30.146 QUIT :Client Quit" + CRLF;
     send_reply(clients[i]->get_socket_fd(), msge);
-    // handle if operator 
+    removeUserFromChannels(*clients[i]); // fkr flblan dial tb9a channel bla operator etc...
     msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)" + CRLF;
     send_reply(clients[i]->get_socket_fd(), msge);
     close(clients[i]->get_socket_fd());

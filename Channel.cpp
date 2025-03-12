@@ -10,27 +10,14 @@ Channel::Channel(std::string ChannelName, Client* Creator){
 	topicSettable = false;
 	topic = "";
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
-	// setOperator(Creator, true);
-	// broadcast lkolchi hadi fach kijoini chiwahd the same channel li fiha chi wahd akhr
-
-	// gad ha reply 9lb 3la smitha etc..
-	
-	// std::string msg2 = ":" + Creator->get_nick_name() + "!~" + Creator->get_hostname() + "@" + Creator->get_ip() +" JOIN " + ChannelName + " +t" + "\n"; 
-	// setTopic("");
-	//rpl topic 332 && RPL_NAMREPLY 353 && ENDOFNAMES 366
-	// mode notification
 	Server::send_reply(Creator->get_socket_fd(), CHANNEL_JOIN(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
 	Server::send_reply(Creator->get_socket_fd(), CHANNEL_MODES(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_NAMREPLY(Creator->get_nick_name(), ChannelName, '@' + Creator->get_nick_name()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_ENDOFNAMES(Creator->get_nick_name(), ChannelName));
 }
 
-void Channel::appendMember(Client *newMember){ // zid lprefix
+void Channel::appendMember(Client *newMember){
 	this->members[newMember] = false;
-	// correct reply;
-	// std::string msg = ":" + newMember->get_nick_name() + "!~" + newMember->get_hostname() + "@" + newMember->get_ip() +" JOIN " + name + "\n"; 
-	// send(newMember->get_socket_fd(), msg.c_str(), msg.length(), 0);
-	// sendiha lga3 lmembers bli joina 
 }
 
 std::string & Channel::getTopicString(){
