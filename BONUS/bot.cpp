@@ -17,7 +17,7 @@ Bot::Bot()
 void Bot::parse(char **av) // use the arg from the user input
 {
     (void)av;
-    _port = 8551;
+    _port = 8080;
     _nick = "nick bot" + CRLF;
     _user = "user f f f f f" + CRLF;
     _pass = "pass hello" + CRLF;
@@ -30,7 +30,7 @@ void    Bot::_connect()
         throw std::runtime_error("socket creation failed");
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
-    _addr.sin_addr.s_addr = inet_addr("10.12.5.7"); 
+    _addr.sin_addr.s_addr = inet_addr("10.12.10.15"); 
     if (connect(_socket, (struct sockaddr *)&_addr, sizeof(_addr)) < -1)
         throw std::runtime_error("failed to connect to server");
     send(_socket, _pass.c_str(), _pass.length(), 0);

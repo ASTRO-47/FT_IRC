@@ -107,7 +107,6 @@ void Client::parse_command()
     std::string test = _buffer.substr(0, pos);
     std::stringstream ss(test);
     std::string command;
-
     while (std::getline(ss, command, ' ')) 
     {
         std::string trimmed = trim(command);
@@ -115,12 +114,14 @@ void Client::parse_command()
             _command_buffer.push_back(trimmed);
     }
     if (pos == _buffer.length() - del)
+    {
         _buffer.clear();
+    }
     else
+    {
         _buffer = _buffer.substr(pos + del, _buffer.length());
-
+    }
     // debug printing
-
     // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
     // std::cout << '[';
     // for (std::vector<std::string>::iterator it= _command_buffer.begin();it != _command_buffer.end();it++)
@@ -236,7 +237,9 @@ bool Client::check_message() const
 
 bool    Client::cmd_end()
 {
-    if ((_buffer[_buffer.length() - 1] == '\n'  && _buffer[_buffer.length() - 2] == '\r' ) || _buffer[_buffer.length() - 1] == '\n')
+    if (!_buffer.length())
+        return false;
+    if (_buffer.back() == '\n')
     {
         _second_buffer = _buffer;
         return true;
