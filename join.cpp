@@ -46,29 +46,29 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
 // join replies
 
 void Server::create_channel(const std::string& channelName, Client *creator){
-    Channel *newChannel = new Channel(channelName, creator);
-    channelMap[channelName] = newChannel;
+    channelMap[channelName] = Channel(channelName, creator);
     return;
 }
     // mli ykon topic msetti nsift rpl topic
-void Server::append_user_to_channel(Channel *channel, Client *newMember){
-    std::map<Client *, bool>::iterator it = channel->getMembers().find(newMember);
-    if (it != channel->getMembers().end()){
-        std::cout << newMember->get_nick_name() << " is already member of " << channel->getChannelName() << '\n';
+void Server::append_user_to_channel(Channel &channel, Client *newMember){
+    std::map<Client *, bool>::iterator it = channel.getMembers().find(newMember);
+    if (it != channel.getMembers().end()){
+        std::cout << newMember->get_nick_name() << " is already member of " << channel.getChannelName() << '\n';
         return;
     }
-    if (!channel->getLimitSet() || channel->getNumMembers() < channel->getUserLimit()){
-        channel->appendMember(newMember);
-        std::string name = channel->getChannelName();
-        channel->broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
-        if (channel->getTopic() == true)
-            send_reply(newMember->get_socket_fd(), RPL_TOPIC(newMember->get_nick_name(), channel->getChannelName(), channel->getTopicString()));
-        send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel->print_members()));
+    if (!channel.getLimitSet() || channel.getNumMembers() < channel.getUserLimit()){
+        channel.appendMember(newMember);
+        std::string name = channel.getChannelName();
+        channel.broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
+        if (channel.getTopic() == true)
+            send_reply(newMember->get_socket_fd(), RPL_TOPIC(newMember->get_nick_name(), channel.getChannelName(), channel.getTopicString()));
+        send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel.print_members()));
 	    send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));// print channel modes +t
         // mli ykon topic msetti nsift rpl topic
     }
+    // checki hna hadchi dial limit set houa hadak
     else
-        send_reply(newMember->get_socket_fd(), ERR_CHANNELISFULL(channel->getChannelName(), newMember->get_nick_name()));
+        send_reply(newMember->get_socket_fd(), ERR_CHANNELISFULL(channel.getChannelName(), newMember->get_nick_name()));
 }
 
 void Server::join_handler(Client &client){
@@ -97,10 +97,10 @@ void Server::join_handler(Client &client){
         if (!exists)
 	        create_channel(channelName, &client);
         else {
-            Channel* channel = channelMap[channelName];
-            if (channel->getInviteOnly() && !client.isInvited(channelName))
+            Channel& channel = channelMap[channelName];
+            if (channel.getInviteOnly() && !channel.isInvited(&client))
                 send_reply(client.get_socket_fd(), ERR_INVITEONLYCHAN(client.get_nick_name(),channelName));
-			else if (channel->getRequiresPass() && channel->getPass() != password)
+			else if (channel.getRequiresPass() && channel.getPass() != password)
                 send_reply(client.get_socket_fd(), ERR_BADCHANNELKEY(client.get_nick_name(), channelName));
             else
                 append_user_to_channel(channel, &client);

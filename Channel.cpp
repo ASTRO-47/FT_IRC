@@ -20,6 +20,8 @@ void Channel::appendMember(Client *newMember){
 	this->members[newMember] = false;
 }
 
+Channel::Channel() {}
+
 std::string & Channel::getTopicString(){
 	return topic;
 }
@@ -41,7 +43,9 @@ void Channel::setPass(const std::string &newPass){
 }
 
 Channel::~Channel(){
-	
+	for (std::map<Client *, bool>::iterator it = members.begin(); it != members.end();){
+		it = members.erase(it);
+	}
 }
 
 void Channel::setRequiresPass(const bool &NewStatus){
@@ -145,4 +149,19 @@ void Channel::setTopic(bool newState){
 
 bool & Channel::getTopic(){
 	return topicSet;
+}
+
+void Channel::appendInvitedMembers(Client *newInvited){
+    invitedMembers.push_back(newInvited);
+}
+
+std::vector<Client*>& Channel::getInvitedMembers(){
+    return invitedMembers;
+}
+
+bool Channel::isInvited(Client *toCheck){
+	std::vector<Client *>::iterator it = std::find(invitedMembers.begin(), invitedMembers.end(), toCheck);
+	if (it != invitedMembers.end())
+        return true;
+    return false;
 }

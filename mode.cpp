@@ -6,7 +6,7 @@ bool Server::requiresArg(char sign, char oper){
     return ((sign == '+' && oper == 'o') || (sign == '-' && oper == 'o') || (sign == '+' && oper == 'l') || (sign == '+' && oper == 'k'));
 }
 
-void  Server::check_operations(const std::string &opers, Client &client, Channel *channel){
+void  Server::check_operations(const std::string &opers, Client &client, Channel &channel){
     char modeSign = '+';
     std::vector<std::pair<char, char> > operations;
     std::vector<std::string> options;
@@ -47,7 +47,7 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
 void Server::mode_handler(Client &client){
 	std::string chan = client.get_cmd(1);
     if (channel_exists(chan) == true){
-        if (channelMap[chan]->isOperator(&client) == true){
+        if (channelMap[chan].isOperator(&client) == true){
 		    std::string oper = client.get_cmd(2);
             check_operations(oper, client, channelMap[chan]);
 	    }

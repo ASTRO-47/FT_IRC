@@ -22,7 +22,6 @@ private:
     std::string                     _message;
     Client                          *_reciever;
     bool                            _disconnected;
-    std::vector<std::string>        invitedChannels; // bad design
     std::vector<std::string>        _command_buffer;
     std::string                     _ip;
     bool                            first;
@@ -67,8 +66,5 @@ public:
     void                           send_buffer();
     void                           set_buffer(std::string);             
     void                           clear_buffer();                 void            set_ip(std::string );
-    std::vector<std::string> &     getInvitedChannels();
-    void        appendInvitedChannels(std::string ); // 7ta hadi anbdlha 
-	bool isInvited(std::string &);
     ~Client();
 } ;

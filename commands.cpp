@@ -22,8 +22,10 @@ void    Server::handle_cmd_1(int i)
     }
     else if (input == "mode"){
 		if (buffer_size < 3){
-            // if (buffer_size == 2) ndisplayi lmods dial channel
-            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), clients[i]->get_cmd(0)));
+            if (buffer_size == 2 && channel_exists(client.get_cmd(1)))
+                send_reply(client.get_socket_fd(), CHANNEL_MODES(client.get_nick_name(), client.get_cmd(1), client.get_ip(), client.get_hostname()));
+            else
+                send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), clients[i]->get_cmd(0)));
 			return ;
         }
         mode_handler(client);
@@ -54,17 +56,6 @@ void    Server::handle_cmd_1(int i)
 //vector 
 // l9it +o 
 // antraiter l arg wnpoppih
-
-// sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
-
-
-// user cannot promote himself
-
-
-//vector 
-// l9it +o 
-// antraiter l arg wnpoppih
-
 
 // sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
 

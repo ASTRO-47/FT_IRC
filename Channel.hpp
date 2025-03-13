@@ -16,7 +16,9 @@ class Channel{
 	size_t userLimit;
 	bool topicSettable;
 	bool topicSet;
+	std::vector<Client*> invitedMembers;
 	public:
+	Channel();
 	std::string & getTopicString();
 	std::string & getPass();
 	bool & getRequiresPass();
@@ -46,4 +48,7 @@ class Channel{
 	void removeMember(Client *);
 	void broadcastToAllMembers(std::string);
 	std::string print_members();
+	bool isInvited(Client *);
+	std::vector<Client*>& getInvitedMembers();
+	void appendInvitedMembers(Client *);
 };

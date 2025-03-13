@@ -41,7 +41,7 @@ void    Server::handle_quit_cmd(int i)
         msge += "*";
     msge += "!~f@197.230.30.146 QUIT :Client Quit" + CRLF;
     send_reply(clients[i]->get_socket_fd(), msge);
-    removeUserFromChannels(*clients[i]); // fkr flblan dial tb9a channel bla operator etc...
+    // removeChannel(); // fkr flblan dial tb9a channel bla operator etc...
     msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)" + CRLF;
     send_reply(clients[i]->get_socket_fd(), msge);
     close(clients[i]->get_socket_fd());

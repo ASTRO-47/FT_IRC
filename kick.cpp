@@ -27,21 +27,21 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
         send_reply(oper->get_socket_fd(), ERR_NOSUCHNICK(oper->get_nick_name(), kicked));
         return false;
     }
-    if (!channelMap[chan]->isMember(oper)){
+    if (!channelMap[chan].isMember(oper)){
         send_reply(oper->get_socket_fd(), ERR_NOTONCHANNEL(chan, oper->get_nick_name()));
         return false;
     }
-     else if (!channelMap[chan]->isOperator(oper)){
+     else if (!channelMap[chan].isOperator(oper)){
         send_reply(oper->get_socket_fd(), ERR_CHANOPRIVSNEEDED(oper->get_nick_name(), chan));
         return false;
      }
-     else if (!channelMap[chan]->isMember(toKick)){
+     else if (!channelMap[chan].isMember(toKick)){
         send_reply(oper->get_socket_fd(), ERR_USERNOTINCHANNEL(chan, oper->get_nick_name(), kicked));
         return false;
      }
     std::string msg = kicked + " :" + oper->get_nick_name();
-    channelMap[chan]->broadcastToAllMembers(OPER_SUCCESS(oper->get_nick_name(), channelMap[chan]->getChannelName(), oper->get_ip(), oper->get_hostname(), msg, "KICK"));
-    channelMap[chan]->removeMember(toKick);
+    channelMap[chan].broadcastToAllMembers(OPER_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_hostname(), msg, "KICK"));
+    channelMap[chan].removeMember(toKick);
     return true;
 }
 
@@ -81,3 +81,6 @@ void Server::kick_handler(Client &client, size_t buffer_size){
 // ana makaynch fdik channel w baghi nkicki chi7d jayn fdik channel
 
 //tester dik kick b reason
+
+
+// ila kan m inviti anseti dak lflag lfalse ila kant invite only ...

@@ -57,7 +57,7 @@ class Server
         void                         check_port(std::string);
         void                         change_nick_name(int);
         bool                         kick_user(Client *, std::string&, std::string&);
-        std::map<std::string ,Channel*>channelMap;
+        std::map<std::string ,Channel>channelMap;
         std::vector<std::pair<std::string, std::string> >channelAndPass;
         std::set<char> modes;
         Client * find_client(std::string &);
@@ -66,10 +66,10 @@ class Server
         void create_channel(const std::string&, Client *);
         std::string parse_join_input(const std::string &, size_t &);
         std::string parse_passwords(const std::string &, size_t &);
-        void check_operations(const std::string &, Client&, Channel *);
-        void process_operation(char, const char &, Client &,std::string &, Channel *);
-        Client* find_user(const std::string &, Channel *);
-        void append_user_to_channel(Channel * ,Client *);
+        void check_operations(const std::string &, Client&, Channel &);
+        void process_operation(char, const char &, Client &,std::string &, Channel &);
+        Client* find_user(const std::string &, Channel &);
+        void append_user_to_channel(Channel& ,Client *);
         bool requiresArg(char, char );
         void invite_user(const std::string &, Client *, const std::string &);
         void join_handler(Client &);
@@ -83,7 +83,8 @@ class Server
         void                         check_pass(std::string);
         static void                  handler(int);
         void                         clean_server();
-        void                         removeUserFromChannels(Client&);
+        void                         removeChannel();
+        void removeUserFromChannels(Client &);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

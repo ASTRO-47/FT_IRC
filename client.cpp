@@ -284,22 +284,3 @@ Client::~Client()
 {
     // close (client_socket);
 }
-
-std::vector<std::string>& Client::getInvitedChannels(){
-    return invitedChannels;
-}
-
-void Client::appendInvitedChannels(std::string invitedTo){
-    std::cout << "he was invited to " << invitedTo << '\n';
-    // if (channel lmit)
-    invitedChannels.push_back(invitedTo);
-}
-
-
-bool Client::isInvited(std::string &chan){
-    std::string channel = chan;
-    std::vector<std::string>::iterator it = std::find(invitedChannels.begin(), invitedChannels.end(), channel);
-    if (it != invitedChannels.end())
-        return true;
-    return false;
-}

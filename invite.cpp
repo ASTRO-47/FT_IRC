@@ -5,8 +5,8 @@
 
 // user kay inviti raso hhhhh
 void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
-    if (channelMap[chan] && channelMap[chan]->getInviteOnly()
-        && !channelMap[chan]->isOperator(sender)){
+    if (channel_exists(chan) && channelMap[chan].getInviteOnly()
+        && !channelMap[chan].isOperator(sender)){
             // send_reply(sender->get_socket_fd(), ERR_CHANOPRIVSNEEDED(sender->get_nick_name(), chan)) knt hna
             return;
     }
@@ -21,10 +21,10 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
         send_reply(sender->get_socket_fd(), ERR_NOSUCHNICK(sender->get_nick_name(), invited));
         return;
     }
-    std::map<std::string, Channel *>::iterator iter = channelMap.find(chan);
+    std::map<std::string, Channel>::iterator iter = channelMap.find(chan);
     if (iter != channelMap.end()){
-        std::map<Client *, bool >::iterator member = iter->second->getMembers().find(cinvited);
-        if (member != iter->second->getMembers().end()){
+        std::map<Client *, bool >::iterator member = iter->second.getMembers().find(cinvited);
+        if (member != iter->second.getMembers().end()){
             send_reply(sender->get_socket_fd(), ERR_USERONCHANNEL(invited, chan, sender->get_nick_name()));
             return;
         }
@@ -34,7 +34,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
     // if (it != vec.end()){
         std::string msg = server_prefix + " you're invited to join the channe\r\n";
         send_reply(cinvited->get_socket_fd(), msg);
-        cinvited->appendInvitedChannels(chan);
+        channelMap[chan].appendInvitedMembers(cinvited);
     // }// ila kan already invited ldik channel n ignori wsf
     // else
         // you werent invited
