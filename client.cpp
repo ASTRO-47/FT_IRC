@@ -35,6 +35,7 @@ void Client::connect(int server_socket)
     __poll.fd = client_socket;
     __poll.events = POLLIN;
     __poll.revents = 0;
+    fcntl(client_socket, F_SETFL, O_NONBLOCK);
 }
 
 int Client::get_socket_fd() const
