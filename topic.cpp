@@ -29,22 +29,22 @@ void Server::topic_handler(Client &client, size_t buffer_size){
     std::string btopic = ":" + topic;
     channelMap[client.get_cmd(1)].setTopic(true);
     channelMap[client.get_cmd(1)].setTopicString(topic);
-    channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_hostname(), btopic , "TOPIC"));
+    channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"));
     return;
     }
     size_t pos = client.get_second_buffer().find(':');
     if (pos != std::string::npos){
-        std::string topic = client.get_second_buffer().substr(pos + 1, client.get_second_buffer().length() - pos - 2); // tatbdl hadchi
+        std::string topic = client.get_second_buffer().substr(pos + 1, client.get_second_buffer().length() - pos - 2);
         std::string btopic = ":" + topic;
         channelMap[client.get_cmd(1)].setTopic(true);
         channelMap[client.get_cmd(1)].setTopicString(topic);
-        channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_hostname(), btopic , "TOPIC"));
+        channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"));
     }
     else{
         std::string topic = client.get_cmd(2);
         std::string btopic = ":" + client.get_cmd(2);
         channelMap[client.get_cmd(1)].setTopic(true);
         channelMap[client.get_cmd(1)].setTopicString(client.get_cmd(2));
-        channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_hostname(), btopic , "TOPIC"));
+        channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"));
     }
 }

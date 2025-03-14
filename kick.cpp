@@ -21,6 +21,10 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan, std
         send_reply(oper->get_socket_fd(), ERR_NEEDMOREPARAMS(oper->get_nick_name(), "KICK"));
         return false;
     }
+    if (!channel_exists(chan)){
+        send_reply(oper->get_socket_fd(), ERR_NOSUCHCHANNEL(chan));
+        return false;
+    }
     Client *toKick = NULL;
     toKick = find_client(kicked);
     if (!toKick){
@@ -31,16 +35,16 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan, std
         send_reply(oper->get_socket_fd(), ERR_NOTONCHANNEL(chan, oper->get_nick_name()));
         return false;
     }
-     else if (!channelMap[chan].isOperator(oper)){
+    else if (!channelMap[chan].isOperator(oper)){
         send_reply(oper->get_socket_fd(), ERR_CHANOPRIVSNEEDED(oper->get_nick_name(), chan));
         return false;
     }
-     else if (!channelMap[chan].isMember(toKick)){
+    else if (!channelMap[chan].isMember(toKick)){
         send_reply(oper->get_socket_fd(), ERR_USERNOTINCHANNEL(chan, oper->get_nick_name(), kicked));
         return false;
     }
     std::cout << "reason li wslat hia " << reason << '\n';
-    channelMap[chan].broadcastToAllMembers(KICK_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_hostname(), kicked, reason, "KICK"));
+    channelMap[chan].broadcastToAllMembers(KICK_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_user_name(), kicked, reason, "KICK"));
     channelMap[chan].removeMember(toKick);
     return true;
 }
@@ -53,8 +57,7 @@ void Server::kick_handler(Client &client, size_t buffer_size){
     std::string chan = client.get_cmd(1);
     std::string kicked = client.get_cmd(2);
     std::string reason;
-    std::cout << "here: " << client.get_second_buffer() << '\n';
-    if (buffer_size == 3 || (buffer_size == 4 && client.get_cmd(3) == ":" && client.get_cmd(3).size() == 1)) // ila kan kick #chan user :dshdsfhj maghatkhdmch
+    if (buffer_size == 3 || (buffer_size == 4 && client.get_cmd(3) == ":" && client.get_cmd(3).size() == 1))
         reason = kicked;
     else if (buffer_size > 3){
         std::vector<std::string> vec = client.get_cmd_buffer();

@@ -49,6 +49,7 @@ public:
     void                           wrong_pass();
     void                           set_nick_name(std::string);
     std::string                    get_nick_name() const; 
+    std::string                    get_user_name() const; 
     void                           reset();
     void                           showed_messgae();
     bool                           check_message() const;

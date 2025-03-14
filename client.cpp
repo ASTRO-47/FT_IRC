@@ -212,6 +212,11 @@ void Client::set_user_infos()
     user = true;
 }
 
+std::string Client::get_user_name() const
+{
+    return user_name;
+}
+
 std::string Client::get_nick_name() const
 {
     return nick;

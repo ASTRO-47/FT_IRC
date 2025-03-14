@@ -1,6 +1,6 @@
 #include "server.hpp"
 
-#define sprefix ":ft_irc_1337"
+#define sprefix ":ircserv"
 
 #define ERR_INVITEONLYCHAN(target, channel) (std::string(sprefix) + " 473 " + target + " " + channel + " :Cannot join channel (+i)\r\n")
 
@@ -12,20 +12,20 @@
 
 #define ERR_NOSUCHCHANNEL(channel) (std::string(sprefix) + " 403 " + channel + " :No such channel\r\n")
 
+#define CHANNEL_QUIT(target, channel, ip, username) (":" + target + "!~" + username + "@" + ip + " QUIT :" + channel + "\r\n")
+
 #define CHANNEL_JOIN(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " JOIN " + channel + "\r\n")
 
-#define CHANNEL_QUIT(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " QUIT :" + channel + "\r\n")
-
-#define CHANNEL_MODES(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " MODE " + channel + " +t\r\n")
+#define CHANNEL_MODES(target, channel, ip, hostname, modes) (":" + target + "!~" + hostname + "@" + ip + " MODE " + channel + " +t\r\n")
 
 #define RPL_NAMREPLY(target, channel, members) (std::string(sprefix) + " 353 " + target + " @ " + channel + " :" + members + "\r\n")
 
+
 #define RPL_ENDOFNAMES(target, channel) (std::string(sprefix) + " 366 " + target + " " + channel + " :End of /NAMES list.\r\n")
 
+#define OPER_SUCCESS(target, channel, ip, username, oper, command) (":" + target + "!~" + username + "@" + ip + " " + command  +  " " +  channel + " " + oper + " \r\n")
 
-#define OPER_SUCCESS(target, channel, ip, hostname, oper, command) (":" + target + "!~" + hostname + "@" + ip + " " + command  +  " " +  channel + " " + oper + " \r\n") // YMKN HNA KHSNI SPACE W ELSWHERE LA
-
-#define KICK_SUCCESS(target, channel, ip, hostname, kicked, reason, command) (":" + target + "!~" + hostname + "@" + ip + " " + command  +  " " +  channel + " " + kicked + " :" + reason + "\r\n")
+#define KICK_SUCCESS(target, channel, ip, username, kicked, reason, command) (":" + target + "!~" + username + "@" + ip + " " + command  +  " " +  channel + " " + kicked + " :" + reason + "\r\n")
 
 
 #define RPL_NOTOPIC(target, channel) (std::string(sprefix) + " 331 " + target + " " + channel + " :No topic is set.\r\n")
@@ -44,3 +44,10 @@
 #define ERR_USERNOTINCHANNEL(channel, target, tobekicked)(std::string(sprefix) + " 441 " + target + " " + tobekicked + " " + channel + " :They aren't on that channel\r\n")
 
 #define ERR_NOTONCHANNEL(channel, target) (std::string(sprefix) + " 442 " + target + " " + channel + " :You're not on that channel\r\n")
+
+
+invite #chan a
+:ft_irc.1337.ma 403 m a :No such channel
+
+checkiha dbbbb
+

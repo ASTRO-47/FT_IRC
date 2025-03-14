@@ -2,7 +2,7 @@
 
 Channel::Channel(std::string ChannelName, Client* Creator){
 	name = ChannelName;
-	this->members[Creator] = true;
+	members.push_back(std::make_pair(Creator, true));
 	isInviteOnly = false;
 	pass = "";
 	requiresPass = false;
@@ -11,14 +11,14 @@ Channel::Channel(std::string ChannelName, Client* Creator){
 	topicSet = false;
 	topic = "";
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
-	Server::send_reply(Creator->get_socket_fd(), CHANNEL_JOIN(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
-	Server::send_reply(Creator->get_socket_fd(), CHANNEL_MODES(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
+	Server::send_reply(Creator->get_socket_fd(), CHANNEL_JOIN(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_user_name()));
+	// Server::send_reply(Creator->get_socket_fd(), CHANNEL_MODES(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_user_name()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_NAMREPLY(Creator->get_nick_name(), ChannelName, '@' + Creator->get_nick_name()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_ENDOFNAMES(Creator->get_nick_name(), ChannelName));
 }
 
 void Channel::appendMember(Client *newMember){
-	this->members[newMember] = false;
+	members.insert(members.begin(),std::make_pair(newMember, false));
 }
 
 Channel::Channel() {}
@@ -47,7 +47,8 @@ void Channel::setPass(const std::string &newPass){
 }
 
 Channel::~Channel(){
-	for (std::map<Client *, bool>::iterator it = members.begin(); it != members.end();){
+	puts("jdhshgsdfs");
+	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end();){
 		it = members.erase(it);
 	}
 }
@@ -61,31 +62,48 @@ bool & Channel::getRequiresPass(){
 }
 
 void Channel::removeMember(Client *toRemove){
-	if (members.find(toRemove) != members.end()){
-		broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_hostname()));
-		members.erase(toRemove);
+	std::vector<std::pair<Client*, bool> >::iterator it = members.end();
+	for (std::vector<std::pair<Client*, bool> >::iterator it2 = members.begin(); it2 != members.end(); it2++){
+		if (it2->first == toRemove){
+			it = it2;
+			break;
+		}
 	}
+	if (it != members.end()){
+		broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_user_name()));
+		members.erase(it);
+	}
+	std::vector<Client *>::iterator it2 = std::find(invitedMembers.begin(), invitedMembers.end(), toRemove);
+	if (it2 != invitedMembers.end())
+		invitedMembers.erase(it2);
 }
 
 bool Channel::isMember(Client* client){
-	std::map<Client*,bool>::iterator it = members.find(client);
-	if (it != members.end())
-		return true;
+	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end(); it++){
+		if (it->first == client)
+			return true;
+	}
 	return false;
 }
 
 bool Channel::isOperator(Client* client){
-	std::map<Client*,bool>::iterator it = members.find(client);
-	if (it != members.end())
-		return it->second;
+	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end(); it++){
+		if (it->first == client)
+			return it->second;
+	}
 	return false;
 }
 
 void Channel::setOperator(Client* client, bool flag){
-	members[client] = flag;
+	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end(); it++){
+		if (it->first == client){
+			it->second = flag;
+			return;
+		}
+	}
 }
 
-std::map<Client*, bool>& Channel::getMembers(){
+std::vector<std::pair<Client*, bool> >& Channel::getMembers(){
 	return members;
 }
 
@@ -131,7 +149,7 @@ void Channel::setTopicFlag(bool flag){
 }
 
 void Channel::broadcastToAllMembers(std::string msg){
-	for (std::map<Client*, bool>::iterator it = members.begin(); it != members.end(); it++){
+	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end(); it++){
 		if (it->first)
 			Server::send_reply(it->first->get_socket_fd(), msg);
 	}
@@ -139,7 +157,7 @@ void Channel::broadcastToAllMembers(std::string msg){
 
 std::string Channel::print_members(){
 	std::stringstream ss;
-	for (std::map<Client *, bool>::iterator it = members.begin(); it != members.end(); it++){
+	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end(); it++){
 		if (it != members.begin())
 			ss << " ";
 		if (it->second == true)

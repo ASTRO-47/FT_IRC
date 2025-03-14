@@ -13,26 +13,25 @@ void    Server::handle_cmd_1(Client &_C)
     std::string msge;
     if (check_command(_C))
         return ;
-	    // join &chan || join #chan not the same thing
-    if (input == "join"){ // tolower w compari
+    if (input == "join"){
         if (buffer_size < 2){
             send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), _C.get_cmd(0)));
             client.reset();
             return ;
         }
         join_handler(client);
+        std::cout << "name : " << channelMap["#chan"].getChannelName() << '\n';
     }
     else if (input == "mode"){
 		if (buffer_size < 3){
             if (buffer_size == 2 && channel_exists(client.get_cmd(1)))
-                send_reply(client.get_socket_fd(), CHANNEL_MODES(client.get_nick_name(), client.get_cmd(1), client.get_ip(), client.get_hostname()));
+                send_reply(client.get_socket_fd(), CHANNEL_MODES(client.get_nick_name(), client.get_cmd(1), client.get_ip(), client.get_user_name()));
             else
                 send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), client.get_cmd(0)));
 			return ;
         }
         mode_handler(client);
     }
-    // chi user 3ndo smia dial chi channel anfr9 binathom b #
     else if (input == "invite"){
         if (buffer_size < 3 || !check_user(_C)){ // fach kansift lrasi katl3 no such nick
             send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), _C.get_cmd(0)));
@@ -54,12 +53,6 @@ void    Server::handle_cmd_1(Client &_C)
     }
 }
 
-
-//vector 
-// l9it +o 
-// antraiter l arg wnpoppih
-
-// sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
 
 
 // user cannot promote himself

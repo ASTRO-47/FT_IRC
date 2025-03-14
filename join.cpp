@@ -6,8 +6,6 @@ bool Server::channel_exists(const std::string& channelName){
 }
 
 std::string Server::parse_passwords(const std::string &passwords, size_t &start){
-    // if (passwords.empty())
-    //     throw std::runtime_error("no passwords");
     size_t comma = passwords.find(',' , start);
     std::string pass = passwords.substr(start, comma - start);
     if (comma != std::string::npos)
@@ -51,17 +49,17 @@ void Server::create_channel(const std::string& channelName, Client *creator){
 }
     // mli ykon topic msetti nsift rpl topic
 void Server::append_user_to_channel(Channel &channel, Client *newMember){
-    std::map<Client *, bool>::iterator it = channel.getMembers().find(newMember);
-    if (it != channel.getMembers().end()){
-        send_reply(newMember->get_socket_fd(), ERR_USERONCHANNEL(newMember->get_nick_name(), channel.getChannelName(), newMember->get_nick_name()));
-        return;
+	for (std::vector<std::pair<Client*, bool> >::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it++){
+        if (it->first == newMember)
+            return;
     }
     if (!channel.getLimitSet() || channel.getNumMembers() < channel.getUserLimit()){
         channel.appendMember(newMember);
         std::string name = channel.getChannelName();
-        channel.broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_hostname()));
+        channel.broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_user_name()));
         if (channel.getTopic() == true)
             send_reply(newMember->get_socket_fd(), RPL_TOPIC(newMember->get_nick_name(), channel.getChannelName(), channel.getTopicString()));
+	    send_reply(newMember->get_socket_fd(), CHANNEL_MODES(newMember->get_nick_name(), channel.getChannelName(), newMember->get_ip(), newMember->get_user_name()));
         send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel.print_members()));
 	    send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));// print channel modes +t
         // mli ykon topic msetti nsift rpl topic

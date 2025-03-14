@@ -11,20 +11,20 @@ Server::Server()
     modes.insert('t');   
     ins = this;
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
-    auth_guide = 
-    "Welcome to our humble server!" + CRLF
-    "To authenticate, please follow these steps:" + CRLF
-    "1. Enter the server password:" + CRLF
-    "   PASS <password>" + CRLF
-    "2. Choose a nickname:" + CRLF
-    "   NICK <nickname>" + CRLF
-    "3. Register with a username and real name:" + CRLF
-    "   USER <username> 0 * :<realname>" + CRLF
-    "Example:" + CRLF
-    "   PASS ServerPass" + CRLF
-    "   NICK JohnDoe" + CRLF
-    "   USER johnd 0 * John Doe" + CRLF
-    "Once authenticated, you can start using the server!" + CRLF;
+    // auth_guide = 
+    // "Welcome to our humble server!" + CRLF
+    // "To authenticate, please follow these steps:" + CRLF
+    // "1. Enter the server password:" + CRLF
+    // "   PASS <password>" + CRLF
+    // "2. Choose a nickname:" + CRLF
+    // "   NICK <nickname>" + CRLF
+    // "3. Register with a username and real name:" + CRLF
+    // "   USER <username> 0 * :<realname>" + CRLF
+    // "Example:" + CRLF
+    // "   PASS ServerPass" + CRLF
+    // "   NICK JohnDoe" + CRLF
+    // "   USER johnd 0 * John Doe" + CRLF
+    // "Once authenticated, you can start using the server!" + CRLF;
 
 }
 
@@ -223,7 +223,7 @@ void Server::multiplexing_func()
 
 void    Server::send_reply(int fd, std::string message)
 {
-    int bytes = send(fd, message.c_str(), message.length(), 0);
+    int bytes = send(fd, message.c_str(), message.size(), 0);
     if (bytes < 0)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)

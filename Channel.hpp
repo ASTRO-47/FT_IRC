@@ -8,8 +8,7 @@ class Channel{
 	std::string name;
 	std::string pass;
 	std::string topic;
-	std::map<Client*, bool> members;
-	// std::set<Client *> invited;
+	std::vector<std::pair<Client*, bool> > members;
 	bool isInviteOnly;
 	bool requiresPass;
 	bool limitSet;
@@ -32,7 +31,7 @@ class Channel{
 	void appendMember(Client *);
 	void setInviteOnly(bool);
 	bool & getInviteOnly();
-	std::map<Client*, bool>& getMembers();
+	std::vector<std::pair<Client*, bool> >& getMembers();
 	Channel(std::string, Client*);
 	~Channel();
 	void setUserLimit(size_t newLimit);

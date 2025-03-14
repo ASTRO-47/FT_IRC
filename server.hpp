@@ -41,6 +41,9 @@ class Server
         int                          port;
         int                          server_socket;
         sockaddr_in                  sock_addr; // use sockaddr_in6 when want to work with ipv6
+        std::map<std::string ,Channel>channelMap;
+        std::vector<std::pair<std::string, std::string> >channelAndPass;
+        std::set<char> modes;
         void                         handle_new_client();
         void                         handle_event_fd(Client &);
         void                         try_to_auth(Client &);
@@ -57,9 +60,6 @@ class Server
         void                         check_port(std::string);
         void                         change_nick_name(Client &);
         bool                         kick_user(Client *, std::string&, std::string&, std::string &);
-        std::map<std::string ,Channel>channelMap;
-        std::vector<std::pair<std::string, std::string> >channelAndPass;
-        std::set<char> modes;
         Client * find_client(std::string &);
         void extract_channels(const std::string &, const std::string &);
         bool channel_exists(const std::string&);
@@ -69,13 +69,13 @@ class Server
         void check_operations(const std::string &, Client&, Channel &);
         void process_operation(char, const char &, Client &,std::string &, Channel &);
         Client* find_user(const std::string &, Channel &);
-        void append_user_to_channel(Channel& ,Client *);
-        bool requiresArg(char, char );
-        void invite_user(const std::string &, Client *, const std::string &);
-        void join_handler(Client &);
-        void mode_handler(Client &);
-        void topic_handler(Client &, size_t);
-        void kick_handler(Client &, size_t);
+        void                         append_user_to_channel(Channel& ,Client *);
+        bool                         requiresArg(char, char );
+        void                         invite_user(const std::string &, Client *, const std::string &);
+        void                         join_handler(Client &);
+        void                         mode_handler(Client &);
+        void                         topic_handler(Client &, size_t);
+        void                         kick_handler(Client &, size_t);
         bool                         check_nick_name(Client &);
         bool                         check_command(Client &);
         void                         handle_quit_cmd(Client &);

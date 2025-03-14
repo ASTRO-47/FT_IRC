@@ -81,5 +81,3 @@ bool Server::check_command(Client &_C)
     }
     return false;
 }
-
-// crash on join multiple times
