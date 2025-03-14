@@ -20,7 +20,12 @@ bool    Server::check_user(Client &_client)
             return true;
         }
     }
-    std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel" + CRLF;
+    if (channel_exists(_n))
+    {
+        // broadcast to channels users
+        return false;
+    }
+    std::string msge = server_prefix + "401 " + _n +  " :No such nick/channel" + CRLF;
     send_reply(_client.get_socket_fd(), msge);
     return false;
 }
@@ -28,7 +33,6 @@ void    Server::change_nick_name(Client &_client)
 {
     parse_nick(_client);
 }
-
 
 void    Server::handle_quit_cmd(Client &_client)
 {
@@ -56,7 +60,6 @@ bool Server::check_command(Client &_client)
 
     std::string input = _client.get_cmd(0);
     toLower(input);
-    Client &client = _client;
     size_t buffer_size = _client.get_buffer_size();
     if (input == "quit")
         return (handle_quit_cmd(_client), true);
@@ -76,11 +79,9 @@ bool Server::check_command(Client &_client)
             send_reply(_client.get_socket_fd(), msge);
             return true;
         }
+        // check channel here first then regular user s 
         if (!check_user(_client))
-        {
-            client.reset();
             return true;
-        }
         handle_prv_msge(_client);
         return true;
     }

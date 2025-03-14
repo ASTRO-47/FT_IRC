@@ -31,7 +31,6 @@ Server::Server()
 void    Server::registration_msge(Client &_client)
 {
     std::string nick = _client.get_nick_name();
-    taken_nick_name(_client);
     std::string message = 
             ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
             ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
@@ -49,6 +48,7 @@ void    Server::registration_msge(Client &_client)
     message += motd;
     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
     _client.showed_messgae();
+    taken_nick_name(_client);
 }
 
 bool white_space(const std::string& str) 
@@ -148,6 +148,7 @@ void Server::handle_event_fd(Client &_client)
     {
         buffer[bytes] = '\0';
         _client.append_buffer(buffer);
+        std::cout << _client.get_buffer() << "]" << std::endl;
         if (_client.get_buffer().length() > 10000)
         {
             std::string msge =  server_prefix + " :INPUT LINE TOO LONG\n";
@@ -214,6 +215,7 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(*clients[i]);
+                    
                 clients[i]->reset();
             }
         }

@@ -8,8 +8,8 @@ void Server::taken_nick_name(Client &_client)
     {
         if ((*it)->get_nick_name() == _n && !(*it)->check_all())
         {
-            std::string msge = "ERROR :Closing Link: " + _client.get_nick_name() + " by :ft_irc (Overridden by other sign on)" + CRLF;
-            send_reply(_client.get_socket_fd(), msge);
+            std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)" + CRLF;
+            send_reply((*it)->get_socket_fd(), msge);
             close((*it)->get_socket_fd());
             (*it)->disconnected();
         }
