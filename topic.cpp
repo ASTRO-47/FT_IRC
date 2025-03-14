@@ -2,8 +2,10 @@
 #include "Channel.hpp"
 
 void Server::topic_handler(Client &client, size_t buffer_size){
-    if (buffer_size < 2)
+    if (buffer_size < 2){
         send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), client.get_cmd(0)));
+        return;
+    }
     else if (buffer_size == 2){
         std::string name = client.get_cmd(1);
         std::string msg = channelMap[name].getTopicString();
