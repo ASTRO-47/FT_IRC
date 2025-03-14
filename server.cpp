@@ -28,15 +28,15 @@ Server::Server()
 
 }
 
-void    Server::registration_msge(int i)
+void    Server::registration_msge(Client &_C)
 {
-    std::string nick = clients[i]->get_nick_name();
-    taken_nick_name(i);
+    std::string nick = _C.get_nick_name();
+    taken_nick_name(_C);
     std::string message = 
-            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network" + CRLF
-            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
-            ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels
-            ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF;
+            ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
+            ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
+            ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
+            ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
     std::string motd = 
         ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF
         ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF
@@ -47,15 +47,15 @@ void    Server::registration_msge(int i)
         ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
         ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
     message += motd;
-    send(clients[i]->get_socket_fd(), message.c_str(), message.length(), 0);
-    clients[i]->showed_messgae();
+    send(_C.get_socket_fd(), message.c_str(), message.length(), 0);
+    _C.showed_messgae();
 }
 
 bool white_space(const std::string& str) 
 {
     for (size_t i = 0; i < str.length(); ++i)
     {
-        if (std::isspace((str[i]))) // cast to char
+        if (std::isspace((str[i])))
             return true;
     }
     return false;
@@ -87,7 +87,6 @@ void    Server::check_port(std::string _p)
 void Server::server_setup(std::string _port, std::string passwd)
 {
     password = passwd;
-    // char *checker = NULL;
     check_port(_port);
     check_pass(passwd);
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
@@ -103,18 +102,18 @@ void Server::server_setup(std::string _port, std::string passwd)
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
-        throw std::runtime_error("bind failed");
+        throw std::runtime_error("BIND FAILED");
     }
     if (listen(server_socket, 100) < 0) // set the backlog = how much cleints in the queue
     {
         close (server_socket);
-        throw std::runtime_error("listen failed"); // try to print the errno
+        throw std::runtime_error("LISTENING FAILED"); // try to print the errno
     }
     Client* poll_server = new Client(); // throwed exc will catched in the main and the program wont start
     poll_server->add_server_to_poll(server_socket);
     clients.push_back(poll_server);
     _poll_fds.push_back(poll_server->get_socket_struct());
-    std::cout << "server listening on port: " << port << std::endl;
+    std::cout << "SERVER LISTENING ON PORT: " << port << std::endl;
 }
 
 void    Server::handle_new_client()
@@ -126,7 +125,7 @@ void    Server::handle_new_client()
         new_client->connect(server_socket);
         clients.push_back(new_client); // add the client to the vector
         _poll_fds.push_back(new_client->get_socket_struct());
-        std::cout << "Client connected, on fd: "  << new_client->get_socket_fd() << CRLF;
+        std::cout << "CLIENT CONNECTED, ON FD: "  << new_client->get_socket_fd() << CRLF;
         send_reply(new_client->get_socket_fd(), auth_guide);
     }
     catch(const std::exception& e)
@@ -136,46 +135,46 @@ void    Server::handle_new_client()
     }
 }
 
-void Server::handle_event_fd(int i)
+void Server::handle_event_fd(Client &_C)
 {
     char buffer[512] = {0};
-    int bytes = recv(clients[i]->get_socket_fd(), buffer, 511, 0); // put in the stream of the client
+    int bytes = recv(_C.get_socket_fd(), buffer, 511, 0); // put in the stream of the client
     // if (bytes <= 0)
     // {
-    //     close (clients[i]->get_socket_fd());
-    //     clients[i]->disconnected();
+    //     close (_C.get_socket_fd());
+    //     _C.disconnected();
     // }
     // else
     std::cout << "limechat sends: " << buffer << '\n';
     {
         buffer[bytes] = '\0';
-        clients[i]->append_buffer(buffer);
-        if (clients[i]->get_buffer().length() > 10000)
+        _C.append_buffer(buffer);
+        if (_C.get_buffer().length() > 600)
         {
-            std::string msge =  server_prefix + "input line too long\n";
-            send_reply(clients[i]->get_socket_fd(), msge);
-            clients[i]->reset();
-            clients[i]->clear_buffer();
+            std::string msge =  server_prefix + " :INPUT LINE TOO LONG\n";
+            send_reply(_C.get_socket_fd(), msge);
+            _C.reset();
+            _C.clear_buffer();
             return ;
         }
-        if (clients[i]->cmd_end() && !clients[i]->check_all())
+        if (_C.cmd_end() && !_C.check_all())
         {
 
-            while (clients[i]->get_buffer().length()) // split the request to handle bot connection
+            while (_C.get_buffer().length()) // split the request to handle bot connection
             {
-                handle_cmd(i);
-                clients[i]->reset();
+                handle_cmd(_C);
+                _C.reset();
             }
         }
-        else if (clients[i]->cmd_end())
+        else if (_C.cmd_end())
         {
-            while (clients[i]->get_buffer().length())
+            while (_C.get_buffer().length())
             {
-                handle_cmd_1(i);
-                clients[i]->reset();
+                handle_cmd_1(_C);
+                _C.reset();
             }
         }
-        clients[i]->clear_buffer();
+        _C.clear_buffer();
     }
 }
 
@@ -194,14 +193,14 @@ void Server::multiplexing_func()
     signal(SIGQUIT, handler);
     while (true)
     {
-        int ready = poll(_poll_fds.data(), _poll_fds.size(), 0); // non-blocking poll
+        int ready = poll(_poll_fds.data(), _poll_fds.size(), -1);
         if (ready == -1)
-            throw std::runtime_error("poll error");
+            throw std::runtime_error("POLL ERROR");
         for (size_t i = 0; i < _poll_fds.size(); i++)
         {
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
-                std::cout << "hangup or error on fd " << _poll_fds[i].fd << std::endl;
+                std::cout << "HANGUP OR ERROR ON FD: " << _poll_fds[i].fd << std::endl;
                 removeChannel();
                 removeUserFromChannels(*clients[i]);
                 close(clients[i]->get_socket_fd());
@@ -215,7 +214,7 @@ void Server::multiplexing_func()
                 if (_poll_fds[i].fd == server_socket) // new events is on the socket file desctiptor
                     handle_new_client();
                 else
-                    handle_event_fd(i);
+                    handle_event_fd(*clients[i]);
                 clients[i]->reset();
             }
         }
@@ -228,7 +227,7 @@ void    Server::send_reply(int fd, std::string message)
     if (bytes < 0)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
-            std::cerr << "an error occured while sending data\n";
+            std::cerr << "AN ERROR OCCURED WHILE SENDING DATA\n";
     }
 }
 
