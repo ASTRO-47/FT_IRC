@@ -76,18 +76,10 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
     else if (oper == 'k'){
         if (sign == '+'){
             if (client.get_buffer_size() > 3){
-                // std::string pass = client.get_cmd(3);
                 std::string pass = arg;
                 channel.setRequiresPass(true);
                 channel.setPass(pass);
-                std::string &channelName = channel.getChannelName();
-                for (std::vector<std::pair<std::string, std::string> >::iterator it = channelAndPass.begin(); it != channelAndPass.end(); ++it){
-                    if (it->first == channelName){
-                        it->second = pass;
-                        std::string key =  "+k " + pass;
-                        channel.broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_hostname(), key, "MODE"));
-                    }
-                }
+                channel.broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_hostname(), pass, "MODE"));
             }
             else
                 send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
@@ -109,3 +101,7 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
         }
     }   
 }
+
+
+
+// testi dok oper success wach khdama reply fhad lcases

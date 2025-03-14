@@ -53,7 +53,7 @@ void Server::create_channel(const std::string& channelName, Client *creator){
 void Server::append_user_to_channel(Channel &channel, Client *newMember){
     std::map<Client *, bool>::iterator it = channel.getMembers().find(newMember);
     if (it != channel.getMembers().end()){
-        std::cout << newMember->get_nick_name() << " is already member of " << channel.getChannelName() << '\n';
+        send_reply(newMember->get_socket_fd(), ERR_USERONCHANNEL(newMember->get_nick_name(), channel.getChannelName(), newMember->get_nick_name()));
         return;
     }
     if (!channel.getLimitSet() || channel.getNumMembers() < channel.getUserLimit()){

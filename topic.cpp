@@ -11,7 +11,6 @@ void Server::topic_handler(Client &client, size_t buffer_size){
             send_reply(client.get_socket_fd(), RPL_NOTOPIC(client.get_nick_name(), name));
             return;
         }
-        channelMap[name].setTopic(true);
         channelMap[name].broadcastToAllMembers(RPL_TOPIC(client.get_nick_name(), name, msg));
         return;
     }
@@ -27,20 +26,23 @@ void Server::topic_handler(Client &client, size_t buffer_size){
     std::string topic = channelMap[client.get_cmd(1)].getTopicString();
     std::string btopic = ":" + topic;
     channelMap[client.get_cmd(1)].setTopic(true);
+    channelMap[client.get_cmd(1)].setTopicString(topic);
     channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_hostname(), btopic , "TOPIC"));
     return;
     }
-    size_t pos = client.get_buffer().find(':');
+    size_t pos = client.get_second_buffer().find(':');
     if (pos != std::string::npos){
-        std::string topic = client.get_buffer().substr(pos + 1, client.get_buffer().length() - pos - 2); // tatbdl hadchi
+        std::string topic = client.get_second_buffer().substr(pos + 1, client.get_second_buffer().length() - pos - 2); // tatbdl hadchi
         std::string btopic = ":" + topic;
         channelMap[client.get_cmd(1)].setTopic(true);
+        channelMap[client.get_cmd(1)].setTopicString(topic);
         channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_hostname(), btopic , "TOPIC"));
     }
     else{
         std::string topic = client.get_cmd(2);
         std::string btopic = ":" + client.get_cmd(2);
         channelMap[client.get_cmd(1)].setTopic(true);
+        channelMap[client.get_cmd(1)].setTopicString(client.get_cmd(2));
         channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_hostname(), btopic , "TOPIC"));
     }
 }

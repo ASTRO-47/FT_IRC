@@ -56,7 +56,7 @@ class Server
         void                         handle_prv_msge(int);
         void                         check_port(std::string);
         void                         change_nick_name(int);
-        bool                         kick_user(Client *, std::string&, std::string&);
+        bool                         kick_user(Client *, std::string&, std::string&, std::string&);
         std::map<std::string ,Channel>channelMap;
         std::vector<std::pair<std::string, std::string> >channelAndPass;
         std::set<char> modes;

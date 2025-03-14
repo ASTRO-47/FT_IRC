@@ -8,6 +8,7 @@ Channel::Channel(std::string ChannelName, Client* Creator){
 	requiresPass = false;
 	limitSet = false;
 	topicSettable = false;
+	topicSet = false;
 	topic = "";
 	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
 	Server::send_reply(Creator->get_socket_fd(), CHANNEL_JOIN(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_hostname()));
@@ -24,6 +25,9 @@ Channel::Channel() {}
 
 std::string & Channel::getTopicString(){
 	return topic;
+}
+void Channel::setTopicString(std::string &newTopic){
+	topic = newTopic;
 }
 
 std::string & Channel::getChannelName(){
@@ -57,8 +61,10 @@ bool & Channel::getRequiresPass(){
 }
 
 void Channel::removeMember(Client *toRemove){
-	if (members.find(toRemove) != members.end())
+	if (members.find(toRemove) != members.end()){
+		broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_hostname()));
 		members.erase(toRemove);
+	}
 }
 
 bool Channel::isMember(Client* client){

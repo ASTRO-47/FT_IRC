@@ -163,6 +163,11 @@ const std::string& Client::get_buffer() const
     return _buffer;
 }
 
+const std::string& Client::get_second_buffer() const
+{
+    return _second_buffer;
+}
+
 bool Client::check_all() const
 {
     if (pass && _nick && user)

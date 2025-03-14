@@ -97,9 +97,9 @@ void Server::server_setup(std::string _port, std::string passwd)
     sock_addr.sin_family = AF_INET; //  select the ipv4 family
     sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
     sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
-    // int opt = 1;
-    // if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)) // keeping the socket alive after the program terminate (skep wait time to handle the packets in the socket)
-    //     throw std::runtime_error("SETSOCKOPT FUNCTION FAILED");
+    int opt = 1;
+    if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)) // keeping the socket alive after the program terminate (skep wait time to handle the packets in the socket)
+        throw std::runtime_error("SETSOCKOPT FUNCTION FAILED");
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
@@ -146,6 +146,7 @@ void Server::handle_event_fd(int i)
     //     clients[i]->disconnected();
     // }
     // else
+    std::cout << "limechat sends: " << buffer << '\n';
     {
         buffer[bytes] = '\0';
         clients[i]->append_buffer(buffer);

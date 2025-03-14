@@ -44,6 +44,7 @@ public:
     socklen_t                      &get_socket_addr_length();
     void                           append_buffer(std::string);
     const std::string              &get_buffer() const;
+    const std::string              &get_second_buffer() const;
     void                           correct_pass();
     void                           wrong_pass();
     void                           set_nick_name(std::string);

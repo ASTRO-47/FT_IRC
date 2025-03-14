@@ -12,7 +12,7 @@ Client* Server::find_client(std::string &tokick){
 // maykikich raso
 // checki wach khona mod
 // wach kicked valid user 
-bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
+bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan, std::string &reason){
     if (kicked.empty() || chan.empty()){
         send_reply(oper->get_socket_fd(), ERR_NEEDMOREPARAMS(oper->get_nick_name(), "KICK"));
         return false;
@@ -34,48 +34,53 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan){
      else if (!channelMap[chan].isOperator(oper)){
         send_reply(oper->get_socket_fd(), ERR_CHANOPRIVSNEEDED(oper->get_nick_name(), chan));
         return false;
-     }
+    }
      else if (!channelMap[chan].isMember(toKick)){
         send_reply(oper->get_socket_fd(), ERR_USERNOTINCHANNEL(chan, oper->get_nick_name(), kicked));
         return false;
-     }
-    std::string msg = kicked + " :" + oper->get_nick_name();
-    channelMap[chan].broadcastToAllMembers(OPER_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_hostname(), msg, "KICK"));
+    }
+    std::cout << "reason li wslat hia " << reason << '\n';
+    channelMap[chan].broadcastToAllMembers(KICK_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_hostname(), kicked, reason, "KICK"));
     channelMap[chan].removeMember(toKick);
     return true;
 }
 
 void Server::kick_handler(Client &client, size_t buffer_size){
-	    if (buffer_size < 3){
+	if (buffer_size < 3){
         send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "KICK"));
         return;
     }
-    else if (buffer_size == 3){
-        std::string chan = client.get_cmd(1);
-        std::string kicked = client.get_cmd(2);
-        kick_user(&client, kicked, chan);
-    }
+    std::string chan = client.get_cmd(1);
+    std::string kicked = client.get_cmd(2);
+    std::string reason;
+    std::cout << "here: " << client.get_second_buffer() << '\n';
+    if (buffer_size == 3 || (buffer_size == 4 && client.get_cmd(3) == ":" && client.get_cmd(3).size() == 1)) // ila kan kick #chan user :dshdsfhj maghatkhdmch
+        reason = kicked;
     else if (buffer_size > 3){
         std::vector<std::string> vec = client.get_cmd_buffer();
         std::vector<std::string>::iterator it = std::find(vec.begin(), vec.end(), ":");
         if (it != vec.end()){
             it++;
-            std::string reason;
             while (it != vec.end()){
                 reason += *it + ' ';
                 it++;
             }
-            size_t pos = client.get_buffer().find(':');
-            if (pos != std::string::npos){
-                std::string reason = client.get_buffer().substr(pos + 1, client.get_buffer().length() - pos - 2);
-            }
-            else
-                std::string reason = client.get_cmd(2);
+            kick_user(&client, kicked, chan, reason);
+            return ;
         }
+    size_t pos = client.get_second_buffer().find(':');
+    if (pos != std::string::npos)
+        reason = client.get_second_buffer().substr(pos + 1, client.get_second_buffer().length() - pos - 2);
+    else
+        reason = client.get_cmd(2);
     }
+    kick_user(&client, kicked, chan, reason);
 }
 
 
+// kick #chan imad :
+// kick #chan imad :sdfsdfsdfds
+// kick #chan imad : sdfsdfsdfds
 
 
 // ana makaynch fdik channel w baghi nkicki chi7d jayn fdik channel
@@ -84,3 +89,11 @@ void Server::kick_handler(Client &client, size_t buffer_size){
 
 
 // ila kan m inviti anseti dak lflag lfalse ila kant invite only ...
+
+
+
+// replies d kick makhdaminch f limechat
+
+// reply rpl topic ymkn makhdamach mzyan
+
+// topic atkon katzad :

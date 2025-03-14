@@ -51,4 +51,5 @@ class Channel{
 	bool isInvited(Client *);
 	std::vector<Client*>& getInvitedMembers();
 	void appendInvitedMembers(Client *);
+	void setTopicString(std::string &);
 };
