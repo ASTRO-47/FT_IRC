@@ -9,7 +9,8 @@ int main()
     char buffer[100];
     fcntl(0, F_SETFL, O_NONBLOCK);
     int bytes = read(0, buffer, sizeof(buffer));
-    if (bytes == -1)
+    if (bytes == -1 && errno == EAGAIN)
+        puts("there is nothing to read right now");
     std::cout << "you entered: " << buffer << std::endl;
 }
 

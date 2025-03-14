@@ -3,8 +3,8 @@
 
 void Server::handle_prv_msge(Client &_client)
 {
-    _client.trim_message();
-    std::string msge = ":" + _client.get_nick_name() +"!~" + "@197.23.30.146" +  " PRIVMSG " +_client.get_reciever()->get_nick_name() + " :" + _client.get_message() + CRLF;
+    std::string _msge = _client.trim_message();
+    std::string msge = ":" + _client.get_nick_name() +"!~" + "@197.23.30.146" +  " PRIVMSG " +_client.get_reciever()->get_nick_name() + " :" + _msge + CRLF;
     send_reply(_client.get_reciever()->get_socket_fd(), msge);
 }
 
@@ -41,7 +41,10 @@ void    Server::handle_quit_cmd(Client &_client)
     msge += "!~f@197.230.30.146 QUIT :Client Quit" + CRLF;
     send_reply(_client.get_socket_fd(), msge);
     // removeUserFromChannels(_C); // fkr flblan dial tb9a channel bla operator etc..., hhhh kharya dyal de7k (by imad)
-    msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)" + CRLF;
+    if (_client.get_buffer_size() == 1)
+        msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)" + CRLF;
+    else
+        msge = "ERROR :Closing Link: 197.230.30.146 (" + _client.trim_message() + ")" + CRLF;
     send_reply(_client.get_socket_fd(), msge);
     close(_client.get_socket_fd());
     _client.disconnected();
@@ -55,6 +58,8 @@ bool Server::check_command(Client &_client)
     toLower(input);
     Client &client = _client;
     size_t buffer_size = _client.get_buffer_size();
+    if (input == "quit")
+        return (handle_quit_cmd(_client), true);
     if (input == "nick")
         return (change_nick_name(_client), true);
     else if (input == "privmsg")

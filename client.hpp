@@ -54,7 +54,7 @@ public:
     bool                           check_message() const;
     void                           set_user_infos();
     bool                           cmd_end();
-    void                           trim_message();
+    std::string                    trim_message();
     bool                           check_nick() const;
     std::string                    get_message() const;
     void                           set_reciever(Client *);

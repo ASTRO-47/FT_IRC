@@ -248,25 +248,32 @@ bool    Client::cmd_end()
     return false;
 }
 
-void Client::trim_message()
+std::string Client::trim_message()
 {
+    std::string msge;
     std::vector<std::string>::iterator it = std::find(_command_buffer.begin(), _command_buffer.end(), ":");
     if (it != _command_buffer.end())
     {
         it++;
         while (it != _command_buffer.end())
         {
-            _message += *it + ' ';
+            msge += *it + ' ';
             it++;
         }
-        _message[_message.length() - 1] = '\0';
-        return ;
+        msge[msge.length() - 1] = '\0';
+        return msge;
     }
     size_t pos = _second_buffer.find(':');
     if (std::string::npos != pos)
-        _message = _second_buffer.substr(pos + 1, _second_buffer.length() - pos - 2);
+        msge = _second_buffer.substr(pos + 1, _second_buffer.length() - pos - 2);
     else
-        _message = _command_buffer[2];
+    {
+        if (_command_buffer[0] == "quit")
+            msge = _command_buffer[1];
+        else
+            msge = _command_buffer[2];
+    }
+    return msge;
 }
 
 std::string Client::get_message() const
