@@ -14,7 +14,6 @@ int main()
     std::cout << "you entered: " << buffer << std::endl;
 }
 
-
 // Summary of Fixes
 // Case	Action
 // bytes > 0	Process received data.

@@ -1,26 +1,28 @@
 #include "server.hpp"
 
-void Server::taken_nick_name(Client &_client)
-{
-    std::string _n = _client.get_nick_name();
+// void Server::taken_nick_name(Client &_client)
+// {
     
-    for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
-    {
-        if ((*it)->get_nick_name() == _n && !(*it)->check_all())
-        {
-            std::string msge = "ERROR :Closing Link: " + _n + " by :ft_irc (Overridden by other sign on)" + CRLF;
-            send_reply((*it)->get_socket_fd(), msge);
-            close((*it)->get_socket_fd());
-            (*it)->disconnected();
-        }
-    }
-}
+//     std::string _n = _client.get_nick_name();
+    
+//     for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
+//     {
+//         if ((*it)->get_nick_name() == _n && !(*it)->check_all() && (*it)->get_socket_fd() != _client.get_socket_fd())
+//         {
+//             std::cout << "this is: " << (*it)->get_nick_name() << "]" << std::endl << "this is fd: " << (*it)->get_socket_fd() << std::endl;
+//             std::string msge = "ERROR :Closing Link: " + _client.get_nick_name() + " by :ft_irc (Overridden by other sign on)" + CRLF;
+//             send_reply((*it)->get_socket_fd(), msge);
+//             close((*it)->get_socket_fd());
+//             (*it)->disconnected();
+//         }
+//     }
+// }
 
 bool Server::taken_nick_name_1(std::string _n) const
 {
     for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
     {
-        if ((*it)->get_nick_name() == _n && (*it)->check_all())  // Ensure the check is active
+        if ((*it)->get_nick_name() == _n)  // Ensure the check is active
             return false;
     }
     return true;
@@ -66,11 +68,10 @@ void Server::parse_nick(Client &_client)
                     msge = _client.get_nick_name() + "!@ NICK :" + _client.get_cmd(1) + '\n';
                     send_reply(_client.get_socket_fd(), msge);
                 }
-                // send info to all the joined channels that the nik is changed
             }
             else if (_client.check_all())
             {
-                msge = ":" + _client.get_nick_name() + "!~d@197.230.30.146 NICK :" + _client.get_cmd(1) + CRLF;
+                msge = ":" + _client.get_nick_name() + "!~d@" + _client.get_ip() +  "NICK :" + _client.get_cmd(1) + CRLF;
                 send_reply(_client.get_socket_fd(), msge);
             }
             _client.set_nick_name(_client.get_cmd(1));
@@ -93,7 +94,6 @@ void Server::parse_user(Client &_client)
     }
     else if (_client.get_buffer_size() < 5)
     {
-        
         msge = server_prefix + "461 " +  "USER :Not enough parameters" + CRLF;
         send_reply(_client.get_socket_fd(), msge);
     }
@@ -132,22 +132,22 @@ void Server::handle_cmd(Client &_client)
     _client.parse_command();
     if (!_client.get_buffer_size())
         return ;
-    if (_client.get_cmd(0) == "quit" || _client.get_cmd(0) == "QUIT")
+    if (_client.get_cmd(0) == "quit")
     {
         handle_quit_cmd(_client);
         return ;
     }
-    if (!_client.check_pass() && (_client.get_cmd(0) != "pass" && _client.get_cmd(0) != "PASS"))
+    if (!_client.check_pass() && _client.get_cmd(0) != "pass")
     {
-        std::string msge = server_prefix + "451 :You have not registered" + CRLF;
+        std::string msge = server_prefix + "451 * :You have not registered" + CRLF;
         send_reply(_client.get_socket_fd(), msge);
         return ;
     }
-    if (_client.get_cmd(0) == "pass" || _client.get_cmd(0) == "PASS")
+    if (_client.get_cmd(0) == "pass")
         try_to_auth(_client);
-    if (_client.get_cmd(0) == "nick" || _client.get_cmd(0) == "NICK")
+    if (_client.get_cmd(0) == "nick")
         parse_nick(_client);
-    if (_client.get_cmd(0) == "user" || _client.get_cmd(0) == "USER")
+    if (_client.get_cmd(0) == "user")
         parse_user(_client);
     if (_client.check_all() && !_client.check_message())
         registration_msge(_client);
