@@ -35,6 +35,7 @@ void Client::connect(int server_socket)
     __poll.fd = client_socket;
     __poll.events = POLLIN;
     __poll.revents = 0;
+    fcntl(client_socket, F_SETFL, O_NONBLOCK);
 }
 
 int Client::get_socket_fd() const
@@ -111,16 +112,20 @@ void Client::parse_command()
     {
         std::string trimmed = trim(command);
         if (!trimmed.empty())
+        {
+            toLower(trimmed);
+        {
+            toLower(trimmed);
             _command_buffer.push_back(trimmed);
+        }
+        }
     }
     if (pos == _buffer.length() - del)
-    {
         _buffer.clear();
-    }
     else
-    {
         _buffer = _buffer.substr(pos + del, _buffer.length());
-    }
+
+
     // debug printing
     // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
     // std::cout << '[';
@@ -257,25 +262,32 @@ bool    Client::cmd_end()
     return false;
 }
 
-void Client::trim_message()
+std::string Client::trim_message()
 {
+    std::string msge;
     std::vector<std::string>::iterator it = std::find(_command_buffer.begin(), _command_buffer.end(), ":");
     if (it != _command_buffer.end())
     {
         it++;
         while (it != _command_buffer.end())
         {
-            _message += *it + ' ';
+            msge += *it + ' ';
             it++;
         }
-        _message[_message.length() - 1] = '\0';
-        return ;
+        msge[msge.length() - 1] = '\0';
+        return msge;
     }
     size_t pos = _second_buffer.find(':');
     if (std::string::npos != pos)
-        _message = _second_buffer.substr(pos + 1, _second_buffer.length() - pos - 2);
+        msge = _second_buffer.substr(pos + 1, _second_buffer.length() - pos - 2);
     else
-        _message = _command_buffer[2];
+    {
+        if (_command_buffer[0] == "quit")
+            msge = _command_buffer[1];
+        else
+            msge = _command_buffer[2];
+    }
+    return msge;
 }
 
 std::string Client::get_message() const

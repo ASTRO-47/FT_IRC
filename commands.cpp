@@ -1,21 +1,21 @@
 #include "server.hpp"
 #include "Channel.hpp"
 
-void    Server::handle_cmd_1(Client &_C)
+void    Server::handle_cmd_1(Client &_client)
 {
-    _C.parse_command();
-    if (!_C.get_buffer_size())
+    _client.parse_command();
+    if (!_client.get_buffer_size())
         return ;
-	std::string input = _C.get_cmd(0);
+	std::string input = _client.get_cmd(0);
     toLower(input);
-    Client &client = _C;
-    size_t buffer_size = _C.get_buffer_size();
+    Client &client = _client;
+    size_t buffer_size = _client.get_buffer_size();
     std::string msge;
-    if (check_command(_C))
+    if (check_command(_client))
         return ;
     if (input == "join"){
         if (buffer_size < 2){
-            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), _C.get_cmd(0)));
+            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), _client.get_cmd(0)));
             client.reset();
             return ;
         }
@@ -55,7 +55,27 @@ void    Server::handle_cmd_1(Client &_C)
     }
     else if (input != "pong" && input != "PONG" )
     {
-        msge = server_prefix + "421 " + _C.get_cmd(0) +  ": unkown command" + CRLF;
-        send_reply(_C.get_socket_fd(), msge);
+        msge = server_prefix + "421 " + _client.get_cmd(0) +  ": unkown command" + CRLF;
+        send_reply(_client.get_socket_fd(), msge);
     }
 }
+
+
+//vector 
+// l9it +o 
+// antraiter l arg wnpoppih
+
+// sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
+
+
+// user cannot promote himself
+
+
+// check discord diali 7at screen tests dial mode
+
+
+// join #chan1,#chan1 key key
+// pk makhdamach
+
+// check if its a member of the channel before checking if it has a password
+

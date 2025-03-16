@@ -11,27 +11,12 @@ Server::Server()
     modes.insert('t');   
     ins = this;
     server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
-    // auth_guide = 
-    // "Welcome to our humble server!" + CRLF
-    // "To authenticate, please follow these steps:" + CRLF
-    // "1. Enter the server password:" + CRLF
-    // "   PASS <password>" + CRLF
-    // "2. Choose a nickname:" + CRLF
-    // "   NICK <nickname>" + CRLF
-    // "3. Register with a username and real name:" + CRLF
-    // "   USER <username> 0 * :<realname>" + CRLF
-    // "Example:" + CRLF
-    // "   PASS ServerPass" + CRLF
-    // "   NICK JohnDoe" + CRLF
-    // "   USER johnd 0 * John Doe" + CRLF
-    // "Once authenticated, you can start using the server!" + CRLF;
 
 }
 
-void    Server::registration_msge(Client &_C)
+void    Server::registration_msge(Client &_client)
 {
-    std::string nick = _C.get_nick_name();
-    taken_nick_name(_C);
+    std::string nick = _client.get_nick_name();
     std::string message = 
             ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
             ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
@@ -47,8 +32,9 @@ void    Server::registration_msge(Client &_C)
         ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
         ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
     message += motd;
-    send(_C.get_socket_fd(), message.c_str(), message.length(), 0);
-    _C.showed_messgae();
+    send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
+    _client.showed_messgae();
+    taken_nick_name(_client);
 }
 
 bool white_space(const std::string& str) 
@@ -92,7 +78,7 @@ void Server::server_setup(std::string _port, std::string passwd)
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
     if (server_socket == -1)
         throw std::runtime_error("failed to create socket");
-    // fcntl(server_socket, F_SETFL, O_NONBLOCK);
+    fcntl(server_socket, F_SETFL, O_NONBLOCK);
     sock_addr.sin_family = AF_INET; //  select the ipv4 family
     sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
     sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
@@ -126,7 +112,7 @@ void    Server::handle_new_client()
         clients.push_back(new_client); // add the client to the vector
         _poll_fds.push_back(new_client->get_socket_struct());
         std::cout << "CLIENT CONNECTED, ON FD: "  << new_client->get_socket_fd() << CRLF;
-        send_reply(new_client->get_socket_fd(), auth_guide);
+        // send_reply(new_client->get_socket_fd(), auth_guide);
     }
     catch(const std::exception& e)
     {
@@ -135,46 +121,46 @@ void    Server::handle_new_client()
     }
 }
 
-void Server::handle_event_fd(Client &_C)
+void Server::handle_event_fd(Client &_client)
 {
     char buffer[512] = {0};
-    int bytes = recv(_C.get_socket_fd(), buffer, 511, 0); // put in the stream of the client
-    // if (bytes <= 0)
-    // {
-    //     close (_C.get_socket_fd());
-    //     _C.disconnected();
-    // }
-    // else
-    std::cout << "limechat sends: " << buffer << '\n';
+    int bytes = recv(_client.get_socket_fd(), buffer, 511, 0); // put in the stream of the client
+    if (bytes <= 0) // 0 client disconnected gracefuly, -1 an error occured
+    {
+        close (_client.get_socket_fd());
+        _client.disconnected();
+    }
+    else
     {
         buffer[bytes] = '\0';
-        _C.append_buffer(buffer);
-        if (_C.get_buffer().length() > 600)
+        _client.append_buffer(buffer);
+        std::cout << _client.get_buffer() << "]" << std::endl;
+        if (_client.get_buffer().length() > 10000)
         {
             std::string msge =  server_prefix + " :INPUT LINE TOO LONG\n";
-            send_reply(_C.get_socket_fd(), msge);
-            _C.reset();
-            _C.clear_buffer();
+            send_reply(_client.get_socket_fd(), msge);
+            _client.reset();
+            _client.clear_buffer();
             return ;
         }
-        if (_C.cmd_end() && !_C.check_all())
+        if (_client.cmd_end() && !_client.check_all())
         {
 
-            while (_C.get_buffer().length()) // split the request to handle bot connection
+            while (_client.get_buffer().length()) // split the request to handle bot connection
             {
-                handle_cmd(_C);
-                _C.reset();
+                handle_cmd(_client);
+                _client.reset();
             }
         }
-        else if (_C.cmd_end())
+        else if (_client.cmd_end())
         {
-            while (_C.get_buffer().length())
+            while (_client.get_buffer().length())
             {
-                handle_cmd_1(_C);
-                _C.reset();
+                handle_cmd_1(_client);
+                _client.reset();
             }
         }
-        _C.clear_buffer();
+        _client.clear_buffer();
     }
 }
 
@@ -193,7 +179,7 @@ void Server::multiplexing_func()
     signal(SIGQUIT, handler);
     while (true)
     {
-        int ready = poll(_poll_fds.data(), _poll_fds.size(), -1);
+        int ready = poll(_poll_fds.data(), _poll_fds.size(), 0);
         if (ready == -1)
             throw std::runtime_error("POLL ERROR");
         for (size_t i = 0; i < _poll_fds.size(); i++)
@@ -215,6 +201,7 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(*clients[i]);
+                    
                 clients[i]->reset();
             }
         }
