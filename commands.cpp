@@ -59,23 +59,3 @@ void    Server::handle_cmd_1(Client &_client)
         send_reply(_client.get_socket_fd(), msge);
     }
 }
-
-
-//vector 
-// l9it +o 
-// antraiter l arg wnpoppih
-
-// sawb chi function katreturni lik wach dak lmode valid w katseti lik wach khas param wla la
-
-
-// user cannot promote himself
-
-
-// check discord diali 7at screen tests dial mode
-
-
-// join #chan1,#chan1 key key
-// pk makhdamach
-
-// check if its a member of the channel before checking if it has a password
-

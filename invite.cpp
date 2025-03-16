@@ -27,7 +27,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
             }
         }
     }
-    send_reply(cinvited->get_socket_fd(), RPL_INVITE(sender->get_nick_name(), chan, sender->get_ip(), sender->get_hostname(), invited));
+    send_reply(cinvited->get_socket_fd(), RPL_INVITE(sender->get_nick_name(), chan, sender->get_ip(), sender->get_user_name(), invited));
     send_reply(sender->get_socket_fd(), RPL_INVITING(sender->get_nick_name(), invited, chan));
     channelMap[chan].appendInvitedMembers(cinvited);
 }

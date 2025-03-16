@@ -16,9 +16,9 @@
 
 #define CLIENT_QUIT(target, ip, username) (":" + target + "!~" + username + "@" + ip + " QUIT :" + target + "\r\n")
 
-#define CHANNEL_JOIN(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " JOIN " + channel + "\r\n")
+#define CHANNEL_JOIN(target, channel, ip, username) (":" + target + "!~" + username + "@" + ip + " JOIN " + channel + "\r\n")
 
-#define CHANNEL_MODES(target, channel, ip, hostname) (":" + target + "!~" + hostname + "@" + ip + " MODE " + channel + " +t\r\n")
+#define CHANNEL_MODES(target, channel, ip, username) (":" + target + "!~" + username + "@" + ip + " MODE " + channel + " +t\r\n")
 
 #define RPL_CHANNELMODEIS(target, channel, modes, params) (std::string(sprefix) + " 324 " + target + " " + channel + " " + modes + " " + params + " \r\n")
 
@@ -51,5 +51,4 @@
 
 #define RPL_INVITING(target, invited, channel) (std::string(sprefix) + " 341 " + target + " " + invited + " " + channel + " \r\n")
 
-#define RPL_INVITE(target, channel, ip, hostname, invited) (":" + target + "!~" + hostname + "@" + ip + " INVITE " + invited + " " + channel + "\r\n")
-
+#define RPL_INVITE(target, channel, ip, username, invited) (":" + target + "!~" + username + "@" + ip + " INVITE " + invited + " " + channel + "\r\n")

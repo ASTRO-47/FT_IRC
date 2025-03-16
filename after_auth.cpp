@@ -4,7 +4,7 @@
 void Server::handle_prv_msge(Client &_client)
 {
     std::string _msge = _client.trim_message();
-    std::string msge = ":" + _client.get_nick_name() +"!~" + "@" + _client.get_ip() +  " PRIVMSG " +_client.get_reciever()->get_nick_name() + " :" + _msge + CRLF;
+    std::string msge = ":" + _client.get_nick_name() +"!~" + _client.get_user_name() + "@" + _client.get_ip() +  " PRIVMSG " +_client.get_reciever()->get_nick_name() + " :" + _msge + CRLF;
     send_reply(_client.get_reciever()->get_socket_fd(), msge);
 }
 
@@ -19,7 +19,7 @@ bool    Server::check_user(Client &_client)
     }
     if (channel_exists(_n))
     {
-        std::string msge = ":" + _client.get_nick_name() +"!~" + "@" + _client.get_ip() +  " PRIVMSG " + _n + " :" + _client.trim_message() + CRLF;
+        std::string msge = ":" + _client.get_nick_name() +"!~" + _client.get_user_name() + "@" + _client.get_ip() +  " PRIVMSG " + _n + " :" + _client.trim_message() + CRLF;
         return (channelMap[_n].broadcastToAllMembers(msge, channelMap[_n]), false);
     }
     if (channel_exists(_n))

@@ -71,7 +71,7 @@ void Server::parse_nick(Client &_client)
             }
             else if (_client.check_all())
             {
-                msge = ":" + _client.get_nick_name() + "!~" + _client.get_hostname() + "@" + _client.get_ip() + " NICK :" + _client.get_cmd(1) + CRLF;
+                msge = ":" + _client.get_nick_name() + "!~" + _client.get_user_name() + "@" + _client.get_ip() + " NICK :" + _client.get_cmd(1) + CRLF;
                 broadcast_msge(msge);
             }
             _client.set_nick_name(_client.get_cmd(1));
