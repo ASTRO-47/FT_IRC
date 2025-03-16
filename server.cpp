@@ -31,7 +31,6 @@ Server::Server()
 void    Server::registration_msge(Client &_client)
 {
     std::string nick = _client.get_nick_name();
-    taken_nick_name(_client);
     std::string message = 
             ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
             ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
@@ -126,7 +125,7 @@ void    Server::handle_new_client()
         clients.push_back(new_client); // add the client to the vector
         _poll_fds.push_back(new_client->get_socket_struct());
         std::cout << "CLIENT CONNECTED, ON FD: "  << new_client->get_socket_fd() << CRLF;
-        send_reply(new_client->get_socket_fd(), auth_guide);
+        // send_reply(new_client->get_socket_fd(), auth_guide);
     }
     catch(const std::exception& e)
     {

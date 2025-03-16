@@ -29,7 +29,6 @@ void    Server::change_nick_name(Client &_client)
     parse_nick(_client);
 }
 
-
 void    Server::handle_quit_cmd(Client &_client)
 {
     std::string msge;
