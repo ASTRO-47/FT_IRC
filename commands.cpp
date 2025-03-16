@@ -23,8 +23,8 @@ void    Server::handle_cmd_1(Client &_client)
     }
     else if (input == "mode"){
 		if (buffer_size < 3){
-            if (buffer_size == 2 && channel_exists(_C.get_cmd(1))){
-                channelMap[_C.get_cmd(1)].displayModes(_C);
+            if (buffer_size == 2 && channel_exists(_client.get_cmd(1))){
+                channelMap[_C.get_cmd(1)].displayModes(_client);
                 return;
             }
             send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), client.get_cmd(0)));
@@ -33,10 +33,10 @@ void    Server::handle_cmd_1(Client &_client)
         mode_handler(client);
     }
     else if (input == "invite"){
-        if (!check_user(_C))
+        if (!check_user(_client))
             return;
         if (buffer_size < 3 ){
-            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), _C.get_cmd(0)));
+            send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), _client.get_cmd(0)));
             client.reset();
             return;
         }
@@ -50,7 +50,7 @@ void    Server::handle_cmd_1(Client &_client)
             kick_handler(client, buffer_size);
     else if (input == "quit")
     {
-        handle_quit_cmd(_C);
+        handle_quit_cmd(_client);
         return ;
     }
     else if (input != "pong" && input != "PONG" )

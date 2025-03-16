@@ -47,7 +47,7 @@ void    Bot::_connect()
         }
         size_t service = buf.find("joke");
         std::string suuuu = buf.substr(service, std::string::npos);
-        std::cout << suuuu << '\n';
+        knt hna
         // if (buf.find(":joke") != std::string::npos || buf.find("joke") != std::string::npos){
         //     random_joke(buf);
         // }
