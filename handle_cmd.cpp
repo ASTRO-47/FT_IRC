@@ -71,7 +71,7 @@ void Server::parse_nick(Client &_client)
             }
             else if (_client.check_all())
             {
-                msge = ":" + _client.get_nick_name() + "!~d@197.230.30.146 NICK :" + _client.get_cmd(1) + CRLF;
+                msge = ":" + _client.get_nick_name() + "!~d@" + _client.get_ip() +  "NICK :" + _client.get_cmd(1) + CRLF;
                 send_reply(_client.get_socket_fd(), msge);
             }
             _client.set_nick_name(_client.get_cmd(1));
@@ -147,7 +147,6 @@ void Server::handle_cmd(Client &_client)
         try_to_auth(_client);
     if (_client.get_cmd(0) == "nick")
         parse_nick(_client);
-    puts("UNTIL HERE");
     if (_client.get_cmd(0) == "user")
         parse_user(_client);
     if (_client.check_all() && !_client.check_message())
