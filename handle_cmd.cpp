@@ -66,12 +66,11 @@ void Server::parse_nick(Client &_C)
                     msge = _C.get_nick_name() + "!@ NICK :" + _C.get_cmd(1) + '\n';
                     send_reply(_C.get_socket_fd(), msge);
                 }
-                // send info to all the joined channels that the nik is changed
             }
             else if (_C.check_all())
             {
-                msge = ":" + _C.get_nick_name() + "!~d@197.230.30.146 NICK :" + _C.get_cmd(1) + CRLF;
-                send_reply(_C.get_socket_fd(), msge);
+                msge = ":" + _C.get_nick_name() + "!~" + _C.get_hostname() + "@" + _C.get_ip() + " NICK :" + _C.get_cmd(1) + CRLF;
+                broadcast_msge(msge);
             }
             _C.set_nick_name(_C.get_cmd(1));
         }

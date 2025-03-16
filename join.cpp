@@ -39,15 +39,12 @@ void Server::extract_channels(const std::string &chans, const std::string &passw
         channelAndPass.push_back(std::make_pair(chan, pass));
     }
 }
-// khasni n ignori ila makanch formatted correctlly
-// check password if channel exists moraha addi lclient ldik channel, operator kikon endo @ 9bl
-// join replies
 
 void Server::create_channel(const std::string& channelName, Client *creator){
     channelMap[channelName] = Channel(channelName, creator);
     return;
 }
-    // mli ykon topic msetti nsift rpl topic
+
 void Server::append_user_to_channel(Channel &channel, Client *newMember){
 	for (std::vector<std::pair<Client*, bool> >::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it++){
         if (it->first == newMember)
@@ -56,15 +53,12 @@ void Server::append_user_to_channel(Channel &channel, Client *newMember){
     if (!channel.getLimitSet() || channel.getNumMembers() < channel.getUserLimit()){
         channel.appendMember(newMember);
         std::string name = channel.getChannelName();
-        channel.broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_user_name()));
+        Channel::broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_user_name()), channel);
         if (channel.getTopic() == true)
             send_reply(newMember->get_socket_fd(), RPL_TOPIC(newMember->get_nick_name(), channel.getChannelName(), channel.getTopicString()));
-	    send_reply(newMember->get_socket_fd(), CHANNEL_MODES(newMember->get_nick_name(), channel.getChannelName(), newMember->get_ip(), newMember->get_user_name()));
         send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel.print_members()));
-	    send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));// print channel modes +t
-        // mli ykon topic msetti nsift rpl topic
+	    send_reply(newMember->get_socket_fd(), RPL_ENDOFNAMES(newMember->get_nick_name(), name));
     }
-    // checki hna hadchi dial limit set houa hadak
     else
         send_reply(newMember->get_socket_fd(), ERR_CHANNELISFULL(channel.getChannelName(), newMember->get_nick_name()));
 }
@@ -82,7 +76,8 @@ void Server::join_handler(Client &client){
 		std::string channelName = it->first;
         std::string password = it->second;
         if (channelName.empty() || (channelName.front() != '#' && channelName.front() != '&')
-            || ((channelName.front() == '#' || channelName.front() == '&') && channelName.size() == 1)){
+            || ((channelName.front() == '#' || channelName.front() == '&') && channelName.size() == 1)
+                || (channelName.size() > 10 )){
             send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(channelName));
             it = channelAndPass.erase(it);
             continue;
@@ -96,7 +91,11 @@ void Server::join_handler(Client &client){
 	        create_channel(channelName, &client);
         else {
             Channel& channel = channelMap[channelName];
-            if (channel.getInviteOnly() && !channel.isInvited(&client))
+            if (channel.isMember(&client)){
+                it = channelAndPass.erase(it);
+                continue;
+            }
+            else if (channel.getInviteOnly() && !channel.isInvited(&client))
                 send_reply(client.get_socket_fd(), ERR_INVITEONLYCHAN(client.get_nick_name(),channelName));
 			else if (channel.getRequiresPass() && channel.getPass() != password)
                 send_reply(client.get_socket_fd(), ERR_BADCHANNELKEY(client.get_nick_name(), channelName));

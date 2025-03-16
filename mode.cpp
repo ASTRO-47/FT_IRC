@@ -1,7 +1,6 @@
 #include "server.hpp"
 #include "Channel.hpp"
 
-// check edge cases kayn chi 8 dial mode
 bool Server::requiresArg(char sign, char oper){
     return ((sign == '+' && oper == 'o') || (sign == '-' && oper == 'o') || (sign == '+' && oper == 'l') || (sign == '+' && oper == 'k'));
 }
@@ -20,7 +19,7 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
         else
             operations.push_back(std::make_pair(*it, modeSign));
     }
-    for (size_t j = 3; j < client.get_buffer_size(); j++) //  machi dima ghaykon idan hadchi mzl chwiya flawed
+    for (size_t j = 3; j < client.get_buffer_size(); j++)
         options.push_back(client.get_cmd(j));
     for (std::vector<std::pair<char, char> >::iterator it = operations.begin(); it != operations.end(); it++){
         char charMode = it->first;
@@ -39,13 +38,17 @@ void  Server::check_operations(const std::string &opers, Client &client, Channel
                     send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
             }
         else
-            process_operation(sign, charMode, client, options.front(), channel); // sawb function khra lhadok li may7tajoch args
+            process_operation(sign, charMode, client, options.front(), channel);
     }
 }
 
 void Server::mode_handler(Client &client){
 	std::string chan = client.get_cmd(1);
     if (channel_exists(chan) == true){
+        if (!channelMap[chan].isMember(&client)){
+            send_reply(client.get_socket_fd(), ERR_NOTONCHANNEL(channelMap[chan].getChannelName(), client.get_nick_name()));
+            return;
+        }
         if (channelMap[chan].isOperator(&client) == true){
 		    std::string oper = client.get_cmd(2);
             check_operations(oper, client, channelMap[chan]);
@@ -56,7 +59,3 @@ void Server::mode_handler(Client &client){
     else
         send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(chan));
 }
-
-// mode #chan ++++hol marin 10
-
-// unknown mode to me

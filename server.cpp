@@ -258,8 +258,9 @@ void Server::broadcastMsg(std::string msg){
 
 void Server::removeChannel(){
     for (std::map<std::string, Channel>::iterator it = channelMap.begin(); it != channelMap.end();){
-        if (channel_exists(it->second.getChannelName()) && it->second.getNumMembers() == 1)
+        if (channel_exists(it->second.getChannelName()) && it->second.getNumMembers() <= 1){
             it = channelMap.erase(it);
+        }
         else
             it++;
     }
@@ -271,3 +272,21 @@ void Server::removeUserFromChannels(Client& client){
             it->second.removeMember(&client);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FILE TRANSFERERERERERER

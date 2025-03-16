@@ -1,13 +1,10 @@
 #include "server.hpp"
 #include "Channel.hpp"
 
-// check channel member limits!!!
-
-// user kay inviti raso hhhhh
 void Server::invite_user(const std::string &invited, Client *sender ,const std::string &chan){
     if (channel_exists(chan) && channelMap[chan].getInviteOnly()
         && !channelMap[chan].isOperator(sender)){
-            // send_reply(sender->get_socket_fd(), ERR_CHANOPRIVSNEEDED(sender->get_nick_name(), chan)) knt hna
+            send_reply(sender->get_socket_fd(), ERR_CHANOPRIVSNEEDED(sender->get_nick_name(), chan));
             return;
     }
     Client *cinvited = NULL;
@@ -30,24 +27,7 @@ void Server::invite_user(const std::string &invited, Client *sender ,const std::
             }
         }
     }
-    // std::vector<std::string> vec = cinvited->getInvitedChannels();
-    // std::vector<std::string>::iterator it = std::find(vec.begin(), vec.end(), chan);
-    // if (it != vec.end()){
-        std::string msg = server_prefix + " you're invited to join the channe\r\n"; //hhhhh
-        send_reply(cinvited->get_socket_fd(), msg);
-        channelMap[chan].appendInvitedMembers(cinvited);
-    // }// ila kan already invited ldik channel n ignori wsf
-    // else
-        // you werent invited
-    // reply mgada
-
-// channel makaynch - user makaynch fdik channel
-// invite message
-//mat invitich rask
+    send_reply(cinvited->get_socket_fd(), RPL_INVITE(sender->get_nick_name(), chan, sender->get_ip(), sender->get_hostname(), invited));
+    send_reply(sender->get_socket_fd(), RPL_INVITING(sender->get_nick_name(), invited, chan));
+    channelMap[chan].appendInvitedMembers(cinvited);
 }
-
-
-
-// 3awd checki replies d invite dik no such nick
-
-

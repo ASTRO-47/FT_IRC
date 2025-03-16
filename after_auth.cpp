@@ -20,7 +20,7 @@ bool    Server::check_user(Client &_C)
             return true;
         }
     }
-    std::string msge = server_prefix + "402 " + _n +  " :No such nick/channel" + CRLF;
+    std::string msge = server_prefix + "401 " + _n +  " :No such nick/channel" + CRLF;
     send_reply(_C.get_socket_fd(), msge);
     return false;
 }
@@ -29,19 +29,16 @@ void    Server::change_nick_name(Client &_C)
     parse_nick(_C);
 }
 
-
 void    Server::handle_quit_cmd(Client &_C)
 {
     std::string msge;
-    msge = ":";
     if (_C.check_all())
-        msge += _C.get_nick_name();
-    else
-        msge += "*";
-    msge += "!~f@197.230.30.146 QUIT :Client Quit" + CRLF;
-    send_reply(_C.get_socket_fd(), msge);
-    // removeUserFromChannels(_C); // fkr flblan dial tb9a channel bla operator etc..., hhhh kharya dyal de7k (by imad)
-    msge = "ERROR :Closing Link: 197.230.30.146 (Client Quit)" + CRLF;
+        send_reply(_C.get_socket_fd(), CLIENT_QUIT(_C.get_nick_name(), _C.get_ip(), _C.get_user_name()));
+    else{
+        msge = ":*!~*@" + _C.get_ip() + " QUIT " + ":Quit" + CRLF;
+        send_reply(_C.get_socket_fd(), msge);
+    }
+    msge = "ERROR :Closing Link: " + _C.get_ip() + " (Client Quit)" + CRLF;
     send_reply(_C.get_socket_fd(), msge);
     close(_C.get_socket_fd());
     _C.disconnected();

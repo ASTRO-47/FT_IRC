@@ -6,45 +6,52 @@ void Server::topic_handler(Client &client, size_t buffer_size){
         send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), client.get_cmd(0)));
         return;
     }
-    else if (buffer_size == 2){
-        std::string name = client.get_cmd(1);
-        std::string msg = channelMap[name].getTopicString();
-        if (msg.empty()){
-            send_reply(client.get_socket_fd(), RPL_NOTOPIC(client.get_nick_name(), name));
-            return;
-        }
-        channelMap[name].broadcastToAllMembers(RPL_TOPIC(client.get_nick_name(), name, msg));
+    std::string chan = client.get_cmd(1);
+    if (!channel_exists(chan)){
+        send_reply(client.get_socket_fd(), ERR_NOSUCHCHANNEL(chan));
+        return;
+    }
+    Channel &channel = channelMap[chan];
+    if (buffer_size == 2 || (buffer_size == 3 && client.get_cmd(2) == ":")){
+        std::string msg = channel.getTopicString();
+        if (msg.empty())
+            send_reply(client.get_socket_fd(), RPL_NOTOPIC(client.get_nick_name(), chan));
+        else
+            send_reply(client.get_socket_fd(), RPL_TOPIC(client.get_nick_name(), chan, msg));
+        return;
+    }
+    if (channel.getTopicFlag() && !channel.isOperator(&client)){
+        send_reply(client.get_socket_fd(), ERR_CHANOPRIVSNEEDED(client.get_nick_name(), chan));
         return;
     }
     std::vector<std::string> vec = client.get_cmd_buffer();
     std::vector<std::string>::iterator it = std::find(vec.begin(), vec.end(), ":");
+    std::string newTopic;
     if (it != vec.end()){
         it++;
-    std::string name = client.get_cmd(1);
     while (it != vec.end()){
-        channelMap[name].getTopicString() += *it + ' ';
+        newTopic += *it + ' ';
         it++;
     }
-    std::string topic = channelMap[client.get_cmd(1)].getTopicString();
-    std::string btopic = ":" + topic;
-    channelMap[client.get_cmd(1)].setTopic(true);
-    channelMap[client.get_cmd(1)].setTopicString(topic);
-    channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"));
+    std::string btopic = ":" + newTopic;
+    channel.setTopic(true);
+    channel.setTopicString(newTopic);
+    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel);
     return;
     }
     size_t pos = client.get_second_buffer().find(':');
     if (pos != std::string::npos){
         std::string topic = client.get_second_buffer().substr(pos + 1, client.get_second_buffer().length() - pos - 2);
         std::string btopic = ":" + topic;
-        channelMap[client.get_cmd(1)].setTopic(true);
-        channelMap[client.get_cmd(1)].setTopicString(topic);
-        channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"));
+        channel.setTopic(true);
+        channel.setTopicString(topic);
+        Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel);
     }
     else{
         std::string topic = client.get_cmd(2);
         std::string btopic = ":" + client.get_cmd(2);
-        channelMap[client.get_cmd(1)].setTopic(true);
-        channelMap[client.get_cmd(1)].setTopicString(client.get_cmd(2));
-        channelMap[client.get_cmd(1)].broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channelMap[client.get_cmd(1)].getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"));
+        channel.setTopic(true);
+        channel.setTopicString(client.get_cmd(2));
+        Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel);
     }
 }

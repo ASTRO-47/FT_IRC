@@ -7,12 +7,12 @@ Channel::Channel(std::string ChannelName, Client* Creator){
 	pass = "";
 	requiresPass = false;
 	limitSet = false;
-	topicSettable = false;
+	topicSettable = true;
 	topicSet = false;
 	topic = "";
-	userLimit = -1; // idan antchecki wach machi negative 3ad nchof wach limit tsetta
+	userLimit = -1;
 	Server::send_reply(Creator->get_socket_fd(), CHANNEL_JOIN(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_user_name()));
-	// Server::send_reply(Creator->get_socket_fd(), CHANNEL_MODES(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_user_name()));
+	Server::send_reply(Creator->get_socket_fd(), CHANNEL_MODES(Creator->get_nick_name(), ChannelName, Creator->get_ip(), Creator->get_user_name()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_NAMREPLY(Creator->get_nick_name(), ChannelName, '@' + Creator->get_nick_name()));
 	Server::send_reply(Creator->get_socket_fd(), RPL_ENDOFNAMES(Creator->get_nick_name(), ChannelName));
 }
@@ -47,10 +47,7 @@ void Channel::setPass(const std::string &newPass){
 }
 
 Channel::~Channel(){
-	puts("jdhshgsdfs");
-	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end();){
-		it = members.erase(it);
-	}
+	members.clear();
 }
 
 void Channel::setRequiresPass(const bool &NewStatus){
@@ -70,7 +67,23 @@ void Channel::removeMember(Client *toRemove){
 		}
 	}
 	if (it != members.end()){
-		broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_user_name()));
+		Channel::broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_user_name()), *this);
+		members.erase(it);
+	}
+	std::vector<Client *>::iterator it2 = std::find(invitedMembers.begin(), invitedMembers.end(), toRemove);
+	if (it2 != invitedMembers.end())
+		invitedMembers.erase(it2);
+}
+
+void Channel::kickMember(Client *toRemove){
+	std::vector<std::pair<Client*, bool> >::iterator it = members.end();
+	for (std::vector<std::pair<Client*, bool> >::iterator it2 = members.begin(); it2 != members.end(); it2++){
+		if (it2->first == toRemove){
+			it = it2;
+			break;
+		}
+	}
+	if (it != members.end()){
 		members.erase(it);
 	}
 	std::vector<Client *>::iterator it2 = std::find(invitedMembers.begin(), invitedMembers.end(), toRemove);
@@ -148,8 +161,8 @@ void Channel::setTopicFlag(bool flag){
 	topicSettable = flag;
 }
 
-void Channel::broadcastToAllMembers(std::string msg){
-	for (std::vector<std::pair<Client*, bool> >::iterator it = members.begin(); it != members.end(); it++){
+void Channel::broadcastToAllMembers(std::string msg, Channel &chan){
+	for (std::vector<std::pair<Client*, bool> >::iterator it = chan.members.begin(); it != chan.members.end(); it++){
 		if (it->first)
 			Server::send_reply(it->first->get_socket_fd(), msg);
 	}
@@ -188,4 +201,25 @@ bool Channel::isInvited(Client *toCheck){
 	if (it != invitedMembers.end())
         return true;
     return false;
+}
+
+void Channel::displayModes(Client &caller){
+	std::string buff = "+";
+	std::string params;
+	if (requiresPass)
+		buff += "k";
+	if (limitSet)
+		buff += "l";
+	if (topicSettable)
+		buff += "t";
+	if (isInviteOnly)
+		buff += "i";
+	if (buff.find('l') != std::string::npos){
+		std::ostringstream oss;
+		oss << userLimit;
+		if (!oss.fail()){
+			params = oss.str();
+		}
+	}
+	Server::send_reply(caller.get_socket_fd(), RPL_CHANNELMODEIS(caller.get_nick_name(), getChannelName(), buff, params));
 }

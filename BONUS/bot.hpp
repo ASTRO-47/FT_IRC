@@ -21,15 +21,17 @@
 class Bot
 {
 private:
-    unsigned int                         _port;
-    std::string                 _ip;
-    std::string                 _nick;
-    std::string                 _pass;
-    std::string                 _user;
-    int                         _socket;
-    sockaddr_in                 _addr;
-    std::vector<std::string>    _jokes;
+    unsigned int                                         _port;
+    std::string                                          _ip;
+    std::string                                          _nick;
+    std::string                                          _pass;
+    std::string                                          _user;
+    int                                                  _socket;
+    sockaddr_in                                          _addr;
+    std::vector<std::string>                             _jokes;
+    std::vector<std::pair<std::string, std::string> >    _capitals;
     std::string                 random_joke();
+    std::string                 capital_handler();
 public:
     Bot();
     void                parse(char **av);

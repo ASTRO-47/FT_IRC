@@ -1,19 +1,5 @@
 #include "bot.hpp"
 
-Bot::Bot()
-{
-    _jokes.push_back("Why don’t skeletons fight each other? They don’t have the guts!");
-    _jokes.push_back("I told my wife she should embrace her mistakes. She gave me a hug.");
-    _jokes.push_back("Parallel lines have so much in common. It’s a shame they’ll never meet.");
-    _jokes.push_back("Why was the math book sad? It had too many problems.");
-    _jokes.push_back("Why don’t programmers like nature? It has too many bugs.");
-    _jokes.push_back("I told my computer I needed a break, and now it won’t stop sending me vacation ads.");
-    _jokes.push_back("Why do cows have hooves instead of feet? Because they lactose.");
-    _jokes.push_back("I asked the librarian if the library had any books on paranoia. She whispered, 'They're right behind you...'");
-    _jokes.push_back("What did the big flower say to the little flower? 'Hey, bud!'");
-    _jokes.push_back("Why did the scarecrow win an award? Because he was outstanding in his field!");
-}
-
 void Bot::parse(char **av) // use the arg from the user input
 {
     (void)av;
@@ -30,12 +16,16 @@ void    Bot::_connect()
         throw std::runtime_error("socket creation failed");
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
-    _addr.sin_addr.s_addr = inet_addr("10.12.10.15"); 
+    _addr.sin_addr.s_addr = inet_addr("10.12.2.9"); 
     if (connect(_socket, (struct sockaddr *)&_addr, sizeof(_addr)) < -1)
         throw std::runtime_error("failed to connect to server");
     send(_socket, _pass.c_str(), _pass.length(), 0);
     send(_socket, _nick.c_str(), _nick.length(), 0);
     send(_socket, _user.c_str(), _user.length(), 0);// check the response from the serve 
+    char _b[2000];
+    int b = recv(_socket, _b, sizeof(_b), 0);
+    _b[b] = '\0';
+    std::cout << _b << std::endl;
     while (1) 
     {
         char buffer[1024] = {0};
@@ -48,14 +38,31 @@ void    Bot::_connect()
             _connect(); // Attempt to reconnect
         }
         buffer[bytes] = '\0'; // /urandom error
-        std::cout << buffer;
+        std::string buf = static_cast<std::string>(buffer);
+        std::cout << buffer << std::endl;
+        size_t pos = buf.find("!");
+        if (pos != std::string::npos){
+            std::string nick = buf.substr(1, pos - 1);
+            // std::cout << "nick is " << nick << '\n';
+        }
+        size_t service = buf.find("joke");
+        std::string suuuu = buf.substr(service, std::string::npos);
+        std::cout << suuuu << '\n';
+        // if (buf.find(":joke") != std::string::npos || buf.find("joke") != std::string::npos){
+        //     random_joke(buf);
+        // }
+        // else if (buf.find(":capital") != std::string::npos || buf.find("capital") != std::string::npos)
+        //     capital_handler();
+        // std::string imad = "privmsg imad :joke\r\n";
+        // send(_socket, imad.c_str(), imad.length(), 0);
     }
 }
 
 int main(int ac, char *av[])
 {
-    if (ac != 5)
-        return (std::cerr << "not enough parameters\n", 1);
+    (void)ac;
+    // if (ac != 5)
+    //     return (std::cerr << "not enough parameters\n", 1);
     Bot my_Bot;
     try
     {
@@ -64,6 +71,6 @@ int main(int ac, char *av[])
     }
     catch(std::exception &e)
     {
-        std::cerr << "ERROR; " << e.what() << std::endl;
+        std::cerr << "ERROR: " << e.what() << std::endl;
     }
 }

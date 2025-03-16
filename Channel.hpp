@@ -45,10 +45,12 @@ class Channel{
 	void setTopicFlag(bool);
 	std::string & getChannelName();
 	void removeMember(Client *);
-	void broadcastToAllMembers(std::string);
+	void kickMember(Client *);
+	static void broadcastToAllMembers(std::string, Channel &);
 	std::string print_members();
 	bool isInvited(Client *);
 	std::vector<Client*>& getInvitedMembers();
 	void appendInvitedMembers(Client *);
 	void setTopicString(std::string &);
+	void displayModes(Client &);
 };
