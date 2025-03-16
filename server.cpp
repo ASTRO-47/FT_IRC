@@ -289,4 +289,4 @@ void Server::removeUserFromChannels(Client& client){
 
 
 
-FILE TRANSFERERERERERER
+// FILE TRANSFERERERERERER
