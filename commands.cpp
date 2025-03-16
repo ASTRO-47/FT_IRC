@@ -24,7 +24,7 @@ void    Server::handle_cmd_1(Client &_client)
     else if (input == "mode"){
 		if (buffer_size < 3){
             if (buffer_size == 2 && channel_exists(_client.get_cmd(1))){
-                channelMap[_C.get_cmd(1)].displayModes(_client);
+                channelMap[_client.get_cmd(1)].displayModes(_client);
                 return;
             }
             send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), client.get_cmd(0)));
