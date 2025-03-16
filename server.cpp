@@ -34,7 +34,7 @@ void    Server::registration_msge(Client &_client)
     message += motd;
     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
     _client.showed_messgae();
-    taken_nick_name(_client);
+    // taken_nick_name(_client);
 }
 
 bool white_space(const std::string& str) 
