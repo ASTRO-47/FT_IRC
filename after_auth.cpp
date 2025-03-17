@@ -22,11 +22,6 @@ bool    Server::check_user(Client &_client)
         std::string msge = ":" + _client.get_nick_name() +"!~" + _client.get_user_name() + "@" + _client.get_ip() +  " PRIVMSG " + _n + " :" + _client.trim_message() + CRLF;
         return (channelMap[_n].broadcastToAllMembers(msge, channelMap[_n]), false);
     }
-    if (channel_exists(_n))
-    {
-        // broadcast to channels users
-        return false;
-    }
     std::string msge = server_prefix + "401 " + _n +  " :No such nick/channel" + CRLF;
     send_reply(_client.get_socket_fd(), msge);
     return false;

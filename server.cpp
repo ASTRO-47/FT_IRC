@@ -17,8 +17,8 @@ Server::Server()
 void    Server::registration_msge(Client &_client)
 {
     std::string nick = _client.get_nick_name();
-    std::string message = 
-            server_prefix + nick + " :Welcome to the :ft_irc Network" + CRLF;
+    // std::string message = 
+    //         server_prefix + nick + " :Welcome to the :ft_irc Network" + CRLF;
     //         ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
     //         ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
     //         ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
@@ -32,6 +32,25 @@ void    Server::registration_msge(Client &_client)
     //     ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
     //     ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
     // message += motd;
+    std::string message = 
+    ":ft_irc 372 " + nick + " :Welcome to the ft_irc Network" + CRLF +
+    ":ft_irc 002 " + nick + " :Your host is ft_irc, running version version: 01" + CRLF +
+    ":ft_irc 254 " + nick + " :" + std::to_string(channelMap.size()) + " channels formed" + CRLF +
+    ":ft_irc 255 " + nick + " :We have " + std::to_string(clients.size() - 1) + " clients" + CRLF;
+    
+std::string motd = 
+    ":ft_irc 375 " + nick + " :- ft_irc Message of the Day -" + CRLF +
+    ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF +
+    ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF +
+    ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / " + CRLF +
+    ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  " + CRLF +
+    ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   " + CRLF +
+    ":ft_irc 372 " + nick + " :-          |_____|                                     " + CRLF +
+    ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF +
+    ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF +
+    ":ft_irc 376 " + nick + " :End of MOTD command" + CRLF;
+    
+message += motd;
     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
     _client.showed_messgae();
 }
