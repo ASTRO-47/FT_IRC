@@ -1,16 +1,16 @@
-FLAGS = -Wall -Wextra -Werror 
+FLAGS =	-Wall -Wextra -Werror 
 
-CPPC = c++ -std=c++98
+CPPC =	c++ -std=c++98
 
-SOURCES =  main.cpp server.cpp client.cpp handle_cmd.cpp after_auth.cpp Channel.cpp broadcast.cpp utils.cpp join.cpp \
-		mode.cpp operations.cpp invite.cpp topic.cpp kick.cpp commands.cpp
+SOURCES =  sources/main.cpp sources/server.cpp sources/client.cpp sources/handle_cmd.cpp sources/after_auth.cpp sources/Channel.cpp sources/broadcast.cpp sources/utils.cpp sources/join.cpp \
+		sources/mode.cpp sources/operations.cpp sources/invite.cpp sources/topic.cpp sources/kick.cpp sources/commands.cpp
 B_SOURCES =	 BONUS/bot.cpp BONUS/bot_utils.cpp BONUS/jokes_capitals.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 B_OBJECTS = $(B_SOURCES:.cpp=.o)
 
 BONUS = bot
 NAME = ircserv
-HEADERS = Makefile server.hpp client.hpp Channel.hpp utils.hpp replies.hpp
+HEADERS = Makefile sources/server.hpp sources/client.hpp sources/Channel.hpp sources/utils.hpp sources/replies.hpp
 B_HEADERS = BONUS/bot.hpp
 RM = rm -f
 #anssi Colors:
