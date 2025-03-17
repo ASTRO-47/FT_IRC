@@ -7,7 +7,7 @@ void f()
 
 int main(int ac , char *av[])
 {
-    // atexit(f);
+    atexit(f);
     if (ac != 3)
         return (std::cerr << "invalid number of args\r\n", 1);
     Server server;
