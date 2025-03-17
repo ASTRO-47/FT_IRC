@@ -243,6 +243,7 @@ bool    Client::cmd_end()
         return false;
     if (_buffer.back() == '\n')
     {
+        std::cout << _buffer ;
         _second_buffer = _buffer;
         return true;
     }

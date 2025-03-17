@@ -10,38 +10,15 @@ Server::Server()
     modes.insert('i');
     modes.insert('t');   
     ins = this;
-    server_prefix = ":ft_irc_1337 "; // to make it easy to send messages with the indecating our server
+    server_prefix = ":ft_irc_1337 ";
 
 }
 
-// void    Server::registration_msge(Client &_client)
-// {
-//     std::string nick = _client.get_nick_name();
-//     std::string message = 
-//             ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
-//             ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
-//             ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
-//             ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
-//     std::string motd = 
-//         ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF
-//         ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF
-//         ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / " + CRLF
-//         ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  " + CRLF
-//         ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   " + CRLF
-//         ":ft_irc 372 " + nick + " :-          |_____|                                     " + CRLF
-//         ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
-//         ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
-//     message += motd;
-//     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
-//     _client.showed_messgae();
-//     // taken_nick_name(_client);
-// }
 void    Server::registration_msge(Client &_client)
 {
     std::string nick = _client.get_nick_name();
-    // taken_nick_name(i);
     std::string message = 
-            ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF;
+            server_prefix + nick + " :Welcome to the :ft_irc Network" + CRLF;
     //         ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
     //         ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
     //         ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
@@ -81,11 +58,6 @@ void    Server::check_pass(std::string _pass)
 
 void    Server::check_port(std::string _p)
 {
-    for (size_t i = 0; i < _p.length();i++)
-    {
-        if (!std::isdigit(_p[0]))
-            throw std::runtime_error("invalid port format");
-    }
     char *checker;
     port = std::strtod(_p.c_str(), &checker);
     if (checker[0] != '\0' || port < 1 || port > 65535)
@@ -97,30 +69,33 @@ void Server::server_setup(std::string _port, std::string passwd)
     password = passwd;
     check_port(_port);
     check_pass(passwd);
+    memset(&sock_addr, 0, sizeof(sock_addr));
     server_socket = socket(AF_INET, SOCK_STREAM, 0); 
     if (server_socket == -1)
         throw std::runtime_error("failed to create socket");
     fcntl(server_socket, F_SETFL, O_NONBLOCK);
-    sock_addr.sin_family = AF_INET; //  select the ipv4 family
-    sock_addr.sin_addr.s_addr = INADDR_ANY; // chose the network interfaces will listen on
-    sock_addr.sin_port = htons(port); // the port will listen on, here about the little endianne and big endianne
+    sock_addr.sin_family = AF_INET;
+    sock_addr.sin_addr.s_addr = INADDR_ANY;
+    sock_addr.sin_port = htons(port);
     int opt = 1;
-    if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)) // keeping the socket alive after the program terminate (skep wait time to handle the packets in the socket)
+    if ((setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1))
         throw std::runtime_error("SETSOCKOPT FUNCTION FAILED");
     if (bind(server_socket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0)
     {
         close (server_socket);
         throw std::runtime_error("BIND FAILED");
     }
-    if (listen(server_socket, 100) < 0) // set the backlog = how much cleints in the queue
+    if (listen(server_socket, 124) < 0)
     {
         close (server_socket);
         throw std::runtime_error("LISTENING FAILED"); // try to print the errno
     }
-    Client* poll_server = new Client(); // throwed exc will catched in the main and the program wont start
-    poll_server->add_server_to_poll(server_socket);
-    clients.push_back(poll_server);
-    _poll_fds.push_back(poll_server->get_socket_struct());
+    memset(&_server_struct, 0, sizeof(server_socket));
+    _server_struct.fd = server_socket;
+    _server_struct.events = POLLIN;
+    _server_struct.revents = 0;
+    _poll_fds.push_back(_server_struct);
+
     std::cout << "SERVER LISTENING ON PORT: " << port << std::endl;
 }
 
@@ -134,7 +109,6 @@ void    Server::handle_new_client()
         clients.push_back(new_client); // add the client to the vector
         _poll_fds.push_back(new_client->get_socket_struct());
         std::cout << "CLIENT CONNECTED, ON FD: "  << new_client->get_socket_fd() << CRLF;
-        // send_reply(new_client->get_socket_fd(), auth_guide);
     }
     catch(const std::exception& e)
     {
@@ -145,19 +119,16 @@ void    Server::handle_new_client()
 
 void Server::handle_event_fd(Client &_client)
 {
-    puts("hello world");
-    char buffer[512] = {0};
+    char buffer[512];
+
+    memset(&buffer, 0, sizeof(buffer));
     int bytes = recv(_client.get_socket_fd(), buffer, 511, 0); // put in the stream of the client
     if (bytes <= 0) // 0 client disconnected gracefuly, -1 an error occured
-    {
-        close (_client.get_socket_fd());
-        _client.disconnected();
-    }
+        return (remove_client(_client.get_socket_fd()));
     else
     {
         buffer[bytes] = 0;
         _client.append_buffer(buffer);
-        std::cout << "[" <<  _client.get_buffer() << "]" << std::endl;
         if (_client.get_buffer().length() > 10000)
         {
             std::string msge =  server_prefix + " :INPUT LINE TOO LONG\n";
@@ -166,13 +137,10 @@ void Server::handle_event_fd(Client &_client)
             _client.clear_buffer();
             return ;
         }
-        // puts("before check");
         if (!_client.cmd_end())
             return ;
-        std::cout << _client.get_buffer() << "]" << std::endl;
         if (!_client.check_all())
         {
-
             while (_client.get_buffer().length()) // split the request to handle bot connection
             {
                 handle_cmd(_client);
@@ -188,8 +156,9 @@ void Server::handle_event_fd(Client &_client)
                 _client.reset();
             }
         }
+        _client.clear_buffer();
     }
-    _client.clear_buffer();
+    _client.reset();
 }
 
 void Server::handler(int sig)
@@ -200,36 +169,68 @@ void Server::handler(int sig)
     std::exit(1);
 }
 
+void Server::remove_client(int fd)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->get_socket_fd() == fd)
+        {
+            std::cout << "HANGUP OR ERROR ON FD: " << clients[i]->get_socket_fd() << std::endl;
+            removeChannel(); // ask marin about the order of this
+            removeUserFromChannels(*clients[i]);
+            close(clients[i]->get_socket_fd());
+             _poll_fds.erase(_poll_fds.begin() + i + 1);
+            delete clients[i];
+            clients.erase(clients.begin() + i);
+            return ;
+        }
+    }
+}
+
+
+Client* Server::find_client_by_fd(int fd)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->get_socket_fd() == fd)
+            return clients[i];
+    }
+    return NULL;
+}
+
 void Server::multiplexing_func()
 {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGINT, handler);
     signal(SIGQUIT, handler);
+
     while (true)
     {
         int ready = poll(_poll_fds.data(), _poll_fds.size(), -1);
-        if (ready == -1)
+        if (ready == -1)    
             throw std::runtime_error("POLL ERROR");
-        for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end();)
+        for (size_t i = 0; i < _poll_fds.size(); i++)
         {
-            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
-            {
-                std::cout << "HANGUP OR ERROR ON FD: " << _poll_fds[i].fd << std::endl;
-                removeChannel();
-                removeUserFromChannels(*clients[i]);
-                close(clients[i]->get_socket_fd());
-                _poll_fds.erase(_poll_fds.begin() + i);
-                delete clients[i];
-                clients.erase(clients.begin() + i);
-                i--;
-            }
-            if (_poll_fds[i].revents & POLLIN && clients[i]->check_connection()) // if a connection to the socket requested and its writing request
+            if (_poll_fds[i].revents & POLLIN) // if a connection to the socket requested and its writing request
             {
                 if (_poll_fds[i].fd == server_socket) // new events is on the socket file desctiptor
                     handle_new_client();
                 else
-                    handle_event_fd(*clients[i]);
-                clients[i]->reset();
+                {
+                    Client *_client = find_client_by_fd(_poll_fds[i].fd);
+                    if (_client)
+                        handle_event_fd(*_client);
+                }
+            }
+            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) // check if a client cut off
+            {
+                if (_poll_fds[i].fd == server_socket)
+                {
+                    std::cerr << "Server: polling failed" << std::endl;
+					break;
+                }
+                else
+                    remove_client(_poll_fds[i].fd);
             }
         }
     }
@@ -237,9 +238,9 @@ void Server::multiplexing_func()
 
 void    Server::send_reply(int fd, std::string message)
 {
-    int bytes = send(fd, message.c_str(), message.size(), 0);
-    if (bytes < 0)
-        std::cerr << "AN ERROR OCCURED WHILE SENDING DATA\n";
+    size_t bytes = send(fd, message.c_str(), message.size(), 0); // should not check the errno when wirte or read
+    if (bytes != message.length())
+        std::cerr << "AN ERROR OCCURED WHILE SENDING DATA TO CLIENT" << std::endl;
 }
 
 void    Server::clean_server()

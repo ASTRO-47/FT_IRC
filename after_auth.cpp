@@ -47,8 +47,7 @@ void    Server::handle_quit_cmd(Client &_C)
     }
     msge = "ERROR :Closing Link: " + _C.get_ip() + " (Client Quit)" + CRLF;
     send_reply(_C.get_socket_fd(), msge);
-    close(_C.get_socket_fd());
-    _C.disconnected();
+    remove_client(_C.get_socket_fd());
 }
 
 bool Server::check_command(Client &_client)

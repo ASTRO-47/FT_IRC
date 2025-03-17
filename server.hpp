@@ -21,7 +21,6 @@
 #include "Channel.hpp"
 #include <exception>
 
-
 #define CRLF (std::string)"\r\n"
 #define MAX_NICK_LEN 9 // think about this later
 
@@ -31,6 +30,7 @@ class Channel;
 class Server
 {
     private:
+        pollfd                       _server_struct;
         static Server                *ins;
         std::string                  auth_guide;
         std::vector<Client *>        clients;
@@ -85,6 +85,8 @@ class Server
         void                         clean_server();
         void                         removeChannel();
         void removeUserFromChannels(Client &);
+        void                         remove_client(int);
+        Client                       *find_client_by_fd(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();
