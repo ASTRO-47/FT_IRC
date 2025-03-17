@@ -1,23 +1,5 @@
 #include "server.hpp"
 
-// void Server::taken_nick_name(Client &_client)
-// {
-    
-//     std::string _n = _client.get_nick_name();
-    
-//     for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
-//     {
-//         if ((*it)->get_nick_name() == _n && !(*it)->check_all() && (*it)->get_socket_fd() != _client.get_socket_fd())
-//         {
-//             std::cout << "this is: " << (*it)->get_nick_name() << "]" << std::endl << "this is fd: " << (*it)->get_socket_fd() << std::endl;
-//             std::string msge = "ERROR :Closing Link: " + _client.get_nick_name() + " by :ft_irc (Overridden by other sign on)" + CRLF;
-//             send_reply((*it)->get_socket_fd(), msge);
-//             close((*it)->get_socket_fd());
-//             (*it)->disconnected();
-//         }
-//     }
-// }
-
 bool Server::taken_nick_name_1(std::string _n) const
 {
     for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
@@ -132,6 +114,7 @@ void Server::handle_cmd(Client &_client)
     _client.parse_command();
     if (!_client.get_buffer_size())
         return ;
+    // std::cout << _client.get_buffer() << "]" << std::endl;
     if (_client.get_cmd(0) == "quit")
     {
         handle_quit_cmd(_client);
