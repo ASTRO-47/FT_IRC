@@ -53,7 +53,7 @@ void Server::append_user_to_channel(Channel &channel, Client *newMember){
     if (!channel.getLimitSet() || channel.getNumMembers() < channel.getUserLimit()){
         channel.appendMember(newMember);
         std::string name = channel.getChannelName();
-        Channel::broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_user_name()), channel);
+        Channel::broadcastToAllMembers(CHANNEL_JOIN(newMember->get_nick_name(), name, newMember->get_ip(), newMember->get_user_name()), channel, *newMember, true);
         if (channel.getTopic() == true)
             send_reply(newMember->get_socket_fd(), RPL_TOPIC(newMember->get_nick_name(), channel.getChannelName(), channel.getTopicString()));
         send_reply(newMember->get_socket_fd(), RPL_NAMREPLY(newMember->get_nick_name(), name, channel.print_members()));

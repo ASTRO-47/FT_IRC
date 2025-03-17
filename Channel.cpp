@@ -67,7 +67,7 @@ void Channel::removeMember(Client *toRemove){
 		}
 	}
 	if (it != members.end()){
-		Channel::broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_user_name()), *this);
+		Channel::broadcastToAllMembers(CHANNEL_QUIT(toRemove->get_nick_name(), getChannelName(), toRemove->get_ip(), toRemove->get_user_name()), *this, *toRemove, false);
 		members.erase(it);
 	}
 	std::vector<Client *>::iterator it2 = std::find(invitedMembers.begin(), invitedMembers.end(), toRemove);
@@ -161,10 +161,18 @@ void Channel::setTopicFlag(bool flag){
 	topicSettable = flag;
 }
 
-void Channel::broadcastToAllMembers(std::string msg, Channel &chan){
-	for (std::vector<std::pair<Client*, bool> >::iterator it = chan.members.begin(); it != chan.members.end(); it++){
-		if (it->first)
-			Server::send_reply(it->first->get_socket_fd(), msg);
+void Channel::broadcastToAllMembers(std::string msg, Channel &chan, Client &sender, int selfSend){
+	if (selfSend == 1){
+		for (std::vector<std::pair<Client*, bool> >::iterator it = chan.members.begin(); it != chan.members.end(); it++){
+			if (it->first)
+				Server::send_reply(it->first->get_socket_fd(), msg);
+		}
+	}
+	else{
+		for (std::vector<std::pair<Client*, bool> >::iterator it = chan.members.begin(); it != chan.members.end(); it++){
+			if (it->first && it->first != &sender)
+				Server::send_reply(it->first->get_socket_fd(), msg);
+		}
 	}
 }
 

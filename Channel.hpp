@@ -46,7 +46,7 @@ class Channel{
 	std::string & getChannelName();
 	void removeMember(Client *);
 	void kickMember(Client *);
-	static void broadcastToAllMembers(std::string, Channel &);
+	static void broadcastToAllMembers(std::string, Channel &, Client &, int);
 	std::string print_members();
 	bool isInvited(Client *);
 	std::vector<Client*>& getInvitedMembers();
