@@ -317,8 +317,3 @@ void Server::removeUserFromChannels(Client& client){
 
 
 
-
-
-
-// FILE TRANSFERERERERERER
-// replies privmsg recheck
