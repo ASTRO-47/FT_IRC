@@ -15,6 +15,8 @@
 #include <string>
 #include <exception>
 #include <set>
+#include <ctime>
+#include <cmath>
 
 #define CRLF (std::string)"\r\n"
 
@@ -29,11 +31,13 @@ private:
     int                                                  _socket;
     sockaddr_in                                          _addr;
     std::vector<std::string>                             _jokes;
-    std::vector<std::pair<std::string, std::string> >    _capitals;
-    std::string                 random_joke();
-    std::string                 capital_handler();
+    std::map<std::string, std::string>    _capitals;
+    void                 random_joke(std::string &);
+    void                 capital_handler(std::string&, std::string&);
 public:
     Bot();
     void                parse(char **av);
     void                _connect();
-} ;
+    int                 which_service(std::string &);
+    void check_port(std::string);
+};

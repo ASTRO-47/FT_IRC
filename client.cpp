@@ -113,11 +113,8 @@ void Client::parse_command()
         std::string trimmed = trim(command);
         if (!trimmed.empty())
         {
-            toLower(trimmed);
-        {
-            toLower(trimmed);
+            // toLower(trimmed);
             _command_buffer.push_back(trimmed);
-        }
         }
     }
     if (pos == _buffer.length() - del)

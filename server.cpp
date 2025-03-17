@@ -14,27 +14,59 @@ Server::Server()
 
 }
 
+// void    Server::registration_msge(Client &_client)
+// {
+//     std::string nick = _client.get_nick_name();
+//     std::string message = 
+//             ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
+//             ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
+//             ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
+//             ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
+//     std::string motd = 
+//         ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF
+//         ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF
+//         ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / " + CRLF
+//         ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  " + CRLF
+//         ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   " + CRLF
+//         ":ft_irc 372 " + nick + " :-          |_____|                                     " + CRLF
+//         ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
+//         ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
+//     message += motd;
+//     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
+//     _client.showed_messgae();
+//     // taken_nick_name(_client);
+// }
 void    Server::registration_msge(Client &_client)
 {
     std::string nick = _client.get_nick_name();
+    // taken_nick_name(i);
     std::string message = 
-            ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF
-            ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
-            ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
-            ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
+            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\r\n"
+            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\r\n"
+            ":ft_irc 254 " + nick + " :channels formed\r\n"
+            ":ft_irc 255 " + nick + " :We have 1 clients\r\n";
     std::string motd = 
-        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF
-        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF
-        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / " + CRLF
-        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  " + CRLF
-        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   " + CRLF
-        ":ft_irc 372 " + nick + " :-          |_____|                                     " + CRLF
-        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
-        ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
+        // ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
+        // ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
+        // ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
+        // ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
+        // ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
+        // ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
+        // ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
+        // ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
+        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
+        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
+        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
+        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
+        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
+        ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
+        ":ft_irc 372 " + nick + " :-                                                   \r\n"
+        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!                 \r\n"
+        ":ft_irc 372 " + nick + " :- No spamming please, thank you!                    \r\n";
+
     message += motd;
     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
     _client.showed_messgae();
-    // taken_nick_name(_client);
 }
 
 bool white_space(const std::string& str) 
@@ -67,7 +99,7 @@ void    Server::check_port(std::string _p)
     char *checker;
     port = std::strtod(_p.c_str(), &checker);
     if (checker[0] != '\0' || port < 1 || port > 65535)
-            throw std::runtime_error("invalid port format");
+        throw std::runtime_error("invalid port format");
 }
 
 void Server::server_setup(std::string _port, std::string passwd)
@@ -134,7 +166,7 @@ void Server::handle_event_fd(Client &_client)
     {
         buffer[bytes] = '\0';
         _client.append_buffer(buffer);
-        std::cout << _client.get_buffer() << "]" << std::endl;
+        std::cout << "[" <<  _client.get_buffer() << "]" << std::endl;
         if (_client.get_buffer().length() > 10000)
         {
             std::string msge =  server_prefix + " :INPUT LINE TOO LONG\n";
@@ -201,7 +233,6 @@ void Server::multiplexing_func()
                     handle_new_client();
                 else
                     handle_event_fd(*clients[i]);
-                    
                 clients[i]->reset();
             }
         }

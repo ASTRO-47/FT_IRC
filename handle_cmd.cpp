@@ -132,22 +132,24 @@ void Server::handle_cmd(Client &_client)
     _client.parse_command();
     if (!_client.get_buffer_size())
         return ;
-    if (_client.get_cmd(0) == "quit")
+    std::string input = _client.get_cmd(0);
+    toLower(input);
+    if (input == "quit")
     {
         handle_quit_cmd(_client);
         return ;
     }
-    if (!_client.check_pass() && _client.get_cmd(0) != "pass")
+    if (!_client.check_pass() && input != "pass")
     {
         std::string msge = server_prefix + "451 * :You have not registered" + CRLF;
         send_reply(_client.get_socket_fd(), msge);
         return ;
     }
-    if (_client.get_cmd(0) == "pass")
+    if (input == "pass")
         try_to_auth(_client);
-    if (_client.get_cmd(0) == "nick")
+    if (input == "nick")
         parse_nick(_client);
-    if (_client.get_cmd(0) == "user")
+    if (input == "user")
         parse_user(_client);
     if (_client.check_all() && !_client.check_message())
         registration_msge(_client);

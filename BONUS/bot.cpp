@@ -1,12 +1,20 @@
 #include "bot.hpp"
 
+void    Bot::check_port(std::string _p)
+{
+    char *checker;
+    _port = std::strtod(_p.c_str(), &checker);
+    if (checker[0] != '\0' || _port < 1 || _port > 65535)
+        throw std::runtime_error("invalid port format");
+}
+
 void Bot::parse(char **av) // use the arg from the user input
 {
-    (void)av;
-    _port = 8080;
-    _nick = "nick bot" + CRLF;
+    _ip = av[1];
+    check_port(av[2]);
+    _nick = "nick " + static_cast<std::string>(av[3]) + CRLF;
     _user = "user f f f f f" + CRLF;
-    _pass = "pass hello" + CRLF;
+    _pass = "pass " + static_cast<std::string>(av[4]) + CRLF;
 }
 
 void    Bot::_connect()
@@ -22,12 +30,13 @@ void    Bot::_connect()
     send(_socket, _pass.c_str(), _pass.length(), 0);
     send(_socket, _nick.c_str(), _nick.length(), 0);
     send(_socket, _user.c_str(), _user.length(), 0);// check the response from the serve 
-    char _b[2000];
-    int b = recv(_socket, _b, sizeof(_b), 0);
-    _b[b] = '\0';
-    std::cout << _b << std::endl;
+    char _c[2000];
+    int c = recv(_socket, _c, sizeof(_c), 0);
+    _c[c] = '\0';
+    std::cout << _c << std::endl;
     while (1) 
     {
+        std::string nick;
         char buffer[1024] = {0};
         int bytes = recv(_socket, buffer, sizeof(buffer), 0);
         if (bytes < 0) 
@@ -39,29 +48,30 @@ void    Bot::_connect()
         }
         buffer[bytes] = '\0'; // /urandom error
         std::string buf = static_cast<std::string>(buffer);
-        std::cout << buffer << std::endl;
         size_t pos = buf.find("!");
         if (pos != std::string::npos){
-            std::string nick = buf.substr(1, pos - 1);
-            // std::cout << "nick is " << nick << '\n';
+            nick = buf.substr(1, pos - 1);
         }
-        size_t service = buf.find("joke");
-        std::string suuuu = buf.substr(service, std::string::npos);
-        // if (buf.find(":joke") != std::string::npos || buf.find("joke") != std::string::npos){
-        //     random_joke(buf);
-        // }
-        // else if (buf.find(":capital") != std::string::npos || buf.find("capital") != std::string::npos)
-        //     capital_handler();
-        // std::string imad = "privmsg imad :joke\r\n";
-        // send(_socket, imad.c_str(), imad.length(), 0);
+        int i = which_service(buf);
+        switch(i){
+            case 1:
+            random_joke(nick);
+            break;
+            case 2:
+            capital_handler(buf, nick);
+            break;
+            default:
+			std::string s = "privmsg " + nick + " :ERROR! Args not formatted correctly" + "\r\n";
+            send(_socket, s.c_str(), s.length(), 0);
+        }
     }
 }
 
 int main(int ac, char *av[])
 {
     (void)ac;
-    // if (ac != 5)
-    //     return (std::cerr << "not enough parameters\n", 1);
+    if (ac != 5)
+        return (std::cerr << "not enough parameters\n", 1);
     Bot my_Bot;
     try
     {
@@ -73,3 +83,6 @@ int main(int ac, char *av[])
         std::cerr << "ERROR: " << e.what() << std::endl;
     }
 }
+
+
+// ./bot localhost 8080 nick pass
