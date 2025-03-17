@@ -102,7 +102,7 @@ void Client::parse_command()
     size_t pos = _buffer.find(CRLF);
     if (pos == std::string::npos)
     {
-        pos = _buffer.find("\n");
+        pos = _buffer.find('\n');
         del--;
     }
     std::string test = _buffer.substr(0, pos);
@@ -121,15 +121,6 @@ void Client::parse_command()
         _buffer.clear();
     else
         _buffer = _buffer.substr(pos + del, _buffer.length());
-
-
-    // debug printing
-    // std::cout << "[" << "buffer : " << _buffer << "]" << std::endl;
-    // std::cout << '[';
-    // for (std::vector<std::string>::iterator it= _command_buffer.begin();it != _command_buffer.end();it++)
-    //     std::cout << *it << "," ;
-    // std::cout << ']' << std::endl;
-    // exit (0);
 }
 
 void    Client::send_buffer()
@@ -141,7 +132,7 @@ void    Client::send_buffer()
 
 void Client::append_buffer(std::string res)
 {
-    if (!res.length() || ((res.length() == 1 && res[0] == '\n')) || (res.length() == 2 && res[0] == '\r' && res[1] == '\n'))
+    if (!res.length()) //|| ((res.length() == 1 && res[0] == '\n')) || (res.length() == 2 && res[0] == '\r' && res[1] == '\n'))
         return ;
     _buffer.append(res);
 }
@@ -180,7 +171,6 @@ bool Client::check_all() const
 
 void Client::reset()
 {
-    // _buffer.clear();
     _command_buffer.clear();
     _message.clear();
 }
@@ -197,7 +187,7 @@ void Client::wrong_pass()
 
 void Client::set_nick_name(std::string _n)
 {
-    nick  = _n; // take one or more ??
+    nick  = _n;
     _nick = true;
     first = true;
 }

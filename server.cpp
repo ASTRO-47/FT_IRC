@@ -41,30 +41,20 @@ void    Server::registration_msge(Client &_client)
     std::string nick = _client.get_nick_name();
     // taken_nick_name(i);
     std::string message = 
-            ":ft_irc 001 " + nick + " :Welcome to the :ft_irc Network\r\n"
-            ":ft_irc 002 " + nick + " :Your host is :ft_irc, running version version: 01\r\n"
-            ":ft_irc 254 " + nick + " :channels formed\r\n"
-            ":ft_irc 255 " + nick + " :We have 1 clients\r\n";
-    std::string motd = 
-        // ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
-        // ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
-        // ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
-        // ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
-        // ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
-        // ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
-        // ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!\r\n"
-        // ":ft_irc 372 " + nick + " :- No spamming please, thank you!\r\n";
-        ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ \r\n"
-        ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |\r\n"
-        ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / \r\n"
-        ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  \r\n"
-        ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   \r\n"
-        ":ft_irc 372 " + nick + " :-          |_____|                                     \r\n"
-        ":ft_irc 372 " + nick + " :-                                                   \r\n"
-        ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!                 \r\n"
-        ":ft_irc 372 " + nick + " :- No spamming please, thank you!                    \r\n";
-
-    message += motd;
+            ":ft_irc 372 " + nick + " :Welcome to the :ft_irc Network" + CRLF;
+    //         ":ft_irc 372 " + nick + " :Your host is :ft_irc, running version version: 01" + CRLF
+    //         ":ft_irc 254 " + nick + " :channels formed" + CRLF // add number of channels , this one is on the ref
+    //         ":ft_irc 255 " + nick + " :We have " + std::to_string (clients.size() - 1) + " clients" + CRLF; // also kayn
+    // std::string motd = 
+    //     ":ft_irc 372 " + nick + " :-   __  _         _               _  _____ _____ _____ " + CRLF
+    //     ":ft_irc 372 " + nick + " :-  / _|| |_      (_) _ __  ___   / ||___ /|___ /|___  |" + CRLF
+    //     ":ft_irc 372 " + nick + " :- | |_ | __|     | || '__|/ __|  | |  |_ \\  |_ \\   / / " + CRLF
+    //     ":ft_irc 372 " + nick + " :- |  _|| |_      | || |  | (__   | | ___) |___) | / /  " + CRLF
+    //     ":ft_irc 372 " + nick + " :- |_|   \\__|_____|_||_|   \\___|  |_||____/|____/ /_/   " + CRLF
+    //     ":ft_irc 372 " + nick + " :-          |_____|                                     " + CRLF
+    //     ":ft_irc 372 " + nick + " :- irc1337 is a really cool network!" + CRLF
+    //     ":ft_irc 372 " + nick + " :- No spamming please, thank you!" + CRLF;
+    // message += motd;
     send(_client.get_socket_fd(), message.c_str(), message.length(), 0);
     _client.showed_messgae();
 }
@@ -155,6 +145,7 @@ void    Server::handle_new_client()
 
 void Server::handle_event_fd(Client &_client)
 {
+    puts("hello world");
     char buffer[512] = {0};
     int bytes = recv(_client.get_socket_fd(), buffer, 511, 0); // put in the stream of the client
     if (bytes <= 0) // 0 client disconnected gracefuly, -1 an error occured
@@ -164,7 +155,7 @@ void Server::handle_event_fd(Client &_client)
     }
     else
     {
-        buffer[bytes] = '\0';
+        buffer[bytes] = 0;
         _client.append_buffer(buffer);
         std::cout << "[" <<  _client.get_buffer() << "]" << std::endl;
         if (_client.get_buffer().length() > 10000)
@@ -175,7 +166,11 @@ void Server::handle_event_fd(Client &_client)
             _client.clear_buffer();
             return ;
         }
-        if (_client.cmd_end() && !_client.check_all())
+        // puts("before check");
+        if (!_client.cmd_end())
+            return ;
+        std::cout << _client.get_buffer() << "]" << std::endl;
+        if (!_client.check_all())
         {
 
             while (_client.get_buffer().length()) // split the request to handle bot connection
@@ -183,8 +178,9 @@ void Server::handle_event_fd(Client &_client)
                 handle_cmd(_client);
                 _client.reset();
             }
+            _client.clear_buffer();
         }
-        else if (_client.cmd_end())
+        else if (_client.check_all())
         {
             while (_client.get_buffer().length())
             {
@@ -192,8 +188,8 @@ void Server::handle_event_fd(Client &_client)
                 _client.reset();
             }
         }
-        _client.clear_buffer();
     }
+    _client.clear_buffer();
 }
 
 void Server::handler(int sig)
@@ -211,10 +207,10 @@ void Server::multiplexing_func()
     signal(SIGQUIT, handler);
     while (true)
     {
-        int ready = poll(_poll_fds.data(), _poll_fds.size(), 0);
+        int ready = poll(_poll_fds.data(), _poll_fds.size(), -1);
         if (ready == -1)
             throw std::runtime_error("POLL ERROR");
-        for (size_t i = 0; i < _poll_fds.size(); i++)
+        for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end();)
         {
             if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !(clients[i]->check_connection())) // check if a client cut off
             {
@@ -243,10 +239,7 @@ void    Server::send_reply(int fd, std::string message)
 {
     int bytes = send(fd, message.c_str(), message.size(), 0);
     if (bytes < 0)
-    {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-            std::cerr << "AN ERROR OCCURED WHILE SENDING DATA\n";
-    }
+        std::cerr << "AN ERROR OCCURED WHILE SENDING DATA\n";
 }
 
 void    Server::clean_server()
