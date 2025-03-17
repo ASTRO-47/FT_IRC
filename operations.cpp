@@ -17,7 +17,7 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 if (newOp != NULL){
                     channel.setOperator(newOp, true);
                     std::string operation = "+o " + arg;
-                    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), operation, "MODE"), channel);
+                    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), operation, "MODE"), channel, client, true);
                 }
                 else
                     send_reply(client.get_socket_fd(), ERR_NOSUCHNICK(client.get_nick_name(), arg));
@@ -31,7 +31,7 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 if (removeOp != NULL){
                     channel.setOperator(removeOp, false);
                     std::string operation = "-o " + arg;
-                    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), operation, "MODE"), channel);
+                    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), operation, "MODE"), channel, client, true);
                 }
                 else
                     send_reply(client.get_socket_fd(), ERR_NOSUCHNICK(client.get_nick_name(), arg));
@@ -43,11 +43,11 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
     else if (oper == 'i'){
         if (sign == '+'){
             channel.setInviteOnly(true);
-            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "+i", "MODE"), channel);
+            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "+i", "MODE"), channel, client, true);
         }
         else if (sign == '-'){
             channel.setInviteOnly(false);
-            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-i", "MODE"), channel);
+            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-i", "MODE"), channel, client, true);
         }
     }
     else if (oper == 'l'){
@@ -64,14 +64,14 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 channel.setLimitSet(true);
                 channel.setUserLimit(userLimit);
                 std::string loper = "+l " + arg;
-                Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), loper, "MODE"), channel);
+                Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), loper, "MODE"), channel, client, true);
             }
             else
                 send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
         }
         else if (sign == '-'){
             channel.setLimitSet(false);
-            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-l", "MODE"), channel);
+            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-l", "MODE"), channel, client, true);
         }
     }
     else if (oper == 'k'){
@@ -81,7 +81,7 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
                 channel.setRequiresPass(true);
                 channel.setPass(pass);
                 std::string rep = "+k " + pass;
-                Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), rep, "MODE"), channel);
+                Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), rep, "MODE"), channel, client, true);
             }
             else
                 send_reply(client.get_socket_fd(), ERR_NEEDMOREPARAMS(client.get_nick_name(), "MODE"));
@@ -89,17 +89,17 @@ void Server::process_operation(char sign, const char &oper, Client &client, std:
         else if (sign == '-'){
             channel.setRequiresPass(false);
             channel.setPass("");
-            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-k", "MODE"), channel);
+            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-k", "MODE"), channel, client, true);
         }
     }
     else if (oper == 't'){
         if (sign == '+'){
             channel.setTopicFlag(true);
-            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "+t", "MODE"), channel);
+            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "+t", "MODE"), channel, client, true);
         }
         else if (sign == '-'){
             channel.setTopicFlag(false);
-            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-t", "MODE"), channel);
+            Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), "-t", "MODE"), channel, client, true);
         }
     }   
 }

@@ -45,6 +45,7 @@ void    Bot::_connect()
         std::string _mahdi = _c;
         throw std::runtime_error(_mahdi.substr(1, _mahdi.length()));
     }
+    std::cout << _c;
     while (1) 
     {
         std::string nick;

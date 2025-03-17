@@ -40,7 +40,7 @@ bool Server::kick_user(Client *oper, std::string &kicked, std::string &chan, std
         send_reply(oper->get_socket_fd(), ERR_USERNOTINCHANNEL(chan, oper->get_nick_name(), kicked));
         return false;
     }
-    Channel::broadcastToAllMembers(KICK_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_user_name(), kicked, reason, "KICK"), channelMap[oper->get_cmd(1)]);
+    Channel::broadcastToAllMembers(KICK_SUCCESS(oper->get_nick_name(), channelMap[chan].getChannelName(), oper->get_ip(), oper->get_user_name(), kicked, reason, "KICK"), channelMap[oper->get_cmd(1)], *oper, true);
     channelMap[chan].kickMember(toKick);
     return true;
 }

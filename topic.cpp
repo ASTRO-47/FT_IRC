@@ -36,7 +36,7 @@ void Server::topic_handler(Client &client, size_t buffer_size){
     std::string btopic = ":" + newTopic;
     channel.setTopic(true);
     channel.setTopicString(newTopic);
-    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel);
+    Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel, client, true);
     return;
     }
     size_t pos = client.get_second_buffer().find(':');
@@ -45,13 +45,13 @@ void Server::topic_handler(Client &client, size_t buffer_size){
         std::string btopic = ":" + topic;
         channel.setTopic(true);
         channel.setTopicString(topic);
-        Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel);
+        Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel, client, true);
     }
     else{
         std::string topic = client.get_cmd(2);
         std::string btopic = ":" + client.get_cmd(2);
         channel.setTopic(true);
         channel.setTopicString(client.get_cmd(2));
-        Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel);
+        Channel::broadcastToAllMembers(OPER_SUCCESS(client.get_nick_name(), channel.getChannelName(), client.get_ip(), client.get_user_name(), btopic , "TOPIC"), channel, client, true);
     }
 }
