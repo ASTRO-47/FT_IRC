@@ -87,6 +87,7 @@ class Server
         void removeUserFromChannels(Client &);
         void                         remove_client(int);
         Client                       *find_client_by_fd(int);
+        bool                         check_client_connection(int);
     public:
         void server_setup(std::string, std::string);
         void multiplexing_func();

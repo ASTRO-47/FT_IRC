@@ -143,7 +143,7 @@ void Server::handle_event_fd(Client &_client)
     memset(&buffer, 0, sizeof(buffer));
     int bytes = recv(_client.get_socket_fd(), buffer, 511, 0); // put in the stream of the client
     if (bytes <= 0) // 0 client disconnected gracefuly, -1 an error occured
-        return (remove_client(_client.get_socket_fd()));
+        return (_client.disconnected());
     else
     {
         buffer[bytes] = 0;
@@ -194,11 +194,12 @@ void Server::remove_client(int fd)
     {
         if (clients[i]->get_socket_fd() == fd)
         {
+            clients[i]->disconnected();
             std::cout << "HANGUP OR ERROR ON FD: " << clients[i]->get_socket_fd() << std::endl;
             removeChannel(); // ask marin about the order of this
             removeUserFromChannels(*clients[i]);
-            close(clients[i]->get_socket_fd());
-             _poll_fds.erase(_poll_fds.begin() + i + 1);
+            close(fd);
+            _poll_fds.erase(_poll_fds.begin() + i + 1);
             delete clients[i];
             clients.erase(clients.begin() + i);
             return ;
@@ -211,10 +212,25 @@ Client* Server::find_client_by_fd(int fd)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i]->get_socket_fd() == fd)
+        if (clients[i]->get_socket_fd() == fd && clients[i]->check_connection())
             return clients[i];
     }
     return NULL;
+}
+
+bool Server::check_client_connection(int fd)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->get_socket_fd() == fd)
+        {
+            if (clients[i]->check_connection())
+                return true;
+            else
+                return false;
+        }
+    }
+    return false;
 }
 
 void Server::multiplexing_func()
@@ -241,16 +257,8 @@ void Server::multiplexing_func()
                         handle_event_fd(*_client);
                 }
             }
-            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) // check if a client cut off
-            {
-                if (_poll_fds[i].fd == server_socket)
-                {
-                    std::cerr << "Server: polling failed" << std::endl;
-					break;
-                }
-                else
-                    remove_client(_poll_fds[i].fd);
-            }
+            if (_poll_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL) || !check_client_connection(_poll_fds[i].fd)) // check if a client cut off
+                remove_client(_poll_fds[i].fd);
         }
     }
 }

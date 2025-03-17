@@ -171,8 +171,10 @@ bool Client::check_all() const
 
 void Client::reset()
 {
-    _command_buffer.clear();
-    _message.clear();
+    if (_command_buffer.size())
+        _command_buffer.clear();
+    if (_message.length())
+        _message.clear();
 }
 
 void Client::correct_pass()
