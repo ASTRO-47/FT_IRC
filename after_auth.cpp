@@ -36,13 +36,15 @@ void    Server::handle_quit_cmd(Client &_C)
     std::string msge;
     if (_C.check_all())
         send_reply(_C.get_socket_fd(), CLIENT_QUIT(_C.get_nick_name(), _C.get_ip(), _C.get_user_name()));
-    else{
-        msge = ":*!~*@" + _C.get_ip() + " QUIT " + ":Quit" + CRLF;
+    else if (!_C.check_all())
+    {
+        msge = ":!~@" + _C.get_ip() + " QUIT " + CRLF;
         send_reply(_C.get_socket_fd(), msge);
     }
-    msge = "ERROR :Closing Link: " + _C.get_ip() + " (Client Quit)" + CRLF;
-    send_reply(_C.get_socket_fd(), msge);
-    remove_client(_C.get_socket_fd());
+    // msge = "ERROR :Closing Link: " + _C.get_ip() + " (Client Quit)" + CRLF;
+    // send_reply(_C.get_socket_fd(), msge);
+    // remove_client(_C.get_socket_fd());
+    _C.disconnected();
 }
 
 bool Server::check_command(Client &_client)

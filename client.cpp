@@ -173,7 +173,7 @@ void Client::reset()
 {
     if (_command_buffer.size())
         _command_buffer.clear();
-    if (_message.size())
+    if (_message.length())
         _message.clear();
 }
 
