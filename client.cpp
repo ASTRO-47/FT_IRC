@@ -46,14 +46,12 @@ int Client::get_socket_fd() const
 void Client::add_server_to_poll(int server_socket)
 {
     __poll.fd = server_socket;
-    __poll.events = POLLIN; // tells poll() which request will come
+    __poll.events = POLLIN;
     __poll.revents = 0;
 }
 
 std::string &Client::get_cmd(int i)
 {
-    // if (i >= _command_buffer.size())
-        // return "";
     return _command_buffer[i];
 }
 
@@ -112,10 +110,7 @@ void Client::parse_command()
     {
         std::string trimmed = trim(command);
         if (!trimmed.empty())
-        {
-            // toLower(trimmed);
             _command_buffer.push_back(trimmed);
-        }
     }
     if (pos == _buffer.length() - del)
         _buffer.clear();
@@ -132,7 +127,7 @@ void    Client::send_buffer()
 
 void Client::append_buffer(std::string res)
 {
-    if (!res.length()) //|| ((res.length() == 1 && res[0] == '\n')) || (res.length() == 2 && res[0] == '\r' && res[1] == '\n'))
+    if (!res.length())
         return ;
     _buffer.append(res);
 }
@@ -202,7 +197,8 @@ void Client::set_user_infos()
     server_name = _command_buffer[3];
     for (size_t i = 4; i < get_buffer_size() ;i++)
         r_name += _command_buffer[i] + ' ';
-    real_name = r_name;  // check this later
+    real_name = r_name;
+    real_name.pop_back();
     user = true;
 }
 
@@ -297,5 +293,5 @@ void Client::set_reciever(Client* _rec)
 
 Client::~Client()
 {
-    // close (client_socket);
+    close (client_socket);
 }

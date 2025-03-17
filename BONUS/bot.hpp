@@ -31,13 +31,14 @@ private:
     int                                                  _socket;
     sockaddr_in                                          _addr;
     std::vector<std::string>                             _jokes;
-    std::map<std::string, std::string>    _capitals;
-    void                 random_joke(std::string &);
-    void                 capital_handler(std::string&, std::string&);
+    std::map<std::string, std::string>                  _capitals;
+    void                                                 random_joke(std::string &);
+    void                                                 capital_handler(std::string&, std::string&);
 public:
     Bot();
-    void                parse(char **av);
-    void                _connect();
-    int                 which_service(std::string &);
-    void check_port(std::string);
+    ~Bot();
+    void                                                parse(char **av);
+    void                                                _connect();
+    int                                                 which_service(std::string &);
+    void                                                check_port(std::string);
 };

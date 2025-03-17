@@ -15,14 +15,13 @@
 #include <string>
 #include <exception>
 #include <set>
-#include <sstream>
 #include "utils.hpp"
 #include "replies.hpp"
 #include "Channel.hpp"
 #include <exception>
 
 #define CRLF (std::string)"\r\n"
-#define MAX_NICK_LEN 9 // think about this later
+#define MAX_NICK_LEN 9
 
 class Client;
 class Channel;
@@ -52,7 +51,6 @@ class Server
         void                         parse_user(Client &);
         void                         registration_msge(Client &);
         std::string                  server_prefix;
-        void                         taken_nick_name(Client &);
         bool                         taken_nick_name_1(std::string) const;
         void                         handle_cmd_1(Client &);
         bool                         check_user(Client &);
@@ -60,15 +58,15 @@ class Server
         void                         check_port(std::string);
         void                         change_nick_name(Client &);
         bool                         kick_user(Client *, std::string&, std::string&, std::string &);
-        Client * find_client(std::string &);
-        void extract_channels(const std::string &, const std::string &);
-        bool channel_exists(const std::string&);
-        void create_channel(const std::string&, Client *);
-        std::string parse_join_input(const std::string &, size_t &);
-        std::string parse_passwords(const std::string &, size_t &);
-        void check_operations(const std::string &, Client&, Channel &);
-        void process_operation(char, const char &, Client &,std::string &, Channel &);
-        Client* find_user(const std::string &, Channel &);
+        Client                      * find_client(std::string &);
+        void                         extract_channels(const std::string &, const std::string &);
+        bool                         channel_exists(const std::string&);
+        void                         create_channel(const std::string&, Client *);
+        std::string                  parse_join_input(const std::string &, size_t &);
+        std::string                  parse_passwords(const std::string &, size_t &);
+        void                         check_operations(const std::string &, Client&, Channel &);
+        void                         process_operation(char, const char &, Client &,std::string &, Channel &);
+        Client*                     find_user(const std::string &, Channel &);
         void                         append_user_to_channel(Channel& ,Client *);
         bool                         requiresArg(char, char );
         void                         invite_user(const std::string &, Client *, const std::string &);
@@ -84,15 +82,15 @@ class Server
         static void                  handler(int);
         void                         clean_server();
         void                         removeChannel();
-        void removeUserFromChannels(Client &);
+        void                        removeUserFromChannels(Client &);
         void                         remove_client(int);
         Client                       *find_client_by_fd(int);
         bool                         check_client_connection(int);
     public:
-        void server_setup(std::string, std::string);
-        void multiplexing_func();
-        void broadcastMsg(std::string);
-        static void send_reply(int, std::string);
+        void                        server_setup(std::string, std::string);
+        void                        multiplexing_func();
+        void                        broadcastMsg(std::string);
+        static void                 send_reply(int, std::string);
 
         Server();
         ~Server();

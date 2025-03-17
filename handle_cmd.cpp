@@ -4,7 +4,7 @@ bool Server::taken_nick_name_1(std::string _n) const
 {
     for (std::vector<Client *>::const_iterator it = clients.begin(); it != clients.end(); it++)
     {
-        if ((*it)->get_nick_name() == _n)  // Ensure the check is active
+        if ((*it)->get_nick_name() == _n)
             return false;
     }
     return true;
@@ -29,7 +29,7 @@ bool    Server::check_nick_name(Client &_client)
 void Server::parse_nick(Client &_client)
 {
     std::string msge;
-    if (_client.get_buffer_size() == 1) // add the nick name is in use
+    if (_client.get_buffer_size() == 1)
     {
         msge = server_prefix + "431 :No nickname given" + CRLF;
         send_reply(_client.get_socket_fd(), msge);

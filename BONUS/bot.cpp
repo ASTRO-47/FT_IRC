@@ -53,7 +53,7 @@ void    Bot::_connect()
         int bytes = recv(_socket, buffer, sizeof(buffer), 0);
         if (bytes < 0) 
         {
-            std::cerr << "server closed or some fatal error happened" << std::endl;
+            std::cerr << "server closed or some fatal error happened!!" << std::endl;
             close(_socket);
             break ;
         }
@@ -76,6 +76,11 @@ void    Bot::_connect()
             send(_socket, s.c_str(), s.length(), 0);
         }
     }
+}
+
+Bot::~Bot()
+{
+    close(_socket);
 }
 
 int main(int ac, char *av[])

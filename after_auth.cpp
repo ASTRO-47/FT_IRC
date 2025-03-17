@@ -41,9 +41,6 @@ void    Server::handle_quit_cmd(Client &_C)
         msge = ":!~@" + _C.get_ip() + " QUIT " + CRLF;
         send_reply(_C.get_socket_fd(), msge);
     }
-    // msge = "ERROR :Closing Link: " + _C.get_ip() + " (Client Quit)" + CRLF;
-    // send_reply(_C.get_socket_fd(), msge);
-    // remove_client(_C.get_socket_fd());
     _C.disconnected();
 }
 
@@ -62,7 +59,7 @@ bool Server::check_command(Client &_client)
     {
         if (buffer_size == 1)
         {
-            msge = server_prefix + "411 " + _client.get_nick_name() + " :No recipient given (PRIVMSG)" + CRLF; // need to fix something  in parsing
+            msge = server_prefix + "411 " + _client.get_nick_name() + " :No recipient given (PRIVMSG)" + CRLF;
             send_reply(_client.get_socket_fd(), msge);
             return true;
         }
@@ -72,7 +69,6 @@ bool Server::check_command(Client &_client)
             send_reply(_client.get_socket_fd(), msge);
             return true;
         }
-        // check channel here first then regular user s 
         if (!check_user(_client))
             return true;
         handle_prv_msge(_client);
