@@ -67,7 +67,7 @@
 
 ### Installation
 ```bash
-$ git clone https://github.com/youruser/ft_irc.git
+$ git clone https://github.com/ASTRO-47/FT_IRC.git
 $ cd ft_irc
 $ make
 ```
