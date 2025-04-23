@@ -2,7 +2,7 @@ FLAGS =	-Wall -Wextra -Werror
 
 CPPC =	c++ -std=c++98
 
-SOURCES =  sources/main.cpp sources/server.cpp sources/client.cpp sources/handle_cmd.cpp sources/after_auth.cpp sources/Channel.cpp sources/broadcast.cpp sources/utils.cpp sources/join.cpp \
+SOURCES =  sources/main.cpp  sources/server.cpp sources/client.cpp sources/handle_cmd.cpp sources/after_auth.cpp sources/Channel.cpp sources/broadcast.cpp sources/utils.cpp sources/join.cpp \
 		sources/mode.cpp sources/operations.cpp sources/invite.cpp sources/topic.cpp sources/kick.cpp sources/commands.cpp
 B_SOURCES =	 BONUS/bot.cpp BONUS/bot_utils.cpp BONUS/jokes_capitals.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
