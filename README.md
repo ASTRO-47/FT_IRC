@@ -1,124 +1,124 @@
-ft_irc
+# ft_irc
 
-ft_irc is a fully functional IRC (Internet Relay Chat) server implementation created for the 1337 School ft_irc project.
+> A modern C++98 IRC server built for the 1337 School **ft_irc** project
 
-📖 Table of Contents
+---
 
-Overview
+## 📖 Table of Contents
+1. [Project Overview](#project-overview)
+2. [Key Features](#key-features)
+3. [High-Level Architecture](#high-level-architecture)
+4. [Quick Start](#quick-start)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+   - [Running the Server](#running-the-server)
+5. [Usage Examples](#usage-examples)
+6. [Supported IRC Commands](#supported-irc-commands)
+7. [Development & Contributing](#development--contributing)
+8. [License](#license)
 
-Features
+---
 
-Architecture
+## Project Overview
 
-Installation
+**ft_irc** is a single-threaded, event-driven IRC (Internet Relay Chat) server written in C++98, fully compliant with RFC 1459. It demonstrates low-level socket programming, I/O multiplexing with `select()`, and robust command parsing.
 
-Usage
 
-Supported Commands
+## Key Features
 
-Contributing
+- **Multi-client support** using `select()` for non-blocking I/O
+- **Channel management**: create, join, part, kick, invite
+- **User modes & channel modes**: operators (+o), invite-only (+i), topic control (+t)
+- **Private messaging** (`PRIVMSG`) and **broadcasts**
+- **Topic management**: view and set with `TOPIC` command
+- Graceful error handling and protocol compliance
 
-License
 
-📝 Overview
+## High-Level Architecture
 
-This project implements the IRC protocol (RFC 1459) in C++98, allowing multiple clients to connect, join channels, send messages, and manage channel modes. It demonstrates network programming, concurrency, command parsing, and adherence to protocol specifications.
+```
++----------------+        +-------------+       +-----------------+
+| Client Sockets | <-->   | Event Loop  | <---> | Command Handlers|
++----------------+        +-------------+       +-----------------+
+                              ^   ^   ^
+                              |   |   |
+                         +----+   |   +----+
+                         |        |        |
+                    +----------+   |   +----------+
+                    | Channel  |   |   | Client   |
+                    | Manager  |   |   | Manager  |
+                    +----------+   |   +----------+
+                                  |
+                             +----------+
+                             |  Logger  |
+                             +----------+
+```
 
-⚙️ Features
+- **Event Loop**: uses `poll()` to watch all client sockets.
+- **Client Manager**: tracks nicknames, registrations, and channels.
+- **Channel Manager**: maintains channel state, modes, topics, and member lists.
+- **Command Handlers**: parse and respond to IRC commands.
+- **Logger**: optional logging of server events.
 
-TCP-based server supporting multiple simultaneous clients
 
-Channel creation and management
+## Quick Start
 
-Private messages and channel broadcasts
+### Prerequisites
+- A POSIX-compliant OS (Linux/macOS)
+- A C++98-compatible compiler (e.g., `g++`)
 
-Channel modes: +o (operator), +i (invite-only), +t (topic settable by operators)
+### Installation
+```bash
+$ git clone https://github.com/youruser/ft_irc.git
+$ cd ft_irc
+$ make
+```
 
-Invitation and kick functionality
+### Running the Server
+```bash
+$ ./ircserv <PORT> <PASSWORD>
+```
+- **PORT**: TCP port to listen on (e.g., `6667`)
+- **PASSWORD**: server password for clients
 
-Topic command for channels
 
-Graceful handling of invalid commands and errors
+## Usage Examples
 
-🏗️ Architecture
+1. **Connect via `nc`**:
+   ```bash
+   $ nc localhost 6667
+   PASS mypass
+   NICK Alice
+   USER alice 0 * :Alice Example
+   JOIN #general
+   PRIVMSG #general :Hello, IRC!
+   ```
 
-Server: Listens on a TCP port, accepts new client connections, and manages client sessions.
+2. **Using an IRC client** (e.g., `irssi`):
+   ```bash
+   /server localhost 6667
+   /pass mypass
+   /nick Alice
+   /join #general
+   /msg #general Hello from irssi!
+   ```
 
-Client Manager: Tracks connected clients, their nicknames, and current channels.
 
-Command Parser: Parses incoming messages, validates commands, and dispatches handlers.
+## Supported IRC Commands
 
-Channel Manager: Maintains channels, their modes, topics, and member lists.
+| Command                          | Description                       |
+| -------------------------------- | --------------------------------- |
+| `PASS <password>`                | Authenticate with server password |
+| `NICK <nickname>`                | Set or change your nickname       |
+| `USER <user> 0 * :<realname>`    | Register user details             |
+| `JOIN <#channel>`                | Join or create a channel          |
+| `PART <#channel>`                | Leave a channel                   |
+| `PRIVMSG <target> :<message>`    | Send private or channel message   |
+| `NOTICE <target> :<message>`     | Send a notice                     |
+| `MODE <channel> +/-m <modes>`    | Change channel modes              |
+| `TOPIC <#channel> :<topic>`      | View or set channel topic         |
+| `INVITE <nick> <#channel>`       | Invite a user to a channel        |
+| `KICK <#channel> <nick> :<reason>` | Remove a user from a channel     |
 
-Event Loop: Uses select() for I/O multiplexing to handle multiple sockets in a single-threaded loop.
+*Happy chatting!*
 
-📦 Installation
-
-Clone the repository
-
-git clone https://github.com/youruser/ft_irc.git
-cd ft_irc
-
-Compile
-
-make
-
-🚀 Usage
-
-Start the server
-
-./ircserv <PORT> <PASSWORD>
-
-Connect with an IRC client (e.g., Weechat, irssi, or nc)
-
-nc -c 127.0.0.1 <PORT>
-
-📜 Supported Commands
-
-Command
-
-Description
-
-PASS <password>
-
-Set connection password
-
-NICK <nickname>
-
-Set or change nickname
-
-USER <user> 0 * :<realname>
-
-Set user information
-
-JOIN <channel>
-
-Join or create a channel
-
-PART <channel>
-
-Leave a channel
-
-PRIVMSG <target> :<message>
-
-Send a private or channel message
-
-NOTICE <target> :<message>
-
-Send a notice
-
-MODE <channel> +/-m <modes>
-
-Change channel modes
-
-TOPIC <channel> :<topic>
-
-Set or view channel topic
-
-INVITE <nick> <channel>
-
-Invite user to channel
-
-KICK <channel> <nick> :<reason>
-
-Kick user from channel
