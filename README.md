@@ -14,8 +14,6 @@
    - [Running the Server](#running-the-server)
 5. [Usage Examples](#usage-examples)
 6. [Supported IRC Commands](#supported-irc-commands)
-7. [Development & Contributing](#development--contributing)
-8. [License](#license)
 
 ---
 
