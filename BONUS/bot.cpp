@@ -6,6 +6,7 @@ void    Bot::check_port(std::string _p)
     _port = std::strtod(_p.c_str(), &checker);
     if (checker[0] != '\0' || _port < 1 || _port > 65535)
         throw std::runtime_error("invalid port format!!\n");
+    
 }
 
 void Bot::parse(char **av)

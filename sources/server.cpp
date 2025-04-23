@@ -14,6 +14,19 @@ Server::Server()
 
 }
 
+void printLogoAndPort(int port) {
+    std::cout << "░▒▓█▓▒░ ░▒▓███████▓▒░   ░▒▓██████▓▒░  \n";
+    std::cout << "░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ \n";
+    std::cout << "░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░        \n";
+    std::cout << "░▒▓█▓▒░ ░▒▓███████▓▒░  ░▒▓█▓▒░        \n";
+    std::cout << "░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░        \n";
+    std::cout << "░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ \n";
+    std::cout << "░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░  ░▒▓██████▓▒░  \n\n";
+
+    // Show port in color if the terminal supports ANSI codes
+    std::cout << "🚀 Server is running on port: \033[1;32m" << port << "\033[0m 🔥\n";
+}
+
 void    Server::registration_msge(Client &_client)
 {
     std::string nick = _client.get_nick_name();
@@ -100,7 +113,8 @@ void Server::server_setup(std::string _port, std::string passwd)
     _server_struct.revents = 0;
     _poll_fds.push_back(_server_struct);
 
-    std::cout << "SERVER LISTENING ON PORT: " << port << std::endl;
+    printLogoAndPort(port);    
+    // std::cout << "SERVER LISTENING ON PORT: " << port << std::endl;
 }
 
 void    Server::handle_new_client()
