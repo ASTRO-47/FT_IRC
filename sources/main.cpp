@@ -1,13 +1,7 @@
 #include "server.hpp"
 
-void f()
-{
-    system("leaks ircserv");
-}
-
 int main(int ac , char *av[])
 {
-    atexit(f);
     if (ac != 3)
         return (std::cerr << "invalid number of args\r\n", 1);
     Server server;

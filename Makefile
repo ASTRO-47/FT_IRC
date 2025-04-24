@@ -20,7 +20,7 @@ GRAY        = \e[38;5;37m
 RESET       = \e[0m
 
 %.o: %.cpp $(HEADERS)
-	$(CPPC) $(FLAGS) -c $< -o $@
+	@$(CPPC) $(FLAGS) -c $< -o $@
 
 all : $(NAME)
 
