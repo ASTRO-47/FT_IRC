@@ -110,9 +110,7 @@ $ ./ircserv <PORT> <PASSWORD>
 | `NICK <nickname>`                | Set or change your nickname       |
 | `USER <user> 0 * :<realname>`    | Register user details             |
 | `JOIN <#channel>`                | Join or create a channel          |
-| `PART <#channel>`                | Leave a channel                   |
 | `PRIVMSG <target> :<message>`    | Send private or channel message   |
-| `NOTICE <target> :<message>`     | Send a notice                     |
 | `MODE <channel> +/-m <modes>`    | Change channel modes              |
 | `TOPIC <#channel> :<topic>`      | View or set channel topic         |
 | `INVITE <nick> <#channel>`       | Invite a user to a channel        |
