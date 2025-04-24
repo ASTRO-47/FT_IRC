@@ -19,12 +19,12 @@
 
 ## Project Overview
 
-**ft_irc** is a single-threaded, event-driven IRC (Internet Relay Chat) server written in C++98, fully compliant with RFC 1459. It demonstrates low-level socket programming, I/O multiplexing with `select()`, and robust command parsing.
+**ft_irc** is a single-threaded, event-driven IRC (Internet Relay Chat) server written in C++98, fully compliant with RFC 1459. It demonstrates low-level socket programming, I/O multiplexing with `poll()`, and robust command parsing.
 
 
 ## Key Features
 
-- **Multi-client support** using `select()` for non-blocking I/O
+- **Multi-client support** using `poll()` for non-blocking I/O
 - **Channel management**: create, join, part, kick, invite
 - **User modes & channel modes**: operators (+o), invite-only (+i), topic control (+t)
 - **Private messaging** (`PRIVMSG`) and **broadcasts**
